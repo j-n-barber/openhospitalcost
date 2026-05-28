@@ -8,11 +8,11 @@
     "node": ">=20"
   },
   "scripts": {
-    "migrate:up": "node-pg-migrate up -m db/migrations -j sql",
-    "migrate:down": "node-pg-migrate down -m db/migrations -j sql",
-    "migrate:create": "node-pg-migrate create -m db/migrations -j sql",
+    "migrate:up": "node db/migrate.js up",
+    "migrate:down": "node db/migrate.js down",
+    "migrate:create": "node db/migrate.js create",
     "seed:procedures": "node db/seeds/load-procedures.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js"
+    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js"
   },
   "dependencies": {
     "node-pg-migrate": "^7.0.0",

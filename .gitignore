@@ -6,8 +6,10 @@ node_modules/
 .env.local
 .env.*.local
 
-# Claude local settings (per-machine permission grants)
-.claude/settings.local.json
+# Claude local settings + skill caches (per-machine artifacts)
+.claude/
+.agents/
+skills-lock.json
 
 # MRF samples (large, downloadable from source)
 pipeline/parse/samples/
