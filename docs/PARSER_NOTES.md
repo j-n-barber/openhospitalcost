@@ -9,13 +9,15 @@
 
 ## Sample coverage
 
-| # | Hospital | CCN / EIN | Format | Spec ver. | File size | Origin | Acquisition notes |
-|---|---|---|---|---|---|---|---|
-| 1 | Spencer Municipal Hospital (Iowa CAH) | 426005883 | CSV (wide) | 2.0.0 | 4 MB | Self-hosted | `cms-hpt.txt` → direct .csv. UA-permissive. |
-| 2 | Children's Hospital of Philadelphia | 231352166 | CSV (tall) | 3.0.0 | 62 MB | Self-hosted | `cms-hpt.txt` → direct .csv. UA-permissive. |
-| 3 | Cleveland Clinic Main Campus | 340714585 | **ZIP → CSV (tall)** | 3.0.0 | 51 MB → 1.5 GB | Panacea-hosted | `cms-hpt.txt` lists a Panacea CDN URL; downloads a ZIP. |
-| 4 | HCA Houston Healthcare Medical Center | 821635538 | JSON | 3.0.0 | 607 MB | Azure Blob (SAS-signed) | URL on hospital page includes SAS query token; raw URL returns 409. |
-| 5 | Stanford Health Care | 946174066 | JSON | 3.0.0 | 155 MB | Self-hosted | Has UTF-8 BOM. |
+| # | Hospital | CCN | EIN (from filename) | Format | Spec ver. | File size | Origin | Acquisition notes |
+|---|---|---|---|---|---|---|---|---|
+| 1 | Spencer Municipal Hospital (Iowa CAH) | 160112 | 426005883 | CSV (wide) | 2.0.0 | 4 MB | Self-hosted | `cms-hpt.txt` → direct .csv. UA-permissive. |
+| 2 | Children's Hospital of Philadelphia | 393303 | 231352166 | CSV (tall) | 3.0.0 | 62 MB | Self-hosted | `cms-hpt.txt` → direct .csv. UA-permissive. |
+| 3 | The Cleveland Clinic Foundation | 360180 | 340714585 | **ZIP → CSV (tall)** | 3.0.0 | 51 MB → 1.5 GB | Panacea-hosted | `cms-hpt.txt` lists a Panacea CDN URL; downloads a ZIP. |
+| 4 | HCA Houston Healthcare Medical Center | 450659 | 821635538 | JSON | 3.0.0 | 607 MB | Azure Blob (SAS-signed) | URL on hospital page includes SAS query token; raw URL returns 409. |
+| 5 | Stanford Health Care | 050441 | 946174066 | JSON | 3.0.0 | 155 MB | Self-hosted | Has UTF-8 BOM. |
+
+**Note (added during Phase B hospital roster ingest, 2026-05-28):** MRF filenames follow the CMS convention `<ein>_<hospitalname>_standardcharges.[json|csv]`. The leading numeric ID is the hospital's **EIN**, *not* the CCN. CMS Hospital General Information uses CCN as its primary key. The Phase B ingest produces `hospitals.ccn` as the canonical identifier; we'll need an EIN→CCN mapping (or hospital-name match) to associate MRF files with hospital rows in `price_records`. This wasn't anticipated by the brief, but the schema can accommodate it via a new column or a lookup table added in Phase C.
 
 **Skipped during spike** (data-acquisition challenges, not parser issues):
 

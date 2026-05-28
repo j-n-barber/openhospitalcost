@@ -12,9 +12,11 @@
     "migrate:down": "node db/migrate.js down",
     "migrate:create": "node db/migrate.js create",
     "seed:procedures": "node db/seeds/load-procedures.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js"
+    "ingest:cms-hospitals": "node pipeline/discovery/ingest-cms-hospitals.js",
+    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js"
   },
   "dependencies": {
+    "csv-parse": "^5.5.0",
     "node-pg-migrate": "^7.0.0",
     "pg": "^8.11.0"
   },
