@@ -15,7 +15,8 @@
     "ingest:cms-hospitals": "node pipeline/discovery/ingest-cms-hospitals.js",
     "geocode:hospitals": "node pipeline/discovery/geocode-hospitals.js",
     "scrape:cms-hpt": "node pipeline/discovery/scrape-cms-hpt.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js && node --check pipeline/discovery/scrape-cms-hpt.js"
+    "ingest:tpafs-links": "node pipeline/discovery/ingest-tpafs-links.js",
+    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js && node --check pipeline/discovery/scrape-cms-hpt.js && node --check pipeline/discovery/ingest-tpafs-links.js"
   },
   "dependencies": {
     "csv-parse": "^5.5.0",
