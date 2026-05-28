@@ -43,3 +43,7 @@ npm run seed:procedures
 ## Stack
 
 Vercel (Phase D) · Next.js App Router · Neon Postgres · Cloudflare R2 · DuckDB · GitHub Actions · MiniSearch · Plausible.
+
+## License
+
+TBD — defer until v1 launch.
