@@ -942,13 +942,13 @@
     {
       "code": "29881",
       "code_type": "CPT",
-      "name": "Knee arthroscopy with meniscus repair",
-      "slug": "meniscus-repair",
-      "description": "Minimally invasive knee surgery to repair a torn meniscus through small incisions using a camera. Performed when the tear is reparable; partial meniscectomy is performed when not.",
+      "name": "Knee arthroscopy with meniscectomy",
+      "slug": "knee-meniscectomy",
+      "description": "Minimally invasive knee surgery that removes the torn portion of a meniscus through small incisions using a camera. The most common surgical treatment for a torn meniscus; meniscus repair (a separate procedure) is performed only when the tear is in a region that can heal.",
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["meniscus surgery cost", "knee meniscus repair", "torn meniscus surgery", "knee arthroscopy cost"],
+      "aliases": ["meniscus surgery cost", "torn meniscus surgery", "meniscectomy cost", "knee arthroscopy cost", "knee meniscus surgery"],
       "source": "draft_addition"
     },
     {
@@ -1176,7 +1176,7 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["home sleep test cost", "home sleep study", "sleep apnea home test", "wat-pat test"],
+      "aliases": ["home sleep test cost", "home sleep study", "sleep apnea home test", "at-home sleep test"],
       "source": "draft_addition"
     },
     {
