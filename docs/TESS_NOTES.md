@@ -2,7 +2,7 @@
 
 **Why.** Per PROJECT_BRIEF.md Section 10, clear OpenHospitalCost in USPTO Classes 35, 42, and 44 before any commercial / branded launch. Domain registration does not require clearance, but going public with branded materials does.
 
-**When.** Originally Phase A "before launch." **Upgraded to "this week" on 2026-05-27** after the pre-screen surfaced an active competitor with a closely-overlapping brand (HospitalCost.com).
+**When.** Originally Phase A "before launch." **Recalibrated 2026-05-27**: still worth doing during Phase A or early Phase B, but not on a week-one timeline. The pre-screen surfaced a regional competitor (HospitalCost.com, 84 hospitals in VA + NC) whose brand is similar to ours, but their competitive footprint is small enough that they're unlikely to actively challenge us at launch. The trademark question remains independent and worth resolving before we invest heavily in branded marketing.
 
 **Effort:** ~30 minutes of clicking. No login required.
 
@@ -14,7 +14,7 @@ Run before formal TESS to flag candidates worth particular attention during the 
 
 ### Active brand to investigate
 
-- **HospitalCost.com** — operational consumer hospital-price-transparency site in VA + NC. Uses federal MRF data, 104 procedures, plain-English presentation. Direct semantic and product overlap with OpenHospitalCost. **TESS priority: highest.** Specifically search the mark "HospitalCost" in Classes 35 and 42 before considering any "OpenHospitalCost" coexistence.
+- **HospitalCost.com** — operational consumer hospital-price-transparency site, 84 hospitals across VA + NC, identical product positioning to OpenHospitalCost. Small competitive footprint today but explicit expansion intent ("More states are coming"). **TESS priority: high but not urgent.** Specifically search the mark "HospitalCost" in Classes 35 and 42. The "Open" prefix likely provides trademark distinction even if HospitalCost is registered (cf. OpenTable / Table, OpenAI / AI, OpenSea / Sea coexistence patterns), but confirm via search.
 - **Open Hospital (open-hospital.org)** — open-source EMR/HIMS software, Italian-led, GPL. Different product space but shares the "Open Hospital" prefix. TESS-search the mark "Open Hospital" in Classes 9, 35, 42.
 
 ### Decision pending TESS
