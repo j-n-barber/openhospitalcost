@@ -2,7 +2,7 @@
 
 **Why.** Per PROJECT_BRIEF.md Section 10, clear OpenHospitalCost in USPTO Classes 35, 42, and 44 before any commercial / branded launch. Domain registration does not require clearance, but going public with branded materials does.
 
-**When.** Originally Phase A "before launch." **Recalibrated 2026-05-27**: still worth doing during Phase A or early Phase B, but not on a week-one timeline. The pre-screen surfaced a regional competitor (HospitalCost.com, 84 hospitals in VA + NC) whose brand is similar to ours, but their competitive footprint is small enough that they're unlikely to actively challenge us at launch. The trademark question remains independent and worth resolving before we invest heavily in branded marketing.
+**When.** Originally Phase A "before launch." Run and resolved 2026-05-28: see Results / Disposition sections below.
 
 **Effort:** ~30 minutes of clicking. No login required.
 
@@ -55,41 +55,51 @@ For each result you find in Classes 35, 42, or 44, click into the **Mark Detail*
 
 ---
 
-## Results
+## Results — 2026-05-28
 
-_Fill in below as searches complete. If a row has no results in our classes, write "no hits" and move on._
+Jake ran all 7 searches at https://tmsearch.uspto.gov/ across statuses Live + All. The sweep came back clean in our three classes with one adjacent mark worth noting.
 
 ### Class 35 (advertising / business services — covers ad-supported content sites)
 
 | Mark | Status | Owner | Notes |
 |---|---|---|---|
-| _TBD_ | | | |
+| Hospital Price Index | live (per Jake's sweep) | — | Adjacent mark; closest hit. Almost certainly the B2B aggregator at hospitalpriceindex.com — we encountered them during the parser spike hosting UCHealth Yampa Valley's MRF. Different audience (B2B platform vs. our consumer site) and different mark structure ("Index" vs. "Cost"). Coexistence highly defensible. |
 
 ### Class 42 (software / SaaS — covers the technical product)
 
 | Mark | Status | Owner | Notes |
 |---|---|---|---|
-| _TBD_ | | | |
+| _no hits_ | | | |
 
 ### Class 44 (medical services — we don't provide care, but adjacent marks could still create friction)
 
 | Mark | Status | Owner | Notes |
 |---|---|---|---|
-| _TBD_ | | | |
+| _no hits_ | | | |
 
 ---
 
 ## Disposition
 
-Tick whichever applies once all searches are done:
+- [x] **Clear** — no conflicting live marks on "OpenHospitalCost" or substantially similar wordmarks in our three classes. Hospital Price Index is the only adjacent mark and is compositionally distinct ("Index" vs. "Cost") and operates in a different audience (B2B aggregator vs. consumer site).
 
-- [ ] **Clear** — no conflicting live marks in any of our classes. Proceed with branded launch.
-- [ ] **One or more conflicts found** — document below, then decide on rename / coexistence / formal attorney opinion.
-- [ ] **Inconclusive** — file a formal clearance opinion with a trademark attorney before launch.
+Proceed with branded launch under the "OpenHospitalCost" name. No rename required.
 
-### Conflicts (if any)
+### Conflicts
 
-_None recorded yet._
+None active. HospitalCost.com (regional consumer site, 84 hospitals VA+NC) was not found as a registered USPTO mark in this sweep. Worth re-checking before launch if their expansion intent ("more states coming") materializes.
+
+---
+
+## Filing decision
+
+**Status:** Deferred 2026-05-28. Three options on the table:
+
+1. **DIY ITU filing on Class 35 wordmark "OpenHospitalCost" via USPTO TEAS Plus** (~$350, ~1 hour). Locks priority date now; revisit Class 42 when the API tier ships.
+2. **Bundle with the Phase B AMA/CPT legal consult.** Lawyer reviews and files; ~$500–1500 incremental cost.
+3. **Defer registration to post-launch.** Common-law trademark rights start with use in commerce. Cheapest, exposes us to copycats filing first if we get attention.
+
+To revisit: see [PROJECT_BRIEF.md Decisions Log](PROJECT_BRIEF.md#9-decisions-log).
 
 ---
 
