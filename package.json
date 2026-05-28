@@ -1,0 +1,22 @@
+{
+  "name": "openhospitalcost",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Consumer-facing hospital price transparency site, sourced from federally mandated MRFs.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "migrate:up": "node-pg-migrate up -m db/migrations -j sql",
+    "migrate:down": "node-pg-migrate down -m db/migrations -j sql",
+    "migrate:create": "node-pg-migrate create -m db/migrations -j sql",
+    "seed:procedures": "node db/seeds/load-procedures.js",
+    "syntax-check": "node --check db/seeds/load-procedures.js"
+  },
+  "dependencies": {
+    "node-pg-migrate": "^7.0.0",
+    "pg": "^8.11.0"
+  },
+  "devDependencies": {}
+}

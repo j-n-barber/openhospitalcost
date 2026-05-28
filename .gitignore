@@ -1,0 +1,32 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Claude local settings (per-machine permission grants)
+.claude/settings.local.json
+
+# MRF samples (large, downloadable from source)
+pipeline/parse/samples/
+
+# Parquet snapshots (archived in R2)
+pipeline/snapshots/output/
+
+# Next.js build artifacts (Phase D)
+apps/web/.next/
+apps/web/out/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/

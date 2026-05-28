@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: ci
+          POSTGRES_DB: openhospitalcost_ci
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Syntax-check JS
+        run: |
+          for f in $(find db pipeline -name '*.js' -not -path '*/node_modules/*'); do
+            node --check "$f"
+          done
+
+      - name: Apply migrations to ephemeral Postgres
+        env:
+          DATABASE_URL: postgres://postgres:ci@localhost:5432/openhospitalcost_ci
+        run: npm run migrate:up
+
+      - name: Seed procedures and verify count
+        env:
+          DATABASE_URL: postgres://postgres:ci@localhost:5432/openhospitalcost_ci
+        run: |
+          npm run seed:procedures
+          COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM procedures" | tr -d '[:space:]')
+          echo "procedure count: $COUNT"
+          test "$COUNT" = "100"
+
+      - name: Re-run seed and confirm idempotent
+        env:
+          DATABASE_URL: postgres://postgres:ci@localhost:5432/openhospitalcost_ci
+        run: |
+          npm run seed:procedures
+          COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM procedures" | tr -d '[:space:]')
+          test "$COUNT" = "100"
