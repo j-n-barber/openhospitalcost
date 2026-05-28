@@ -1,0 +1,15 @@
+{
+  "_note": "Hand-curated seed list of hospital cms-hpt.txt URLs. The url field points to the root-locator file, not the MRF itself. CCN is the canonical key. Verified working as of 2026-05-28 against direct curl with a standard browser User-Agent.",
+  "_problem_to_solve_next_session": "Programmatic discovery of cms-hpt.txt URLs for the remaining ~5,400 hospitals. See PARSER_NOTES.md + ACQUISITION_STRATEGY.md.",
+  "roots": [
+    { "ccn": "160112", "name_hint": "Spencer Municipal Hospital",          "url": "https://www.spencerhospital.org/cms-hpt.txt" },
+    { "ccn": "393303", "name_hint": "Children's Hospital of Philadelphia", "url": "https://www.chop.edu/cms-hpt.txt" },
+    { "ccn": "360180", "name_hint": "The Cleveland Clinic Foundation",     "url": "https://my.clevelandclinic.org/cms-hpt.txt" },
+    { "ccn": "140281", "name_hint": "Northwestern Memorial Hospital",      "url": "https://www.nm.org/cms-hpt.txt" },
+    { "ccn": "050441", "name_hint": "Stanford Health Care",                "url": "https://stanfordhealthcare.org/cms-hpt.txt" },
+    { "ccn": "450358", "name_hint": "Houston Methodist Hospital",          "url": "https://www.houstonmethodist.org/cms-hpt.txt" },
+    { "ccn": "050625", "name_hint": "Cedars-Sinai Medical Center",         "url": "https://www.cedars-sinai.org/cms-hpt.txt" },
+    { "ccn": "390006", "name_hint": "Geisinger Medical Center",            "url": "https://www.geisinger.org/cms-hpt.txt" },
+    { "ccn": "060049", "name_hint": "UCHealth Yampa Valley Medical Center","url": "https://www.uchealth.org/cms-hpt.txt" }
+  ]
+}
