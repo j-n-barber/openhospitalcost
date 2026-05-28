@@ -13,7 +13,8 @@
     "migrate:create": "node db/migrate.js create",
     "seed:procedures": "node db/seeds/load-procedures.js",
     "ingest:cms-hospitals": "node pipeline/discovery/ingest-cms-hospitals.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js"
+    "geocode:hospitals": "node pipeline/discovery/geocode-hospitals.js",
+    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js"
   },
   "dependencies": {
     "csv-parse": "^5.5.0",
