@@ -2,9 +2,28 @@
 
 **Why.** Per PROJECT_BRIEF.md Section 10, clear OpenHospitalCost in USPTO Classes 35, 42, and 44 before any commercial / branded launch. Domain registration does not require clearance, but going public with branded materials does.
 
-**When.** Phase A, ahead of any branded press or social presence.
+**When.** Originally Phase A "before launch." **Upgraded to "this week" on 2026-05-27** after the pre-screen surfaced an active competitor with a closely-overlapping brand (HospitalCost.com).
 
 **Effort:** ~30 minutes of clicking. No login required.
+
+---
+
+## 2026-05-27 pre-screen findings (informal WebSearch, not USPTO)
+
+Run before formal TESS to flag candidates worth particular attention during the searches.
+
+### Active brand to investigate
+
+- **HospitalCost.com** — operational consumer hospital-price-transparency site in VA + NC. Uses federal MRF data, 104 procedures, plain-English presentation. Direct semantic and product overlap with OpenHospitalCost. **TESS priority: highest.** Specifically search the mark "HospitalCost" in Classes 35 and 42 before considering any "OpenHospitalCost" coexistence.
+- **Open Hospital (open-hospital.org)** — open-source EMR/HIMS software, Italian-led, GPL. Different product space but shares the "Open Hospital" prefix. TESS-search the mark "Open Hospital" in Classes 9, 35, 42.
+
+### Decision pending TESS
+
+If "HospitalCost" is a live registered USPTO mark in our classes, three options:
+
+1. **Coexistence** — "Open" prefix is a meaningful trademark distinguisher (cf. Anthropic vs. Anthropic Industries, Open Table vs. Table, etc.). Defensible if HospitalCost's registration is narrow.
+2. **Rename** — candidate alternatives: OpenHospitalPrice, OpenMedPrice, OpenCarePrice, PriceClear (if available), HospitalPrice.io.
+3. **Coexistence with formal opinion** — request a trademark attorney's clearance opinion ($1.5K–3K). Defensible legal posture if HospitalCost ever challenges us.
 
 ---
 

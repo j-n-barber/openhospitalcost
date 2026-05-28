@@ -483,6 +483,8 @@ openhospitalcost/
 
 - **CareCostIndex.com** — active consumer site (last update April 16, 2026), multi-language, multi-vertical (procedures, elder care, therapy, birth, country pages), AdSense-monetized. Aggregates estimates from CMS, FAIR Health, Genworth, NHS, OECD, WHO. *Not* MRF-cited per hospital. Sharpens OpenHospitalCost's positioning rather than competing on identical product.
 - **HealthCost.com** — appears dormant per Crunchbase ("permanently closed"), though LinkedIn page remains active. Originally a transparent-marketplace pitch. Relevant for trademark adjacency only.
+- **HospitalCost.com** — *(surfaced 2026-05-27 during TESS pre-screen)* active consumer site, MRF-sourced data for hospitals in Virginia and North Carolina, 104 common procedures, plain-English presentation. Closest existing product fit. Regional scope only, so not direct national competition today, but the brand name "HospitalCost" overlaps significantly with "OpenHospitalCost." **Action: formal TESS search on the "HospitalCost" mark required before any branded launch** — coexistence may or may not be possible. See [TESS_NOTES.md](TESS_NOTES.md).
+- **Open Hospital (open-hospital.org)** — open-source EMR/HIMS software for hospital operations, Italian-led project, GPL-licensed. Different product space (B2B clinical software, not consumer price transparency) but shares the "Open Hospital" prefix. Likely Class 9/42 trademark coverage for software; our use is Class 35 (advertising) and Class 42 (information services) so coexistence is plausible but TESS confirmation needed.
 
 **Cost ceiling:** infra under $50/month during build, under $250/month at revenue scale.
 
