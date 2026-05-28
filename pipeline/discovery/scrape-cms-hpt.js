@@ -162,34 +162,57 @@ async function seedRootUrls(client) {
 
 async function matchHospitalForEntry(client, entry, sourceHospital) {
   // Try to find the hospital row that best matches the cms-hpt entry's
-  // location-name. Start by looking within the same state as the seed
-  // hospital — most cms-hpt files list co-located facilities.
+  // location-name. For hospital-level sources, prefer same-state matches
+  // first. For system-level sources (sourceHospital is null) or as a
+  // fallback when same-state finds nothing, match across all states.
   const targetName = entry['location-name'];
   if (!targetName) return null;
 
   const targetSlug = slugify(targetName);
-  const state = sourceHospital.state;
+  const state = sourceHospital?.state ?? null;
+  const sourceCcn = sourceHospital?.ccn ?? null;
 
-  // 1) Exact slug match within state
-  const exact = await client.query(
-    `SELECT id, ccn, name FROM hospitals
-     WHERE state = $1 AND slug = $2
-     ORDER BY (ccn = $3) DESC -- prefer the seed hospital itself
-     LIMIT 1`,
-    [state, targetSlug, sourceHospital.ccn]
+  if (state) {
+    // 1) Exact slug match within state
+    const exact = await client.query(
+      `SELECT id, ccn, name FROM hospitals
+       WHERE state = $1 AND slug = $2
+       ORDER BY (ccn = $3) DESC -- prefer the seed hospital itself
+       LIMIT 1`,
+      [state, targetSlug, sourceCcn]
+    );
+    if (exact.rows.length) return exact.rows[0];
+
+    // 2) Trigram similarity within state (pg_trgm)
+    const fuzzy = await client.query(
+      `SELECT id, ccn, name, similarity(slug, $2) AS sim
+       FROM hospitals
+       WHERE state = $1 AND similarity(slug, $2) > 0.4
+       ORDER BY sim DESC
+       LIMIT 1`,
+      [state, targetSlug]
+    );
+    if (fuzzy.rows.length) return fuzzy.rows[0];
+  }
+
+  // 3) Cross-state exact slug — useful for system-level files where the
+  //    seed (if any) lives in a different state than the listed facility.
+  const exactCross = await client.query(
+    `SELECT id, ccn, name FROM hospitals WHERE slug = $1 LIMIT 1`,
+    [targetSlug]
   );
-  if (exact.rows.length) return exact.rows[0];
+  if (exactCross.rows.length) return exactCross.rows[0];
 
-  // 2) Trigram similarity within state (pg_trgm is enabled)
-  const fuzzy = await client.query(
-    `SELECT id, ccn, name, similarity(slug, $2) AS sim
+  // 4) Cross-state trigram, with a stricter threshold to avoid false matches
+  const fuzzyCross = await client.query(
+    `SELECT id, ccn, name, similarity(slug, $1) AS sim
      FROM hospitals
-     WHERE state = $1 AND similarity(slug, $2) > 0.4
+     WHERE similarity(slug, $1) > 0.6
      ORDER BY sim DESC
      LIMIT 1`,
-    [state, targetSlug]
+    [targetSlug]
   );
-  if (fuzzy.rows.length) return fuzzy.rows[0];
+  if (fuzzyCross.rows.length) return fuzzyCross.rows[0];
 
   return null;
 }
@@ -200,9 +223,14 @@ async function processOneRoot(client, url, seedHospitals, throttle) {
 
   // Use the first seed hospital's state for the initial name-match lookups;
   // the matcher will still find cross-state hospitals via the unconstrained
-  // fallback if needed. Almost all cms-hpt files list intra-state facilities.
-  const sourceHospital = seedHospitals[0];
-  console.log(`[${seedHospitals.length} seed(s)] ${url}`);
+  // fallback if needed. Almost all hospital-level cms-hpt files list
+  // intra-state facilities. System-level URLs pass an empty seed list, in
+  // which case the matcher works across all states from the start.
+  const sourceHospital = seedHospitals[0] ?? null;
+  const label = sourceHospital
+    ? `[${seedHospitals.length} seed(s)]`
+    : '[system-level]';
+  console.log(`${label} ${url}`);
 
   const result = await fetchPolite(url);
 
@@ -268,6 +296,13 @@ async function main() {
     for (const h of rows) {
       if (!byUrl.has(h.mrf_root_url)) byUrl.set(h.mrf_root_url, []);
       byUrl.get(h.mrf_root_url).push(h);
+    }
+
+    // Add system-level URLs (no DB seed; matched by name across all states).
+    const knownPath = resolve(__dirname, 'known-root-urls.json');
+    const known = JSON.parse(readFileSync(knownPath, 'utf8'));
+    for (const sys of known.system_roots ?? []) {
+      if (!byUrl.has(sys.url)) byUrl.set(sys.url, []);
     }
 
     console.log(

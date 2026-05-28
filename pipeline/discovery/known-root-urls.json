@@ -11,5 +11,20 @@
     { "ccn": "050625", "name_hint": "Cedars-Sinai Medical Center",         "url": "https://www.cedars-sinai.org/cms-hpt.txt" },
     { "ccn": "390006", "name_hint": "Geisinger Medical Center",            "url": "https://www.geisinger.org/cms-hpt.txt" },
     { "ccn": "060049", "name_hint": "UCHealth Yampa Valley Medical Center","url": "https://www.uchealth.org/cms-hpt.txt" }
+  ],
+  "_system_roots_note": "Multi-state hospital-system cms-hpt files. No seed CCN — each parsed entry is matched to a hospital row by slug-then-trigram-similarity across all states (system flagship hospitals are spread across many states). Add new systems here once probed via curl.",
+  "system_roots": [
+    { "system_name": "CommonSpirit Health", "url": "https://www.commonspirit.org/cms-hpt.txt" },
+    { "system_name": "Providence Health",   "url": "https://www.providence.org/cms-hpt.txt" },
+    { "system_name": "AdventHealth",        "url": "https://www.adventhealth.com/cms-hpt.txt" }
+  ],
+  "_unprobed_systems": [
+    "LifePoint Health (chs.net & lifepointhealth.net both return soft-404 HTML)",
+    "Community Health Systems (same)",
+    "Ascension (ascension.org/cms-hpt.txt → 404)",
+    "Tenet (tenethealth.com/cms-hpt.txt → 404)",
+    "HCA Healthcare (hcahealthcare.com/cms-hpt.txt → 200 but 0 bytes; per-region domains do work — see HCA Houston)",
+    "UHS (uhsinc.com/cms-hpt.txt → 404)",
+    "Bon Secours (bonsecourshealth.org → connection timeout)"
   ]
 }
