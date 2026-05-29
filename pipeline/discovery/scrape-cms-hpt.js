@@ -326,16 +326,26 @@ async function main() {
 
     let totalFetched = 0;
     let totalMatched = 0;
+    let totalErrors = 0;
     for (const [url, seeds] of byUrl) {
-      const r = await processOneRoot(client, url, seeds, throttle);
-      if (r.fetched) totalFetched++;
-      totalMatched += r.matched;
+      try {
+        const r = await processOneRoot(client, url, seeds, throttle);
+        if (r.fetched) totalFetched++;
+        totalMatched += r.matched;
+      } catch (err) {
+        // Most commonly: 'Connection terminated unexpectedly' from Neon's
+        // pooler dropping a connection mid-query. Skip this URL, let the
+        // pool hand out a fresh connection for the next iteration.
+        console.error(`  [skip] ${url}: ${err.message}`);
+        totalErrors++;
+      }
     }
 
     console.log('');
     console.log('=== Scrape summary ===');
     console.log(`Unique root URLs: ${byUrl.size}`);
     console.log(`URLs fetched:     ${totalFetched}`);
+    console.log(`URLs errored:     ${totalErrors}`);
     console.log(`Hospitals matched + file URL stored: ${totalMatched}`);
   } finally {
     await client.end();
