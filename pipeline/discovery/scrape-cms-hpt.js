@@ -277,8 +277,15 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
-  await client.connect();
+  // pg.Pool auto-reconnects when Neon's pooler drops idle connections.
+  // The scraper's long-running session was crashing with "Connection
+  // terminated unexpectedly" after ~600 URLs against a single pg.Client.
+  const client = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 1,
+    idleTimeoutMillis: 30_000,
+    connectionTimeoutMillis: 10_000,
+  });
 
   try {
     await seedRootUrls(client);
@@ -287,6 +294,7 @@ async function main() {
       `SELECT id, ccn, name, state, mrf_root_url
        FROM hospitals
        WHERE mrf_root_url IS NOT NULL
+         AND (last_mrf_check_at IS NULL OR last_mrf_check_at < now() - interval '6 hours')
        ORDER BY mrf_root_url, ccn`
     );
 
@@ -328,6 +336,9 @@ async function main() {
   }
 }
 
+// Resume-friendly: skip hospitals whose last_mrf_check_at is recent.
+// If a prior partial run already touched a URL within the last 6 hours,
+// don't re-fetch it on resume.
 main().catch((err) => {
   console.error(err);
   process.exit(1);
