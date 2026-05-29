@@ -171,8 +171,18 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
-  await client.connect();
+  // Use a pool with explicit error handling to survive Neon's
+  // idle-connection drops on long-running scrapes (same fix as
+  // scrape-cms-hpt.js).
+  const client = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 2,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 10_000,
+  });
+  client.on('error', (err) => {
+    console.error(`[pool] connection error (recoverable): ${err.message}`);
+  });
 
   const { rows } = await client.query(`
     SELECT id, ccn, name, state, mrf_root_url
@@ -190,12 +200,20 @@ async function main() {
 
   let found = 0;
   let processed = 0;
+  let errored = 0;
   for (const h of rows) {
-    const r = await processOne(client, h, throttle);
-    if (r.found) found++;
+    try {
+      const r = await processOne(client, h, throttle);
+      if (r.found) found++;
+    } catch (err) {
+      // Skip individual hospital failures (network blips, query
+      // errors) without killing the whole loop.
+      console.error(`  [skip] ${h.ccn}: ${err.message}`);
+      errored++;
+    }
     processed++;
     if (processed % 50 === 0) {
-      console.log(`... ${processed}/${rows.length} processed, ${found} found`);
+      console.log(`... ${processed}/${rows.length} processed, ${found} found, ${errored} errored`);
     }
   }
 
