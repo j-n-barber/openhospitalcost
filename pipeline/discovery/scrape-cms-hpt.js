@@ -282,9 +282,15 @@ async function main() {
   // terminated unexpectedly" after ~600 URLs against a single pg.Client.
   const client = new pg.Pool({
     connectionString: process.env.DATABASE_URL,
-    max: 1,
-    idleTimeoutMillis: 30_000,
+    max: 2,
+    idleTimeoutMillis: 10_000,
     connectionTimeoutMillis: 10_000,
+  });
+  // The pool emits 'error' when a connection in its pool drops while idle.
+  // Without a handler, the process crashes. Swallow it — the next query
+  // gets a fresh connection from the pool.
+  client.on('error', (err) => {
+    console.error(`[pool] connection error (recoverable): ${err.message}`);
   });
 
   try {
