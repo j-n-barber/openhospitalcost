@@ -76,7 +76,9 @@
     { "system_name": "Michigan Medicine",             "url": "https://www.uofmhealth.org/cms-hpt.txt" },
     { "system_name": "Phoenix Children's",            "url": "https://www.phoenixchildrens.org/cms-hpt.txt" },
     { "system_name": "OHSU",                          "url": "https://www.ohsu.edu/cms-hpt.txt" },
-    { "system_name": "Seattle Children's",            "url": "https://www.seattlechildrens.org/cms-hpt.txt" }
+    { "system_name": "Seattle Children's",            "url": "https://www.seattlechildrens.org/cms-hpt.txt" },
+    { "system_name": "Ochsner Health (Louisiana)",    "url": "https://www.ochsner.org/cms-hpt.txt" },
+    { "system_name": "UT Southwestern Medical",       "url": "https://www.utswmed.org/cms-hpt.txt" }
   ],
   "_unprobed_systems": [
     "LifePoint Health (chs.net & lifepointhealth.net both return soft-404 HTML)",
