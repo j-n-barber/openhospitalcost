@@ -16,7 +16,8 @@
 
 import pg from 'pg';
 import { createHash } from 'node:crypto';
-import { readFileSync, statSync } from 'node:fs';
+import { createReadStream, statSync } from 'node:fs';
+import { pipeline } from 'node:stream/promises';
 import { loadEnv } from '../db/load-env.js';
 import { parseCsv, itemHeaderColumns } from './parse/parsers/csv.js';
 import { parseJson } from './parse/parsers/json.js';
@@ -29,8 +30,12 @@ function arg(name) {
   const i = process.argv.indexOf(`--${name}`);
   return i !== -1 ? process.argv[i + 1] : undefined;
 }
-function sha256(path) {
-  return createHash('sha256').update(readFileSync(path)).digest('hex');
+// Stream the hash — readFileSync throws on files > 2 GB (Node Buffer limit),
+// and several MRFs exceed that (Cleveland-class, plus 2–5 GB outliers).
+async function sha256(path) {
+  const hash = createHash('sha256');
+  await pipeline(createReadStream(path), hash);
+  return hash.digest('hex');
 }
 
 export async function fetchCptMap(client) {
@@ -68,7 +73,7 @@ export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
 
   return {
     payload, metrics, score, priceRows,
-    fileHash: sha256(filePath), fileSize: statSync(filePath).size,
+    fileHash: await sha256(filePath), fileSize: statSync(filePath).size,
     effectiveDate: metrics.lastUpdatedOn || null,
   };
 }

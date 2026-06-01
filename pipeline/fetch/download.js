@@ -34,7 +34,7 @@ async function streamToFile(url, destPath, headers, timeoutMs) {
 /**
  * Tier-1 direct download, streaming. Throws on non-2xx or timeout.
  */
-export async function downloadToFile(url, destPath, { timeoutMs = 180_000 } = {}) {
+export async function downloadToFile(url, destPath, { timeoutMs = 600_000 } = {}) {
   return { ...(await streamToFile(url, destPath, { 'User-Agent': USER_AGENT, Accept: '*/*' }, timeoutMs)), tier: 1 };
 }
 
@@ -43,7 +43,7 @@ export async function downloadToFile(url, destPath, { timeoutMs = 180_000 } = {}
  * file with those cookies. Playwright is imported lazily so the common Tier-1
  * path never loads it.
  */
-export async function downloadViaBrowser(url, destPath, { timeoutMs = 180_000 } = {}) {
+export async function downloadViaBrowser(url, destPath, { timeoutMs = 600_000 } = {}) {
   const { getBrowserCookies } = await import('./browser-fetch.js');
   const { cookieHeader, userAgent } = await getBrowserCookies(url);
   const headers = { 'User-Agent': userAgent, Accept: '*/*' };

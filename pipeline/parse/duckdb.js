@@ -36,7 +36,10 @@ export function duckdbQuery(sql, opts = {}) {
   if (!duckdbAvailable()) {
     throw new Error(`DuckDB binary not found at ${DUCKDB_BIN}. It is gitignored; restore it before parsing.`);
   }
-  const result = spawnSync(DUCKDB_BIN, ['-json', '-c', sql], {
+  // Help the multi-GB outliers: drop result ordering (big memory savings on
+  // large aggregations) and give DuckDB a disk temp dir to spill into.
+  const init = "SET preserve_insertion_order=false; SET temp_directory='/tmp/ohc-duckdb-spill';";
+  const result = spawnSync(DUCKDB_BIN, ['-json', '-c', `${init} ${sql}`], {
     encoding: 'utf8',
     timeout: opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     maxBuffer: opts.maxBuffer ?? MAX_BUFFER_BYTES,
