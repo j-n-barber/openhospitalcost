@@ -68,7 +68,7 @@ function readPreamble(filePath) {
   };
 }
 
-function itemHeaderColumns(filePath) {
+export function itemHeaderColumns(filePath) {
   const rows = duckdbQuery(
     `DESCRIBE SELECT * FROM read_csv(${sqlStr(filePath)}, skip=2, header=true, all_varchar=true, ignore_errors=true)`
   );
