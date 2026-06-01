@@ -47,5 +47,14 @@ export function duckdbQuery(sql, opts = {}) {
   }
   const out = (result.stdout || '').trim();
   if (!out) return [];
-  return JSON.parse(out);
+  try {
+    return JSON.parse(out);
+  } catch {
+    // DuckDB occasionally prints a warning line to stdout ahead of the JSON
+    // (e.g. syntax deprecations). The -json result is a single array/object;
+    // recover it from the first structural bracket.
+    const start = out.search(/[[{]/);
+    if (start > 0) return JSON.parse(out.slice(start));
+    throw new Error(`DuckDB returned non-JSON output: ${out.slice(0, 200)}`);
+  }
 }
