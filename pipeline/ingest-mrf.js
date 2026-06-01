@@ -1,16 +1,18 @@
 // pipeline/ingest-mrf.js
 //
-// Per-hospital MRF ingest job: parse -> score -> persist mrf_files -> normalize
-// to price_records -> (optionally) refresh the summary view. This is the
-// PROJECT_BRIEF § 5 "per-hospital ingestion job", minus the download stage
-// (fetching lives in pipeline/fetch + the discovery scrapers; here we start
-// from a file already on disk so it can be validated against the spike samples).
+// Per-hospital MRF ingest, split so the long no-DB work (detect → decompress →
+// parse → score → normalize) runs WITHOUT holding a database connection, and
+// only the brief writes hold one. This matters under Neon: a connection left
+// idle through a multi-minute download or an 80 s DuckDB parse gets dropped,
+// and an unhandled drop crashes the process (see run-ingest-batch.js, which
+// keeps the connection in a pool and checks one out only for persistMrf).
+//
+//   computeMrf()  -> no DB; returns metrics, score, priceRows, file hash/size
+//   persistMrf()  -> short transaction: mrf_files + price_records
+//   ingestOne()   -> CLI convenience that wires DB lookups around the two
 //
 // Usage:
 //   node pipeline/ingest-mrf.js --ccn 360180 --file /path/to/mrf.csv [--refresh]
-//
-// --refresh rebuilds procedure_hospital_summary at the end (skip when ingesting
-// many hospitals in a loop; refresh once after the batch).
 
 import pg from 'pg';
 import { createHash } from 'node:crypto';
@@ -31,20 +33,17 @@ function sha256(path) {
   return createHash('sha256').update(readFileSync(path)).digest('hex');
 }
 
-export async function ingestOne(client, opts) {
-  try {
-    return await ingestOneInner(client, opts);
-  } catch (err) {
-    await client.query('ROLLBACK').catch(() => {});
-    throw err;
-  }
+export async function fetchCptMap(client) {
+  const procs = (await client.query("SELECT id, code FROM procedures WHERE code_type = 'CPT'")).rows;
+  return new Map(procs.map((p) => [p.code, p.id]));
 }
 
-async function ingestOneInner(client, { ccn, filePath, url, asOf, refresh }) {
-  const hosp = (await client.query('SELECT id, ccn, name FROM hospitals WHERE ccn = $1', [ccn])).rows[0];
-  if (!hosp) throw new Error(`No hospital with ccn=${ccn}`);
-
-  // Detect + decompress to a working file.
+/**
+ * Detect/decompress/parse/score/normalize a file. NO database access — pass the
+ * CPT dictionary in so normalization is self-contained. Safe to run while no
+ * connection is held.
+ */
+export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
   const fmt = detectFormat({ headBytes: readHeadBytes(filePath), url });
   let workingPath = filePath;
   let payload = fmt.payload;
@@ -54,82 +53,106 @@ async function ingestOneInner(client, { ccn, filePath, url, asOf, refresh }) {
     payload = d.payload && d.payload !== 'unknown' ? d.payload : payload;
   }
 
-  // Parse + score.
   const metrics = payload === 'json'
     ? await parseJson({ path: workingPath })
     : await parseCsv({ path: workingPath });
   const score = scoreFile(metrics, { asOf });
 
-  await client.query('BEGIN');
-  // Persist the mrf_files row.
-  const fileRow = (await client.query(
-    `INSERT INTO mrf_files
-       (hospital_id, url, file_hash, file_size_bytes, fetched_at, parsed_at, status,
-        record_count, quality_score, quality_metrics)
-     VALUES ($1,$2,$3,$4, now(), now(), $5, $6, $7, $8)
-     RETURNING id`,
-    [
-      hosp.id,
-      url || `file://${filePath}`,
-      sha256(filePath),
-      statSync(filePath).size,
-      metrics.parseStatus === 'failed' ? 'failed' : 'parsed',
-      metrics.rowsParsed,
-      score.score,
-      JSON.stringify({ ...score, metrics: undefined }),
-    ]
-  )).rows[0];
-
-  // Normalize -> price_records (CSV tall/wide and JSON).
-  let inserted = 0;
+  let priceRows = [];
   if (metrics.parseStatus !== 'failed') {
-    const procs = (await client.query("SELECT id, code FROM procedures WHERE code_type = 'CPT'")).rows;
-    const pidByCpt = new Map(procs.map((p) => [p.code, p.id]));
     const cptList = [...pidByCpt.keys()];
-    const priceRows = payload === 'json'
+    priceRows = payload === 'json'
       ? extractJsonPriceRows({ path: workingPath, cptList })
       : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: itemHeaderColumns(workingPath), cptList });
-
-    const effective = metrics.lastUpdatedOn || null;
-    let batch = [];
-    const N = 8; // params per row; observed_at uses now() literal
-    const flush = async () => {
-      if (!batch.length) return;
-      const ph = batch.map((_, i) => {
-        const b = i * N;
-        return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7}, now(), $${b + 8})`;
-      }).join(', ');
-      const params = batch.flatMap((r) => [
-        hosp.id, pidByCpt.get(r.cpt), r.charge_type, r.payer, r.plan, r.amount, fileRow.id, effective,
-      ]);
-      await client.query(
-        `INSERT INTO price_records
-           (hospital_id, procedure_id, charge_type, payer, plan, amount, source_file_id, observed_at, effective_date)
-         VALUES ${ph}`,
-        params
-      );
-      inserted += batch.length;
-      batch = [];
-    };
-    for (const r of priceRows) {
-      if (!pidByCpt.has(r.cpt) || r.amount == null) continue;
-      batch.push(r);
-      if (batch.length >= 500) await flush();
-    }
-    await flush();
   }
-  await client.query('COMMIT');
+
+  return {
+    payload, metrics, score, priceRows,
+    fileHash: sha256(filePath), fileSize: statSync(filePath).size,
+    effectiveDate: metrics.lastUpdatedOn || null,
+  };
+}
+
+/**
+ * Persist a computeMrf() result in one short transaction. Holds the connection
+ * only for the inserts.
+ */
+export async function persistMrf(client, { hospitalId, url, filePath, computed, pidByCpt }) {
+  const { metrics, score, priceRows, fileHash, fileSize, effectiveDate } = computed;
+  try {
+    await client.query('BEGIN');
+    const fileRow = (await client.query(
+      `INSERT INTO mrf_files
+         (hospital_id, url, file_hash, file_size_bytes, fetched_at, parsed_at, status,
+          record_count, quality_score, quality_metrics)
+       VALUES ($1,$2,$3,$4, now(), now(), $5, $6, $7, $8)
+       RETURNING id`,
+      [
+        hospitalId,
+        url || `file://${filePath}`,
+        fileHash,
+        fileSize,
+        metrics.parseStatus === 'failed' ? 'failed' : 'parsed',
+        metrics.rowsParsed,
+        score.score,
+        JSON.stringify({ ...score, metrics: undefined }),
+      ]
+    )).rows[0];
+
+    let inserted = 0;
+    if (metrics.parseStatus !== 'failed') {
+      let batch = [];
+      const N = 8; // params per row; observed_at uses now() literal
+      const flush = async () => {
+        if (!batch.length) return;
+        const ph = batch.map((_, i) => {
+          const b = i * N;
+          return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7}, now(), $${b + 8})`;
+        }).join(', ');
+        const params = batch.flatMap((r) => [
+          hospitalId, pidByCpt.get(r.cpt), r.charge_type, r.payer, r.plan, r.amount, fileRow.id, effectiveDate,
+        ]);
+        await client.query(
+          `INSERT INTO price_records
+             (hospital_id, procedure_id, charge_type, payer, plan, amount, source_file_id, observed_at, effective_date)
+           VALUES ${ph}`,
+          params
+        );
+        inserted += batch.length;
+        batch = [];
+      };
+      for (const r of priceRows) {
+        if (!pidByCpt.has(r.cpt) || r.amount == null) continue;
+        batch.push(r);
+        if (batch.length >= 500) await flush();
+      }
+      await flush();
+    }
+    await client.query('COMMIT');
+    return { fileId: fileRow.id, inserted };
+  } catch (err) {
+    await client.query('ROLLBACK').catch(() => {});
+    throw err;
+  }
+}
+
+/** CLI/single-file convenience: looks up the hospital + CPT map, then compute+persist. */
+export async function ingestOne(client, { ccn, filePath, url, asOf, refresh }) {
+  const hosp = (await client.query('SELECT id, ccn, name FROM hospitals WHERE ccn = $1', [ccn])).rows[0];
+  if (!hosp) throw new Error(`No hospital with ccn=${ccn}`);
+  const pidByCpt = await fetchCptMap(client);
+  const computed = await computeMrf({ filePath, url, asOf, pidByCpt });
+  const { fileId, inserted } = await persistMrf(client, { hospitalId: hosp.id, url, filePath, computed, pidByCpt });
 
   console.log(
-    `${hosp.name} (${ccn}): ${metrics.format} | FQS ${score.score} ${score.grade} ` +
-    `| money ${score.eligibleForMoneyPages} | price_records +${inserted} | file ${fileRow.id}`
+    `${hosp.name} (${ccn}): ${computed.metrics.format} | FQS ${computed.score.score} ${computed.score.grade} ` +
+    `| money ${computed.score.eligibleForMoneyPages} | price_records +${inserted} | file ${fileId}`
   );
-
   if (refresh) {
     await client.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
     console.log('Refreshed procedure_hospital_summary.');
   }
-  return { score, inserted };
+  return { score: computed.score, inserted };
 }
 
 async function main() {
@@ -144,7 +167,6 @@ async function main() {
   try {
     await ingestOne(client, {
       ccn, filePath, url: arg('url'),
-      // Score freshness against the ingest date (today), not the file's own date.
       asOf: arg('asOf') || new Date().toISOString().slice(0, 10),
       refresh: process.argv.includes('--refresh'),
     });
@@ -153,8 +175,7 @@ async function main() {
   }
 }
 
-// Only run as a CLI when invoked directly — not when imported (e.g. by
-// run-ingest-batch.js, which reuses ingestOne).
+// Only run as a CLI when invoked directly — not when imported.
 if (import.meta.url === `file://${process.argv[1]}`) {
   main().catch((err) => {
     console.error(err.message);

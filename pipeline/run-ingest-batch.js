@@ -1,13 +1,16 @@
 // pipeline/run-ingest-batch.js
 //
 // Downloads + ingests the starter cohort (refresh_tier = 1) end to end:
-// for each hospital, download mrf_file_url -> temp file -> ingestOne -> delete
-// temp. Refreshes procedure_hospital_summary once at the end, logs an
-// ingestion_runs row, and reports how many of the cohort are money-page eligible.
+// for each hospital, download mrf_file_url -> compute (parse/score/normalize,
+// no DB) -> check out a pooled connection only for the inserts -> delete temp.
+// Refreshes procedure_hospital_summary once at the end, logs an ingestion_runs
+// row, and reports money-page eligibility.
 //
-// Resumable: hospitals that already have an mrf_files row are skipped unless
-// --force. A single bad URL never aborts the batch (matches the scraper's
-// crash-resilience policy).
+// Robustness: a pg.Pool (with an 'error' handler) survives Neon idle-connection
+// drops — the connection is held only for the short persist, never during the
+// multi-minute download or the multi-second DuckDB parse. Resumable (skips
+// already-ingested unless --force) and crash-resilient (one bad URL never
+// aborts the batch).
 //
 // Usage:
 //   node pipeline/run-ingest-batch.js                 # all tier-1, skip done
@@ -21,17 +24,17 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadEnv } from '../db/load-env.js';
 import { downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
-import { ingestOne } from './ingest-mrf.js';
+import { computeMrf, persistMrf, fetchCptMap } from './ingest-mrf.js';
 
 function flag(name) {
   const i = process.argv.indexOf(`--${name}`);
   return i !== -1 ? (process.argv[i + 1] ?? true) : undefined;
 }
 
-async function selectCohort(client, { tier, limit, force }) {
+async function selectCohort(pool, { tier, limit, force }) {
   const skip = force ? '' : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
   const lim = limit ? `LIMIT ${parseInt(limit, 10)}` : '';
-  return (await client.query(`
+  return (await pool.query(`
     SELECT h.id, h.ccn, h.name, h.mrf_file_url
     FROM hospitals h
     WHERE h.refresh_tier = ${parseInt(tier, 10)} AND h.mrf_file_url IS NOT NULL ${skip}
@@ -47,45 +50,59 @@ async function main() {
   const force = !!flag('force');
   const doRefresh = !flag('no-refresh');
 
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
-  await client.connect();
+  const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
+  // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
+  pool.on('error', () => {});
 
-  const run = (await client.query(
+  const run = (await pool.query(
     `INSERT INTO ingestion_runs (status, run_type) VALUES ('running', 'starter_batch') RETURNING id`
   )).rows[0];
 
-  const stats = { attempted: 0, ingested: 0, failed: 0, skipped: 0, downloadFail: 0, eligible: 0, viaTier2: 0, failures: [] };
+  const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, failures: [] };
   try {
-    const cohort = await selectCohort(client, { tier, limit, force });
+    const pidByCpt = await fetchCptMap(pool);
+    const cohort = await selectCohort(pool, { tier, limit, force });
     console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}).`);
 
     for (const h of cohort) {
       stats.attempted++;
       const tmp = join(tmpdir(), `ohc-mrf-${h.ccn}`);
       try {
+        // Long work: no DB connection held.
         const meta = await downloadWithFallback(h.mrf_file_url, tmp);
         if (meta.tier === 2) stats.viaTier2++;
-        const res = await ingestOne(client, {
-          ccn: h.ccn, filePath: tmp, url: h.mrf_file_url,
-          contentType: meta.contentType, contentDisposition: meta.contentDisposition,
-          asOf: new Date().toISOString().slice(0, 10), refresh: false,
+        const computed = await computeMrf({
+          filePath: tmp, url: h.mrf_file_url,
+          asOf: new Date().toISOString().slice(0, 10), pidByCpt,
         });
-        stats.ingested++;
-        if (res.score.eligibleForMoneyPages) stats.eligible++;
+
+        // Short work: hold a pooled connection only for the writes.
+        const client = await pool.connect();
+        try {
+          const { fileId, inserted } = await persistMrf(client, {
+            hospitalId: h.id, url: h.mrf_file_url, filePath: tmp, computed, pidByCpt,
+          });
+          stats.ingested++;
+          if (computed.score.eligibleForMoneyPages) stats.eligible++;
+          console.log(`  ✓ ${h.name} (${h.ccn}): ${computed.metrics.format} FQS ${computed.score.score} ${computed.score.grade}` +
+            `${meta.tier === 2 ? ' [tier2]' : ''} +${inserted} (file ${fileId.slice(0, 8)})`);
+        } finally {
+          client.release();
+        }
       } catch (err) {
-        const isDownload = /HTTP \d|fetch|aborted|body|timeout/i.test(err.message);
+        const isDownload = /HTTP \d|tier1:|tier2:|fetch|aborted|empty response|timeout/i.test(err.message);
         if (isDownload) stats.downloadFail++; else stats.failed++;
-        stats.failures.push({ ccn: h.ccn, name: h.name, error: err.message.slice(0, 140) });
-        console.warn(`  ✗ ${h.name} (${h.ccn}): ${err.message.slice(0, 120)}`);
+        stats.failures.push({ ccn: h.ccn, name: h.name, error: err.message.slice(0, 160) });
+        console.warn(`  ✗ ${h.name} (${h.ccn}): ${err.message.slice(0, 140)}`);
       } finally {
         await unlink(tmp).catch(() => {});
       }
     }
 
     if (doRefresh && stats.ingested > 0) {
-      await client.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
+      await pool.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
     }
-    await client.query(
+    await pool.query(
       `UPDATE ingestion_runs SET status='completed', ended_at=now(), stats=$2 WHERE id=$1`,
       [run.id, JSON.stringify(stats)]
     );
@@ -93,18 +110,18 @@ async function main() {
     console.log(`\nDone. ingested=${stats.ingested} (tier2=${stats.viaTier2}) eligible=${stats.eligible} ` +
       `downloadFail=${stats.downloadFail} parseFail=${stats.failed} of attempted=${stats.attempted}.`);
     if (stats.failures.length) {
-      console.log('Failures (route blocked ones to Tier-2 Playwright):');
-      for (const f of stats.failures.slice(0, 20)) console.log(`  - ${f.name} (${f.ccn}): ${f.error}`);
+      console.log('Failures:');
+      for (const f of stats.failures) console.log(`  - ${f.name} (${f.ccn}): ${f.error}`);
     }
   } catch (err) {
-    await client.query(
+    await pool.query(
       `UPDATE ingestion_runs SET status='failed', ended_at=now(), stats=$2 WHERE id=$1`,
       [run.id, JSON.stringify({ ...stats, fatal: err.message })]
     ).catch(() => {});
     throw err;
   } finally {
     await closeBrowserIfOpen();
-    await client.end();
+    await pool.end();
   }
 }
 
