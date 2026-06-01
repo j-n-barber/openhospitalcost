@@ -140,9 +140,27 @@ function buildWideSql(filePath, cols) {
  * @param {object} [args.hospital]
  * @returns {Promise<import('../parse-mrf.js').FileMetrics>}
  */
+// CMS requires these item-level fields; if none are present we didn't download
+// a real MRF (commonly an .aspx/.ashx stub or an HTML error page returned to a
+// direct fetch — route to the Tier-2 Playwright fetcher). Fail clearly instead
+// of letting a later query throw "standard_charge|gross not found".
+function assertLooksLikeMrf(cols, path) {
+  const ok = cols.some((c) => {
+    const n = c.toLowerCase();
+    return n === 'description' || n === 'code|1' || n === 'standard_charge|gross';
+  });
+  if (!ok) {
+    throw new Error(
+      `Not a recognizable CSV MRF (columns: ${cols.slice(0, 6).join(', ') || 'none'}). ` +
+      `Likely a blocked/stub download — route ${path} to Tier-2 fetch.`
+    );
+  }
+}
+
 export async function parseCsv({ path }) {
   const { specVersion, lastUpdatedOn } = readPreamble(path);
   const cols = itemHeaderColumns(path);
+  assertLooksLikeMrf(cols, path);
   const isTall = cols.some((c) => c.toLowerCase() === 'payer_name');
 
   let agg;

@@ -163,10 +163,10 @@ Key changes from this sketch when it was hardened: split into a File Quality Sco
 A 6-hospital `run-ingest-batch` slice ingested CSV (tall+wide) and JSON cleanly but surfaced three real gaps the parser does NOT yet handle (each fails gracefully and is logged to `ingestion_runs.stats.failures`, not crashing the batch):
 
 - **XLSX MRFs** — e.g. Jackson Health ships an `.xlsx` (zip containing `xl/workbook.xml`). `decompress` finds no `.csv/.json` entry. Fix: add an XLSX branch (DuckDB `read_xlsx` via the `excel` extension, or detect and route to Tier-3 manual). Some big systems use XLSX.
-- **Non-compliant CSV preamble** — e.g. Orlando Health: `read_csv(skip=2)` yields `column0…` (the standard 3-row preamble is absent), so `standard_charge|gross` isn't found. Fix: detect the real header row (scan first ~5 rows for `code|1`/`standard_charge|gross`) instead of hard-coding `skip=2`.
-- **403 / bot-blocked** — e.g. Indiana University Health returns HTTP 403 to the direct fetcher. Route to the Tier-2 Playwright fetcher ([fetch/browser-fetch.js](../pipeline/fetch/browser-fetch.js)) per [ACQUISITION_STRATEGY.md](ACQUISITION_STRATEGY.md); the batch runner currently records these under `downloadFail`.
+- **Stub / blocked downloads** — e.g. Orlando Health's `download.aspx?...` endpoint returns a 564-byte stub (not the MRF) to a direct fetch, like the Memorial Hermann `.ashx` case. `parseCsv` now guards: if the item header has none of `description` / `code|1` / `standard_charge|gross` it throws a clear "not a recognizable CSV MRF — route to Tier-2" instead of a cryptic `standard_charge|gross not found`. The fetch itself still needs the Tier-2 Playwright fetcher ([fetch/browser-fetch.js](../pipeline/fetch/browser-fetch.js)).
+- **403 / bot-blocked** — e.g. Indiana University Health returns HTTP 403 to the direct fetcher. Route to Tier-2 Playwright per [ACQUISITION_STRATEGY.md](ACQUISITION_STRATEGY.md); the batch runner records these under `downloadFail`.
 
-These are the expected long tail (the brief's Tier-2/3 acquisition handling). CSV-tall, CSV-wide, and JSON — the dominant formats — are fully ingested.
+These are the expected long tail (the brief's Tier-2/3 acquisition handling) — mostly *acquisition*, not parser, problems. CSV-tall, CSV-wide, and JSON — the dominant formats — are fully ingested.
 
 ### 11. CPT codes are routinely labeled "HCPCS"
 
