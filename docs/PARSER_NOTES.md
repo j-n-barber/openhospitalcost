@@ -141,19 +141,11 @@ The Phase C parser must, at minimum:
 
 ---
 
-## Quality-scoring rubric (sketch — to refine in Phase B)
+## Quality-scoring rubric — FINALIZED in Phase B
 
-Per-file score components (sum to 100):
+This sketch has been superseded. The authoritative rubric is **[QUALITY_RUBRIC.md](QUALITY_RUBRIC.md)**, implemented in **[pipeline/quality.js](../pipeline/quality.js)** (`scoreFile()` / `scoreProcedureCompleteness()`). The Phase C parser emits the `FileMetrics` contract defined there and persists the score to `mrf_files.quality_score` / `quality_metrics` (migration `002`).
 
-- 20 pts: file is parseable end-to-end (modulo `ignore_errors`)
-- 20 pts: `version` is 2.0.0 or 3.0.0 (vs. legacy / unrecognized)
-- 15 pts: gross charges present in ≥90% of rows
-- 15 pts: discounted cash price present in ≥90% of rows
-- 15 pts: ≥3 distinct payers represented
-- 10 pts: standardized code (CPT/HCPCS/MS-DRG/APR-DRG) on ≥80% of rows
-- 5 pts: `last_updated_on` within the last 12 months
-
-A hospital scoring < 50 should not appear in money pages; only on the hospital landing as "MRF posted but data incomplete — last updated [date]."
+Key changes from this sketch when it was hardened: split into a File Quality Score (FQS) and a per-procedure completeness score (PCS); standardized-code coverage re-weighted up to 20 pts (it's the gateway into our procedure dictionary); payer-negotiated coverage added as its own 15-pt component; freshness made reproducible via a caller-supplied `asOf`; money-page eligibility expressed as a 3-part predicate rather than a single `< 50` cutoff.
 
 ---
 

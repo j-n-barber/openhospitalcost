@@ -22,7 +22,8 @@
     "scrape:via-browser": "node pipeline/discovery/scrape-via-browser.js",
     "apply:manual-urls": "node pipeline/discovery/apply-manual-mrf-urls.js",
     "coverage": "node pipeline/coverage.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js && node --check pipeline/discovery/scrape-cms-hpt.js && node --check pipeline/discovery/ingest-tpafs-links.js && node --check pipeline/discovery/ingest-dolthub-charges.js && node --check pipeline/discovery/probe-alt-paths.js && node --check pipeline/discovery/scrape-via-browser.js && node --check pipeline/fetch/browser-fetch.js && node --check pipeline/discovery/apply-manual-mrf-urls.js"
+    "quality": "node pipeline/quality.js",
+    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/coverage.js && node --check pipeline/quality.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js && node --check pipeline/discovery/scrape-cms-hpt.js && node --check pipeline/discovery/ingest-tpafs-links.js && node --check pipeline/discovery/ingest-dolthub-charges.js && node --check pipeline/discovery/probe-alt-paths.js && node --check pipeline/discovery/scrape-via-browser.js && node --check pipeline/fetch/browser-fetch.js && node --check pipeline/discovery/apply-manual-mrf-urls.js"
   },
   "dependencies": {
     "csv-parse": "^5.5.0",
