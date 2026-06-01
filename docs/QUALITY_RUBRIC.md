@@ -126,11 +126,7 @@ Computed per `(hospital_id, procedure_id)` when materializing `procedure_hospita
 
 ### 2.1 Representative price (resolving the CDM fan-out)
 
-The spike found one CPT maps to many CDM rows ([PARSER_NOTES.md](PARSER_NOTES.md) § 5). When collapsing to one displayed price per `(hospital, procedure, charge_type, payer, plan)`:
-
-1. Group `price_records` by `(hospital_id, procedure_id, charge_type, payer, plan)`.
-2. Take the **modal** amount; if no mode, the **median**, then the lower of ties.
-3. Never silently average across wildly different CDM line items — store the chosen `source_record` count in the summary so we can show "based on N line items."
+The spike found one CPT maps to many CDM rows ([PARSER_NOTES.md](PARSER_NOTES.md) § 5), and a tall file carries one negotiated row per payer. ✅ **Implemented** in the `procedure_hospital_summary` materialized view (migration `004`): per `(hospital_id, procedure_id, charge_type)` it exposes the **median** `amount` (collapses the fan-out + per-payer spread to one defensible number), plus `min_amount`/`max_amount` (the displayed range), `payer_count`, and `observations` (the "based on N line items / N payers" trust signal). Median over mode because real MRF amounts rarely tie; min/max preserve the honest spread rather than hiding it.
 
 ---
 

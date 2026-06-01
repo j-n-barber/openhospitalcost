@@ -158,6 +158,16 @@ Key changes from this sketch when it was hardened: split into a File Quality Sco
 
 **Normalizer + ingest (2026-06-01):** [pipeline/parse/normalize.js](../pipeline/parse/normalize.js) extracts `price_records` rows (gross/discounted_cash/negotiated) for our CPT dictionary; [pipeline/ingest-mrf.js](../pipeline/ingest-mrf.js) is the end-to-end per-hospital job (parse → score → `mrf_files` → `price_records` → refresh view). Verified by ingesting all three CSV samples: Spencer +1,152, CHOP +1,352, Cleveland +16,458 price records (98/100 CPTs); materialized view populated. JSON normalizer is the remaining gap (metrics-only for JSON so far).
 
+### 12. Format long-tail surfaced by the first batch run (2026-06-01)
+
+A 6-hospital `run-ingest-batch` slice ingested CSV (tall+wide) and JSON cleanly but surfaced three real gaps the parser does NOT yet handle (each fails gracefully and is logged to `ingestion_runs.stats.failures`, not crashing the batch):
+
+- **XLSX MRFs** — e.g. Jackson Health ships an `.xlsx` (zip containing `xl/workbook.xml`). `decompress` finds no `.csv/.json` entry. Fix: add an XLSX branch (DuckDB `read_xlsx` via the `excel` extension, or detect and route to Tier-3 manual). Some big systems use XLSX.
+- **Non-compliant CSV preamble** — e.g. Orlando Health: `read_csv(skip=2)` yields `column0…` (the standard 3-row preamble is absent), so `standard_charge|gross` isn't found. Fix: detect the real header row (scan first ~5 rows for `code|1`/`standard_charge|gross`) instead of hard-coding `skip=2`.
+- **403 / bot-blocked** — e.g. Indiana University Health returns HTTP 403 to the direct fetcher. Route to the Tier-2 Playwright fetcher ([fetch/browser-fetch.js](../pipeline/fetch/browser-fetch.js)) per [ACQUISITION_STRATEGY.md](ACQUISITION_STRATEGY.md); the batch runner currently records these under `downloadFail`.
+
+These are the expected long tail (the brief's Tier-2/3 acquisition handling). CSV-tall, CSV-wide, and JSON — the dominant formats — are fully ingested.
+
 ### 11. CPT codes are routinely labeled "HCPCS"
 
 Cleveland Clinic types its 5-digit CPT codes as `HCPCS` (CPT is HCPCS Level I), and scatters the real standardized code across `code|1`/`code|3` while `code|1|type='CPT'` holds *internal* strings like `AUTOTANOP`. The normalizer therefore matches our dictionary on value + type ∈ {CPT, HCPCS} across **every** `code|N` slot. Safe because our dictionary is 5-digit numeric CPT and HCPCS Level II codes are alphanumeric — no collisions. Do NOT trust a single code slot or the `CPT` type label alone.

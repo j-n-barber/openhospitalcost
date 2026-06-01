@@ -20,7 +20,7 @@ import { parseCsv, itemHeaderColumns } from './parse/parsers/csv.js';
 import { parseJson } from './parse/parsers/json.js';
 import { detectFormat, readHeadBytes } from './parse/detect-format.js';
 import { decompress } from './parse/decompress.js';
-import { extractCsvPriceRows } from './parse/normalize.js';
+import { extractCsvPriceRows, extractJsonPriceRows } from './parse/normalize.js';
 import { scoreFile } from './quality.js';
 
 function arg(name) {
@@ -31,7 +31,7 @@ function sha256(path) {
   return createHash('sha256').update(readFileSync(path)).digest('hex');
 }
 
-async function ingestOne(client, opts) {
+export async function ingestOne(client, opts) {
   try {
     return await ingestOneInner(client, opts);
   } catch (err) {
@@ -80,15 +80,15 @@ async function ingestOneInner(client, { ccn, filePath, url, asOf, refresh }) {
     ]
   )).rows[0];
 
-  // Normalize -> price_records (CSV only for now; JSON normalizer is next).
+  // Normalize -> price_records (CSV tall/wide and JSON).
   let inserted = 0;
-  if (payload !== 'json' && metrics.parseStatus !== 'failed') {
-    const cols = itemHeaderColumns(workingPath);
+  if (metrics.parseStatus !== 'failed') {
     const procs = (await client.query("SELECT id, code FROM procedures WHERE code_type = 'CPT'")).rows;
     const pidByCpt = new Map(procs.map((p) => [p.code, p.id]));
-    const priceRows = extractCsvPriceRows({
-      path: workingPath, format: metrics.format, cols, cptList: [...pidByCpt.keys()],
-    });
+    const cptList = [...pidByCpt.keys()];
+    const priceRows = payload === 'json'
+      ? extractJsonPriceRows({ path: workingPath, cptList })
+      : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: itemHeaderColumns(workingPath), cptList });
 
     const effective = metrics.lastUpdatedOn || null;
     let batch = [];
@@ -153,7 +153,11 @@ async function main() {
   }
 }
 
-main().catch((err) => {
-  console.error(err.message);
-  process.exit(1);
-});
+// Only run as a CLI when invoked directly — not when imported (e.g. by
+// run-ingest-batch.js, which reuses ingestOne).
+if (import.meta.url === `file://${process.argv[1]}`) {
+  main().catch((err) => {
+    console.error(err.message);
+    process.exit(1);
+  });
+}
