@@ -93,9 +93,18 @@ Rationale: a money page needs (a) enough trust, (b) enough rows we can actually 
 
 ### 1.5 How FQS feeds starter-200 selection
 
-Phase C selects the starter cohort as **top 50 metros × top ~4 hospitals by volume, filtered by MRF compliance**. "MRF compliance" = `eligibleForMoneyPages` on a freshly parsed file. Selection order within a metro: volume proxy first, then FQS as the tie-breaker, so the cohort skews toward hospitals with genuinely usable data. The 200 are tagged `hospitals.refresh_tier = 1`.
+Phase C selects the starter cohort as **top 50 metros × top ~4 hospitals by volume, filtered by MRF compliance**, tagged `hospitals.refresh_tier = 1`.
 
-> **Open decision (Phase C, not blocking this rubric):** "volume" has no column yet. `hospitals.beds` is the available proxy; true discharge volume would need an extra CMS/AHA dataset. Default to `beds` unless we ingest discharge data. Tracked in [PARSER_NOTES.md](PARSER_NOTES.md).
+**Resolved selection recipe (decided 2026-06-01):**
+
+1. **Metro grouping** — join `hospitals.county` + `state` to a static **county→CBSA crosswalk** (Census/OMB delineation file). We have no CBSA column and lat/long clustering is fuzzy; the crosswalk is a tiny one-time static reference that fits the overhead budget. *Concrete next step: ingest the crosswalk into a `cbsa` reference table + add `hospitals.cbsa_code`.*
+2. **Pick the 50 metros** — rank CBSAs by population (same delineation dataset). Biggest metros ≈ most consumer search demand ≈ most SEO traffic.
+3. **Filter** each metro's hospitals to `eligibleForMoneyPages` (a hospital with an unparseable MRF makes a worse page than a smaller one with clean data).
+4. **Rank within metro** by `hospitals.beds` **DESC**, tie-break by **FQS DESC**.
+   - *Why beds, not discharge volume:* beds is already in the roster and within a single metro its rank tracks discharge-volume rank closely enough for a top-4 cut. Ingesting CMS HCRIS discharge data is a whole pipeline for marginal gain on a 200-hospital set — revisit only if the cohort looks wrong.
+5. Take the top ~4 per metro until the cohort reaches 200.
+
+> The FQS gate at step 3 and tie-break at step 4 mean the starter set skews toward hospitals with genuinely usable data, not just big buildings.
 
 ---
 
