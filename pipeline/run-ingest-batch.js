@@ -20,7 +20,7 @@ import { unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadEnv } from '../db/load-env.js';
-import { downloadToFile } from './fetch/download.js';
+import { downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
 import { ingestOne } from './ingest-mrf.js';
 
 function flag(name) {
@@ -54,7 +54,7 @@ async function main() {
     `INSERT INTO ingestion_runs (status, run_type) VALUES ('running', 'starter_batch') RETURNING id`
   )).rows[0];
 
-  const stats = { attempted: 0, ingested: 0, failed: 0, skipped: 0, downloadFail: 0, eligible: 0, failures: [] };
+  const stats = { attempted: 0, ingested: 0, failed: 0, skipped: 0, downloadFail: 0, eligible: 0, viaTier2: 0, failures: [] };
   try {
     const cohort = await selectCohort(client, { tier, limit, force });
     console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}).`);
@@ -63,7 +63,8 @@ async function main() {
       stats.attempted++;
       const tmp = join(tmpdir(), `ohc-mrf-${h.ccn}`);
       try {
-        const meta = await downloadToFile(h.mrf_file_url, tmp);
+        const meta = await downloadWithFallback(h.mrf_file_url, tmp);
+        if (meta.tier === 2) stats.viaTier2++;
         const res = await ingestOne(client, {
           ccn: h.ccn, filePath: tmp, url: h.mrf_file_url,
           contentType: meta.contentType, contentDisposition: meta.contentDisposition,
@@ -89,7 +90,7 @@ async function main() {
       [run.id, JSON.stringify(stats)]
     );
 
-    console.log(`\nDone. ingested=${stats.ingested} eligible=${stats.eligible} ` +
+    console.log(`\nDone. ingested=${stats.ingested} (tier2=${stats.viaTier2}) eligible=${stats.eligible} ` +
       `downloadFail=${stats.downloadFail} parseFail=${stats.failed} of attempted=${stats.attempted}.`);
     if (stats.failures.length) {
       console.log('Failures (route blocked ones to Tier-2 Playwright):');
@@ -102,6 +103,7 @@ async function main() {
     ).catch(() => {});
     throw err;
   } finally {
+    await closeBrowserIfOpen();
     await client.end();
   }
 }

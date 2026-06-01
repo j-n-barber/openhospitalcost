@@ -36,6 +36,37 @@ export async function closeBrowser() {
 }
 
 /**
+ * Tier-2 helper for FILE downloads: drive a real browser to the URL's origin so
+ * any Cloudflare/Akamai/Imperva JS challenge sets its clearance cookie, then
+ * hand those cookies + UA back so the caller can stream the file with a plain
+ * fetch (Playwright's APIResponse buffers in memory — unusable for GB files).
+ * Returns { cookieHeader, userAgent }.
+ */
+export async function getBrowserCookies(url) {
+  const browser = await getBrowser();
+  const ctx = await browser.newContext({
+    userAgent: USER_AGENT,
+    extraHTTPHeaders: { Accept: '*/*' },
+  });
+  try {
+    const page = await ctx.newPage();
+    try {
+      await page.goto(new URL(url).origin, { waitUntil: 'domcontentloaded', timeout: NAV_TIMEOUT_MS });
+      await page.waitForTimeout(SETTLE_MS); // let the challenge handshake settle
+    } catch {
+      // navigation hiccup is non-fatal — still try whatever cookies we have
+    }
+    const cookies = await ctx.cookies(url);
+    return {
+      cookieHeader: cookies.map((c) => `${c.name}=${c.value}`).join('; '),
+      userAgent: USER_AGENT,
+    };
+  } finally {
+    await ctx.close();
+  }
+}
+
+/**
  * Fetch a URL with Playwright. Returns { ok, status, text, finalUrl }
  * or { ok: false, error }. Uses a fresh context per call so cookies
  * from one hospital don't leak to another.
