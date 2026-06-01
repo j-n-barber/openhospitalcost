@@ -69,8 +69,19 @@ async function main() {
     process.exit(1);
   }
 
-  const client = new pg.Client({ connectionString: process.env.DATABASE_URL });
-  await client.connect();
+  // Pool with error handler — Neon drops idle connections mid-run.
+  // No big BEGIN/COMMIT either: per-row updates auto-commit, so a
+  // mid-script crash leaves work-so-far in place (idempotent on re-run
+  // because of the IS NULL guards).
+  const client = new pg.Pool({
+    connectionString: process.env.DATABASE_URL,
+    max: 2,
+    idleTimeoutMillis: 10_000,
+    connectionTimeoutMillis: 10_000,
+  });
+  client.on('error', (err) => {
+    console.error(`[pool] connection error (recoverable): ${err.message}`);
+  });
 
   let offset = 0;
   let totalSeen = 0;
@@ -78,19 +89,18 @@ async function main() {
   let rootUrlSet = 0;
   let notInRoster = 0;
   let pdfFiltered = 0;
+  let rowErrors = 0;
 
   console.log('Paginating dolthub/standard-charge-files...');
 
-  try {
-    await client.query('BEGIN');
+  while (true) {
+    const rows = await fetchPage(offset);
+    if (rows.length === 0) break;
+    console.log(`  offset=${offset} → ${rows.length} rows`);
 
-    while (true) {
-      const rows = await fetchPage(offset);
-      if (rows.length === 0) break;
-      console.log(`  offset=${offset} → ${rows.length} rows`);
-
-      for (const r of rows) {
-        totalSeen++;
+    for (const r of rows) {
+      totalSeen++;
+      try {
         const ccn = (r.ccn ?? '').trim();
         if (!ccn) continue;
 
@@ -134,16 +144,18 @@ async function main() {
           );
           rootUrlSet++;
         }
+      } catch (err) {
+        // Skip individual row failures (connection blip, query error)
+        // without crashing the whole script.
+        rowErrors++;
+        if (rowErrors < 10) {
+          console.error(`  [skip] ccn=${r.ccn}: ${err.message}`);
+        }
       }
-
-      if (rows.length < PAGE_SIZE) break;
-      offset += PAGE_SIZE;
     }
 
-    await client.query('COMMIT');
-  } catch (err) {
-    await client.query('ROLLBACK');
-    throw err;
+    if (rows.length < PAGE_SIZE) break;
+    offset += PAGE_SIZE;
   }
 
   console.log('');
@@ -153,6 +165,7 @@ async function main() {
   console.log(`mrf_root_url newly set:   ${rootUrlSet}`);
   console.log(`CCN not in our roster:    ${notInRoster}`);
   console.log(`PDF URLs filtered out:    ${pdfFiltered}  (not valid MRFs)`);
+  console.log(`Row-level errors skipped: ${rowErrors}`);
 
   await client.end();
 }
