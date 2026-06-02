@@ -1,0 +1,276 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>OpenHospitalCost — What hospitals actually charge</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --ink:#13283A; --paper:#FAF9F6; --surface:#FFFFFF;
+  --teal:#1A6B7A; --teal-ink:#12545F; --savings:#147A52; --higher:#B4433A;
+  --border:#E5E3DD; --muted:#5B6670;
+  --serif:'Source Serif 4',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --mono:'IBM Plex Mono',monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--paper); color:var(--ink); font-family:var(--sans);
+  font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+  /* faint paper texture + hairline horizon */
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(19,40,58,.025) 1px, transparent 0);
+  background-size:22px 22px;
+}
+.wrap{max-width:1120px;margin:0 auto;padding:0 28px}
+a{color:var(--teal-ink);text-decoration:none}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums;letter-spacing:-.01em}
+
+/* ---- top bar ---- */
+header{border-bottom:1px solid var(--border);background:rgba(250,249,246,.85);backdrop-filter:blur(6px);position:sticky;top:0;z-index:20}
+.bar{display:flex;align-items:center;justify-content:space-between;height:62px}
+.brand{font-family:var(--serif);font-weight:700;font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+.brand .o{color:var(--teal)}
+nav.top{display:flex;gap:30px;font-size:14.5px;font-weight:500}
+nav.top a{color:var(--muted)}
+nav.top a:hover{color:var(--ink)}
+
+/* ---- hero ---- */
+.hero{padding:74px 0 28px;position:relative}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:20px;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:26px;height:1px;background:var(--teal)}
+h1{font-family:var(--serif);font-weight:700;font-size:clamp(38px,6vw,68px);line-height:1.02;letter-spacing:-.02em;max-width:14ch}
+h1 em{font-style:italic;color:var(--teal-ink)}
+.sub{margin-top:22px;font-size:19px;line-height:1.5;max-width:46ch;color:#34495a}
+
+/* ---- search ---- */
+.search{margin-top:34px;max-width:620px;position:relative}
+.search-box{display:flex;align-items:center;gap:12px;background:var(--surface);border:1.5px solid var(--ink);border-radius:3px;padding:16px 18px;box-shadow:5px 6px 0 rgba(19,40,58,.08);transition:box-shadow .15s,transform .15s}
+.search-box:focus-within{box-shadow:7px 9px 0 var(--teal);transform:translate(-1px,-1px)}
+.search-box svg{flex:none;color:var(--muted)}
+.search-box input{border:0;outline:0;font-family:var(--sans);font-size:17px;width:100%;color:var(--ink);background:transparent}
+.search-box input::placeholder{color:#8a939c}
+.chips{margin-top:14px;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.chips .lbl{font-size:12.5px;color:var(--muted);margin-right:2px}
+.chip{font-size:13px;border:1px solid var(--border);background:var(--surface);padding:5px 11px;border-radius:100px;color:#34495a;cursor:pointer;transition:.15s}
+.chip:hover{border-color:var(--teal);color:var(--teal-ink)}
+.results{position:absolute;top:62px;left:0;right:0;background:var(--surface);border:1.5px solid var(--ink);border-radius:3px;box-shadow:5px 6px 0 rgba(19,40,58,.08);overflow:hidden;display:none;z-index:30}
+.results.on{display:block}
+.res{display:flex;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);cursor:pointer}
+.res:last-child{border-bottom:0}
+.res:hover{background:#f4f2ec}
+.res .tag{font-family:var(--mono);font-size:10px;letter-spacing:.08em;text-transform:uppercase;padding:3px 7px;border-radius:3px;flex:none}
+.tag.h{background:#e7f0f1;color:var(--teal-ink)}
+.tag.p{background:#e7f1ea;color:var(--savings)}
+.res .nm{font-weight:500;font-size:15px}
+.res .meta{font-size:12.5px;color:var(--muted)}
+
+/* ---- map section ---- */
+.mapwrap{margin:54px 0 30px;background:var(--surface);border:1px solid var(--border);border-radius:5px;padding:30px 32px 26px;position:relative;overflow:hidden}
+.maphead{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap;margin-bottom:22px}
+.maphead h2{font-family:var(--serif);font-weight:600;font-size:24px;letter-spacing:-.01em}
+.maphead p{font-size:14px;color:var(--muted);margin-top:4px;max-width:42ch}
+.stat-row{display:flex;gap:26px}
+.stat .n{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--teal-ink);letter-spacing:-.02em}
+.stat .l{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+
+.tilegrid{display:grid;grid-template-columns:repeat(11,1fr);gap:6px;max-width:760px;margin:0 auto}
+.tile{aspect-ratio:1;border-radius:4px;background:#f1efe9;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:11px}
+.tile .ab{font-family:var(--mono);font-weight:500;color:#9aa3ab;font-size:11px}
+.tile .ct{font-family:var(--mono);font-size:9px;color:transparent;line-height:1}
+.tile.has{cursor:pointer;border-color:transparent}
+.tile.has .ab{color:#fff}
+.tile.has .ct{color:rgba(255,255,255,.8)}
+.tile.has:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(19,40,58,.18);z-index:5}
+.legend{display:flex;align-items:center;gap:14px;margin-top:22px;font-size:12px;color:var(--muted);flex-wrap:wrap}
+.legend .sw{display:inline-flex;align-items:center;gap:7px}
+.legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
+.tip{position:fixed;pointer-events:none;background:var(--ink);color:#fff;padding:7px 11px;border-radius:4px;font-size:12.5px;opacity:0;transition:opacity .12s;z-index:50;white-space:nowrap}
+.tip .price{font-family:var(--mono);color:#8fd0c3}
+
+/* ---- value strip ---- */
+.values{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--border);border:1px solid var(--border);border-radius:5px;overflow:hidden;margin:30px 0 18px}
+.val{background:var(--surface);padding:26px 24px}
+.val .k{font-family:var(--mono);font-size:12px;color:var(--teal);letter-spacing:.04em}
+.val h3{font-family:var(--serif);font-weight:600;font-size:19px;margin:10px 0 7px;letter-spacing:-.01em}
+.val p{font-size:14px;color:#46586a;line-height:1.5}
+
+/* ---- sample provenance card ---- */
+.sample{display:grid;grid-template-columns:1.1fr 1fr;gap:0;border:1.5px solid var(--ink);border-radius:5px;overflow:hidden;margin:30px 0 70px;box-shadow:6px 8px 0 rgba(19,40,58,.06)}
+.sample .l{padding:30px 32px;background:var(--ink);color:#eef2f4}
+.sample .l .eyebrow{color:#7fd3c4}.sample .l .eyebrow::before{background:#7fd3c4}
+.sample .l h3{font-family:var(--serif);font-size:25px;font-weight:600;margin:6px 0 14px;color:#fff;letter-spacing:-.01em}
+.sample .l p{font-size:14px;color:#b9c5cd;line-height:1.6}
+.sample .r{padding:24px 28px;background:var(--surface);display:flex;flex-direction:column;justify-content:center}
+.prow{display:flex;justify-content:space-between;align-items:baseline;padding:11px 0;border-bottom:1px solid var(--border)}
+.prow:last-child{border-bottom:0}
+.prow .city{font-size:13px;color:var(--muted)}
+.prow .hosp{font-size:14.5px;font-weight:500}
+.prow .amt{font-family:var(--mono);font-size:16px;color:var(--ink);font-variant-numeric:tabular-nums}
+.prow .amt small{color:var(--muted);font-size:11px}
+.src{font-size:11.5px;color:var(--muted);margin-top:14px;font-style:italic}
+
+footer{border-top:1px solid var(--border);padding:40px 0 56px;font-size:13.5px;color:var(--muted)}
+.fcols{display:flex;justify-content:space-between;gap:30px;flex-wrap:wrap}
+.fcols a{color:var(--muted);display:block;margin-bottom:8px}.fcols a:hover{color:var(--ink)}
+.fcols strong{color:var(--ink);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:12px}
+.fine{margin-top:30px;font-size:12px;line-height:1.6;max-width:62ch}
+
+@media(max-width:780px){
+  .sample{grid-template-columns:1fr}.values{grid-template-columns:1fr}
+  nav.top{display:none}.stat-row{display:none}
+  .tilegrid{gap:4px}.tile .ct{display:none}
+}
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap bar">
+    <div class="brand"><span class="o">Open</span>HospitalCost</div>
+    <nav class="top">
+      <a href="#">Procedures</a><a href="#">Hospitals</a><a href="#">How it works</a><a href="#">Methodology</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div class="eyebrow">Sourced from federally-mandated price files</div>
+    <h1>See what hospitals <em>actually</em> charge.</h1>
+    <p class="sub">Real gross, cash, and negotiated prices — pulled straight from each hospital's machine-readable file and cited to the source. Not estimates. Not ranges. The actual numbers.</p>
+
+    <div class="search">
+      <div class="search-box">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+        <input id="q" type="text" placeholder="Type a hospital or procedure — e.g. “MRI brain” or “Cleveland Clinic”" autocomplete="off" />
+      </div>
+      <div class="results" id="results"></div>
+      <div class="chips">
+        <span class="lbl">Try:</span>
+        <span class="chip">MRI brain</span><span class="chip">Hemodialysis</span><span class="chip">Vitamin D test</span><span class="chip">Holter monitor</span><span class="chip">Montefiore</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="mapwrap">
+    <div class="maphead">
+      <div>
+        <h2>Where we have prices today</h2>
+        <p>Pick a state to browse its hospitals. Coverage is growing from the largest metros outward.</p>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n">110</div><div class="l">Hospitals</div></div>
+        <div class="stat"><div class="n">27</div><div class="l">States</div></div>
+        <div class="stat"><div class="n">100</div><div class="l">Procedures</div></div>
+      </div>
+    </div>
+    <div class="tilegrid" id="grid"></div>
+    <div class="legend">
+      <span class="sw"><i style="background:#bfe0db"></i><i style="background:#5fa9a6"></i><i style="background:#1A6B7A"></i> More hospitals →</span>
+      <span class="sw"><i style="background:#f1efe9;border:1px solid var(--border)"></i> Coming soon</span>
+    </div>
+  </section>
+
+  <section class="values">
+    <div class="val"><div class="k">01 / Real numbers</div><h3>Negotiated &amp; cash prices</h3><p>The actual rates payers and self-pay patients are charged — the data every competitor hides behind modeled “estimates.”</p></div>
+    <div class="val"><div class="k">02 / Cited</div><h3>Traceable to the source</h3><p>Every price links to the hospital's own machine-readable file and the date we ingested it. Check our work.</p></div>
+    <div class="val"><div class="k">03 / Independent</div><h3>Free &amp; ad-supported</h3><p>No logins, no upsells, no data resale. A public-interest index of a public-interest dataset.</p></div>
+  </section>
+
+  <section class="sample">
+    <div class="l">
+      <div class="eyebrow">Sample · what you'll see</div>
+      <h3>MRI of the brain, without contrast</h3>
+      <p>Median negotiated price per hospital, with the full payer range. The same procedure swings wildly between hospitals — that gap is the whole point.</p>
+    </div>
+    <div class="r" id="sample"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="fcols">
+      <div><strong>Browse</strong><a href="#">By procedure</a><a href="#">By hospital</a><a href="#">By state</a></div>
+      <div><strong>Understand</strong><a href="#">How it works</a><a href="#">Methodology</a><a href="#">Data sources</a></div>
+      <div><strong>Data</strong><a href="#">Open data export</a><a href="#">Submit a correction</a><a href="#">llms.txt</a></div>
+      <div><strong>About</strong><a href="#">The project</a><a href="#">Contact</a></div>
+    </div>
+    <p class="fine">OpenHospitalCost aggregates hospital price transparency files published under 45 CFR §180. Prices are shown as reported by each hospital and cited to the source file and ingestion date. Figures are for informational purposes and are not a quote or guarantee of cost.</p>
+  </div>
+</footer>
+
+<div class="tip" id="tip"></div>
+
+<script>
+/* --- real coverage data --- */
+const COUNTS={ca:17,fl:12,oh:10,tx:10,nc:7,mi:5,va:5,pa:4,ny:4,ky:4,mn:3,or:3,al:3,co:3,ma:3,wi:2,ga:2,il:2,ks:2,md:2,in:1,ri:1,ia:1,ut:1,de:1,wa:1,az:1};
+/* tile-grid layout [row,col] — stylized US, 8 rows x 11 cols */
+const GRID={
+ AK:[1,1],ME:[1,11], VT:[2,10],NH:[2,11],
+ WA:[3,1],ID:[3,2],MT:[3,3],ND:[3,4],MN:[3,5],WI:[3,7],MI:[3,8],NY:[3,10],MA:[3,11],
+ OR:[4,1],NV:[4,2],WY:[4,3],SD:[4,4],IA:[4,5],IL:[4,6],IN:[4,7],OH:[4,8],PA:[4,9],NJ:[4,10],CT:[4,11],
+ CA:[5,1],UT:[5,2],CO:[5,3],NE:[5,4],MO:[5,5],KY:[5,6],WV:[5,7],VA:[5,8],MD:[5,9],DC:[5,10],RI:[5,11],
+ AZ:[6,2],NM:[6,3],KS:[6,4],AR:[6,5],TN:[6,6],NC:[6,7],SC:[6,8],DE:[6,9],
+ OK:[7,4],LA:[7,5],MS:[7,6],AL:[7,7],GA:[7,8],
+ HI:[8,1],TX:[8,3],FL:[8,9]
+};
+function shade(n){ if(n>=11)return'#1A6B7A'; if(n>=5)return'#3f8a8a'; if(n>=2)return'#74b0ad'; return'#aed4cf'; }
+const grid=document.getElementById('grid'), tip=document.getElementById('tip');
+const names={ca:'California',fl:'Florida',oh:'Ohio',tx:'Texas',nc:'North Carolina',mi:'Michigan',va:'Virginia',pa:'Pennsylvania',ny:'New York',ky:'Kentucky',mn:'Minnesota',or:'Oregon',al:'Alabama',co:'Colorado',ma:'Massachusetts',wi:'Wisconsin',ga:'Georgia',il:'Illinois',ks:'Kansas',md:'Maryland',in:'Indiana',ri:'Rhode Island',ia:'Iowa',ut:'Utah',de:'Delaware',wa:'Washington',az:'Arizona'};
+for(const [ab,[r,col]] of Object.entries(GRID)){
+  const key=ab.toLowerCase(); const n=COUNTS[key];
+  const el=document.createElement(n?'a':'div');
+  el.className='tile'+(n?' has':''); el.style.gridRow=r; el.style.gridColumn=col;
+  if(n){ el.style.background=shade(n); el.href='#/state/'+key; }
+  el.innerHTML='<span class="ab">'+ab+'</span><span class="ct">'+(n||'')+'</span>';
+  if(n){
+    el.addEventListener('mousemove',e=>{tip.style.opacity=1;tip.textContent='';
+      tip.innerHTML=names[key]+' · <span class="price">'+n+' hospital'+(n>1?'s':'')+'</span>';
+      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';});
+    el.addEventListener('mouseleave',()=>tip.style.opacity=0);
+  }
+  grid.appendChild(el);
+}
+
+/* --- search demo --- */
+const INDEX=[
+  {t:'p',nm:'MRI brain, without contrast',meta:'CPT 70551 · 96 hospitals',href:'#'},
+  {t:'p',nm:'Hemodialysis treatment',meta:'CPT 90937',href:'#'},
+  {t:'p',nm:'Vitamin D blood test',meta:'CPT 82306',href:'#'},
+  {t:'p',nm:'Holter monitor (24–48 hr)',meta:'CPT 93224',href:'#'},
+  {t:'p',nm:'Urinalysis with microscopy',meta:'CPT 81001',href:'#'},
+  {t:'h',nm:'Montefiore Medical Center',meta:'Bronx, NY',href:'#'},
+  {t:'h',nm:'AdventHealth Orlando',meta:'Orlando, FL',href:'#'},
+  {t:'h',nm:'Memorial Hermann Hospital System',meta:'Houston, TX',href:'#'},
+  {t:'h',nm:'UPMC Presbyterian Shadyside',meta:'Pittsburgh, PA',href:'#'},
+  {t:'h',nm:'M Health Fairview — University of MN',meta:'Minneapolis, MN',href:'#'}
+];
+const q=document.getElementById('q'), box=document.getElementById('results');
+function render(v){
+  const s=v.trim().toLowerCase();
+  if(!s){box.classList.remove('on');return;}
+  const hits=INDEX.filter(i=>i.nm.toLowerCase().includes(s)||i.meta.toLowerCase().includes(s)).slice(0,6);
+  box.innerHTML=hits.map(i=>`<a class="res" href="${i.href}"><span class="tag ${i.t}">${i.t==='h'?'Hospital':'Procedure'}</span><span><div class="nm">${i.nm}</div><div class="meta">${i.meta}</div></span></a>`).join('')||'<div class="res"><span class="meta">No matches — try “MRI”, “dialysis”, or a hospital name.</span></div>';
+  box.classList.add('on');
+}
+q.addEventListener('input',e=>render(e.target.value));
+q.addEventListener('focus',e=>render(e.target.value));
+document.addEventListener('click',e=>{if(!e.target.closest('.search'))box.classList.remove('on')});
+document.querySelectorAll('.chip').forEach(c=>c.addEventListener('click',()=>{q.value=c.textContent;q.focus();render(q.value)}));
+
+/* --- sample money rows (real medians) --- */
+const SAMPLE=[
+ ['Saint Agnes Medical Center','Fresno, CA','67.64','754'],
+ ['Harper University Hospital','Detroit, MI','83.73','3'],
+ ['Mercy Hospital of Buffalo','Buffalo, NY','115.00','31'],
+ ['Ascension St. Vincent','Indianapolis, IN','148.30','42'],
+ ['Sisters of Charity Hospital','Buffalo, NY','168.99','71']
+];
+document.getElementById('sample').innerHTML=SAMPLE.map(([h,c,a,p])=>
+ `<div class="prow"><span><div class="hosp">${h}</div><div class="city">${c}</div></span><span class="amt">$${a} <small>· ${p} payers</small></span></div>`
+).join('')+'<div class="src">Median negotiated price · sourced from each hospital\'s MRF</div>';
+</script>
+</body>
+</html>
