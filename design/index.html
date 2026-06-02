@@ -31,7 +31,8 @@ a{color:var(--teal-ink);text-decoration:none}
 /* ---- top bar ---- */
 header{border-bottom:1px solid var(--border);background:rgba(250,249,246,.85);backdrop-filter:blur(6px);position:sticky;top:0;z-index:20}
 .bar{display:flex;align-items:center;justify-content:space-between;height:62px}
-.brand{font-family:var(--serif);font-weight:700;font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+.brand{display:flex;align-items:center;gap:11px;font-family:var(--serif);font-weight:700;font-size:21px;letter-spacing:-.01em;color:var(--ink)}
+.brand .logo{width:30px;height:30px;color:var(--ink);flex:none}
 .brand .o{color:var(--teal)}
 nav.top{display:flex;gap:30px;font-size:14.5px;font-weight:500}
 nav.top a{color:var(--muted)}
@@ -128,7 +129,22 @@ footer{border-top:1px solid var(--border);padding:40px 0 56px;font-size:13.5px;c
 <body>
 <header>
   <div class="wrap bar">
-    <div class="brand"><span class="o">Open</span>HospitalCost</div>
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 48 48" aria-hidden="true">
+        <g fill="currentColor">
+          <rect x="2.5" y="17.5" width="43" height="13" rx="6.5" transform="rotate(45 24 24)"/>
+          <rect x="2.5" y="17.5" width="43" height="13" rx="6.5" transform="rotate(-45 24 24)"/>
+        </g>
+        <g transform="rotate(45 24 24)" fill="#FAF9F6">
+          <circle cx="19.5" cy="18" r="0.9"/><circle cx="22.5" cy="18" r="0.9"/><circle cx="25.5" cy="18" r="0.9"/><circle cx="28.5" cy="18" r="0.9"/>
+          <circle cx="19.5" cy="21" r="0.9"/><circle cx="22.5" cy="21" r="0.9"/><circle cx="25.5" cy="21" r="0.9"/><circle cx="28.5" cy="21" r="0.9"/>
+          <circle cx="19.5" cy="24" r="0.9"/><circle cx="22.5" cy="24" r="0.9"/><circle cx="25.5" cy="24" r="0.9"/><circle cx="28.5" cy="24" r="0.9"/>
+          <circle cx="19.5" cy="27" r="0.9"/><circle cx="22.5" cy="27" r="0.9"/><circle cx="25.5" cy="27" r="0.9"/><circle cx="28.5" cy="27" r="0.9"/>
+          <circle cx="19.5" cy="30" r="0.9"/><circle cx="22.5" cy="30" r="0.9"/><circle cx="25.5" cy="30" r="0.9"/><circle cx="28.5" cy="30" r="0.9"/>
+        </g>
+      </svg>
+      <span><span class="o">Open</span>HospitalCost</span>
+    </div>
     <nav class="top">
       <a href="#">Procedures</a><a href="#">Hospitals</a><a href="#">How it works</a><a href="#">Methodology</a>
     </nav>
