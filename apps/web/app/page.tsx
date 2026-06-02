@@ -1,12 +1,11 @@
 import { sql } from "@/lib/db";
-import Logo from "@/components/Logo";
+import SiteHeader from "@/components/SiteHeader";
+import SiteFooter from "@/components/SiteFooter";
 import SearchBar from "@/components/SearchBar";
 import CoverageMap from "@/components/CoverageMap";
+import { titleCase, usd } from "@/lib/format";
 
 export const revalidate = 3600; // ISR: rebuild at most hourly
-
-const titleCase = (s: string) => s.toLowerCase().replace(/\b\w/g, (c) => c.toUpperCase());
-const usd = (n: number) => `$${n.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
 export default async function Home() {
   const stateRows = (await sql`
@@ -36,20 +35,7 @@ export default async function Home() {
 
   return (
     <>
-      <header>
-        <div className="wrap bar">
-          <a className="brand" href="/">
-            <Logo className="logo" />
-            <span><span className="o">Open</span>HospitalCost</span>
-          </a>
-          <nav className="top">
-            <a href="/procedures">Procedures</a>
-            <a href="/hospitals">Hospitals</a>
-            <a href="/how-it-works">How it works</a>
-            <a href="/methodology">Methodology</a>
-          </nav>
-        </div>
-      </header>
+      <SiteHeader />
 
       <main className="wrap">
         <section className="hero">
@@ -107,17 +93,7 @@ export default async function Home() {
         </section>
       </main>
 
-      <footer>
-        <div className="wrap">
-          <div className="fcols">
-            <div><strong>Browse</strong><a href="/procedures">By procedure</a><a href="/hospitals">By hospital</a><a href="/states">By state</a></div>
-            <div><strong>Understand</strong><a href="/how-it-works">How it works</a><a href="/methodology">Methodology</a><a href="/data">Data sources</a></div>
-            <div><strong>Data</strong><a href="/data">Open data export</a><a href="/corrections">Submit a correction</a><a href="/llms.txt">llms.txt</a></div>
-            <div><strong>About</strong><a href="/about">The project</a><a href="/contact">Contact</a></div>
-          </div>
-          <p className="fine">OpenHospitalCost aggregates hospital price transparency files published under 45 CFR §180. Prices are shown as reported by each hospital and cited to the source file and ingestion date. Figures are for informational purposes and are not a quote or guarantee of cost.</p>
-        </div>
-      </footer>
+      <SiteFooter />
     </>
   );
 }
