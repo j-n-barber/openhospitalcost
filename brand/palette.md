@@ -24,17 +24,20 @@ Color + type reference for brand assets. Load `openhospitalcost.ase` into Illust
 - **Green/red ONLY in price data** (savings, deltas, "↑23% since Jan") — never decoration. Keeps the brand calm and makes the semantic colors mean something.
 - **Accessibility:** always pair red/green with an arrow or label (≈8% of men can't distinguish them by color). Aim WCAG AA contrast; use *Link Teal* for text links, *Primary Teal* for buttons/fills.
 
-## Typography
+## Typography — Direction B ("Trust / editorial") — LOCKED
 
-**Decided:**
-- **Wordmark / logo — Source Serif Pro, Bold (700)** (audition SemiBold 600 if Bold feels heavy at logo size). Avoid the Black (900) weight — Source Serif's high stroke contrast makes it look uneven at large sizes.
-- **Headlines — Source Serif Pro, SemiBold (600) / Bold (700).** Editorial, public-interest authority — the trust signal that differentiates from generic SaaS-sans competitors.
+| Use | Font | Weight |
+|---|---|---|
+| **Wordmark / logo** | **Source Serif Pro** | Bold (700) — audition SemiBold 600 if 700 feels heavy at logo size; **never** Black 900 (uneven at large sizes) |
+| **Headlines** | **Source Serif Pro** | SemiBold (600) / Bold (700) |
+| **Body / UI / tables** | **Inter** | Regular (400) + SemiBold (600) |
+| **Prices / numbers** | **IBM Plex Mono** | Medium (500) — monospaced, so dollar figures align column-to-column and read as precise "real data" |
 
-**Recommended (not yet locked):**
-- **Body / UI / tables — Inter** (or IBM Plex Sans). Neutral, legible at small data-table sizes, free, self-hosts via Next.js `next/font`.
-- **Prices / numbers — tabular figures.** Set any price with `font-variant-numeric: tabular-nums` so dollar amounts align column-to-column. Optional: a mono (IBM Plex Mono) for big headline price figures ("precision / real data" feel).
+Source Serif headlines + Inter body = the editorial, public-interest authority that differentiates from generic SaaS-sans competitors; Plex Mono on the numbers reinforces "this is sourced data."
 
-**Weight discipline:** ship only the weights you use — Source Serif Pro 700 (logo/headline) + one body weight + one body-bold is plenty. Fewer weights = faster pages (matters for the SEO that drives your traffic).
+Body sans note: keep `font-variant-numeric: tabular-nums` on Inter too, for any inline figures not set in Plex Mono.
+
+**Weight discipline:** ship only the 5 weights above. Fewer weights = faster pages (matters for the SEO that drives your traffic).
 
 **Logo production:** once the wordmark looks right, **Type → Create Outlines** (⇧⌘O) so the logo is font-independent forever; keep an editable (pre-outline) copy too. Consider weight/color contrast within the name for hierarchy (e.g. "Open" lighter, **"HospitalCost"** bolder).
 
