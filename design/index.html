@@ -77,14 +77,10 @@ h1 em{font-style:italic;color:var(--teal-ink)}
 .stat .n{font-family:var(--mono);font-size:26px;font-weight:500;color:var(--teal-ink);letter-spacing:-.02em}
 .stat .l{font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
 
-.tilegrid{display:grid;grid-template-columns:repeat(11,1fr);gap:6px;max-width:760px;margin:0 auto}
-.tile{aspect-ratio:1;border-radius:4px;background:#f1efe9;border:1px solid var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;font-size:11px}
-.tile .ab{font-family:var(--mono);font-weight:500;color:#9aa3ab;font-size:11px}
-.tile .ct{font-family:var(--mono);font-size:9px;color:transparent;line-height:1}
-.tile.has{cursor:pointer;border-color:transparent}
-.tile.has .ab{color:#fff}
-.tile.has .ct{color:rgba(255,255,255,.8)}
-.tile.has:hover{transform:translateY(-3px);box-shadow:0 6px 14px rgba(19,40,58,.18);z-index:5}
+.usmap{display:block;width:100%;max-width:800px;height:auto;margin:2px auto 0}
+.usmap path{stroke:#fff;stroke-width:.7;stroke-linejoin:round;transition:fill .12s,stroke .12s,stroke-width .12s}
+.usmap path.has{cursor:pointer}
+.usmap path.has:hover{stroke:var(--ink);stroke-width:1.5}
 .legend{display:flex;align-items:center;gap:14px;margin-top:22px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .legend .sw{display:inline-flex;align-items:center;gap:7px}
 .legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
@@ -122,7 +118,6 @@ footer{border-top:1px solid var(--border);padding:40px 0 56px;font-size:13.5px;c
 @media(max-width:780px){
   .sample{grid-template-columns:1fr}.values{grid-template-columns:1fr}
   nav.top{display:none}.stat-row{display:none}
-  .tilegrid{gap:4px}.tile .ct{display:none}
 }
 </style>
 </head>
@@ -182,10 +177,10 @@ footer{border-top:1px solid var(--border);padding:40px 0 56px;font-size:13.5px;c
         <div class="stat"><div class="n">100</div><div class="l">Procedures</div></div>
       </div>
     </div>
-    <div class="tilegrid" id="grid"></div>
+    <svg class="usmap" id="usmap" role="img" aria-label="Hospitals with published prices, by U.S. state"></svg>
     <div class="legend">
-      <span class="sw"><i style="background:#bfe0db"></i><i style="background:#5fa9a6"></i><i style="background:#1A6B7A"></i> More hospitals →</span>
-      <span class="sw"><i style="background:#f1efe9;border:1px solid var(--border)"></i> Coming soon</span>
+      <span class="sw"><i style="background:#cfe3e0"></i><i style="background:#8cc1bc"></i><i style="background:#4f9a98"></i><i style="background:#1A6B7A"></i><i style="background:#15616d"></i> Fewer → more hospitals</span>
+      <span class="sw"><i style="background:#EBE8E1"></i> Coming soon</span>
     </div>
   </section>
 
@@ -220,36 +215,6 @@ footer{border-top:1px solid var(--border);padding:40px 0 56px;font-size:13.5px;c
 <div class="tip" id="tip"></div>
 
 <script>
-/* --- real coverage data --- */
-const COUNTS={ca:17,fl:12,oh:10,tx:10,nc:7,mi:5,va:5,pa:4,ny:4,ky:4,mn:3,or:3,al:3,co:3,ma:3,wi:2,ga:2,il:2,ks:2,md:2,in:1,ri:1,ia:1,ut:1,de:1,wa:1,az:1};
-/* tile-grid layout [row,col] — stylized US, 8 rows x 11 cols */
-const GRID={
- AK:[1,1],ME:[1,11], VT:[2,10],NH:[2,11],
- WA:[3,1],ID:[3,2],MT:[3,3],ND:[3,4],MN:[3,5],WI:[3,7],MI:[3,8],NY:[3,10],MA:[3,11],
- OR:[4,1],NV:[4,2],WY:[4,3],SD:[4,4],IA:[4,5],IL:[4,6],IN:[4,7],OH:[4,8],PA:[4,9],NJ:[4,10],CT:[4,11],
- CA:[5,1],UT:[5,2],CO:[5,3],NE:[5,4],MO:[5,5],KY:[5,6],WV:[5,7],VA:[5,8],MD:[5,9],DC:[5,10],RI:[5,11],
- AZ:[6,2],NM:[6,3],KS:[6,4],AR:[6,5],TN:[6,6],NC:[6,7],SC:[6,8],DE:[6,9],
- OK:[7,4],LA:[7,5],MS:[7,6],AL:[7,7],GA:[7,8],
- HI:[8,1],TX:[8,3],FL:[8,9]
-};
-function shade(n){ if(n>=11)return'#1A6B7A'; if(n>=5)return'#3f8a8a'; if(n>=2)return'#74b0ad'; return'#aed4cf'; }
-const grid=document.getElementById('grid'), tip=document.getElementById('tip');
-const names={ca:'California',fl:'Florida',oh:'Ohio',tx:'Texas',nc:'North Carolina',mi:'Michigan',va:'Virginia',pa:'Pennsylvania',ny:'New York',ky:'Kentucky',mn:'Minnesota',or:'Oregon',al:'Alabama',co:'Colorado',ma:'Massachusetts',wi:'Wisconsin',ga:'Georgia',il:'Illinois',ks:'Kansas',md:'Maryland',in:'Indiana',ri:'Rhode Island',ia:'Iowa',ut:'Utah',de:'Delaware',wa:'Washington',az:'Arizona'};
-for(const [ab,[r,col]] of Object.entries(GRID)){
-  const key=ab.toLowerCase(); const n=COUNTS[key];
-  const el=document.createElement(n?'a':'div');
-  el.className='tile'+(n?' has':''); el.style.gridRow=r; el.style.gridColumn=col;
-  if(n){ el.style.background=shade(n); el.href='#/state/'+key; }
-  el.innerHTML='<span class="ab">'+ab+'</span><span class="ct">'+(n||'')+'</span>';
-  if(n){
-    el.addEventListener('mousemove',e=>{tip.style.opacity=1;tip.textContent='';
-      tip.innerHTML=names[key]+' · <span class="price">'+n+' hospital'+(n>1?'s':'')+'</span>';
-      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';});
-    el.addEventListener('mouseleave',()=>tip.style.opacity=0);
-  }
-  grid.appendChild(el);
-}
-
 /* --- search demo --- */
 const INDEX=[
   {t:'p',nm:'MRI brain, without contrast',meta:'CPT 70551 · 96 hospitals',href:'#'},
@@ -287,6 +252,29 @@ const SAMPLE=[
 document.getElementById('sample').innerHTML=SAMPLE.map(([h,c,a,p])=>
  `<div class="prow"><span><div class="hosp">${h}</div><div class="city">${c}</div></span><span class="amt">$${a} <small>· ${p} payers</small></span></div>`
 ).join('')+'<div class="src">Median negotiated price · sourced from each hospital\'s MRF</div>';
+</script>
+
+<script type="module">
+import { US_VIEWBOX, US_STATES } from './us-states.js';
+const COUNTS={ca:17,fl:12,oh:10,tx:10,nc:7,mi:5,va:5,pa:4,ny:4,ky:4,mn:3,or:3,al:3,co:3,ma:3,wi:2,ga:2,il:2,ks:2,md:2,in:1,ri:1,ia:1,ut:1,de:1,wa:1,az:1};
+const NAMES={ca:'California',fl:'Florida',oh:'Ohio',tx:'Texas',nc:'North Carolina',mi:'Michigan',va:'Virginia',pa:'Pennsylvania',ny:'New York',ky:'Kentucky',mn:'Minnesota',or:'Oregon',al:'Alabama',co:'Colorado',ma:'Massachusetts',wi:'Wisconsin',ga:'Georgia',il:'Illinois',ks:'Kansas',md:'Maryland',in:'Indiana',ri:'Rhode Island',ia:'Iowa',ut:'Utah',de:'Delaware',wa:'Washington',az:'Arizona'};
+function shade(n){ if(!n)return'#EBE8E1'; if(n>=15)return'#15616d'; if(n>=10)return'#1A6B7A'; if(n>=5)return'#4f9a98'; if(n>=2)return'#8cc1bc'; return'#cfe3e0'; }
+const NS='http://www.w3.org/2000/svg';
+const svg=document.getElementById('usmap'); svg.setAttribute('viewBox',US_VIEWBOX);
+const tip=document.getElementById('tip');
+for(const st of US_STATES){
+  const key=st.a.toLowerCase(); const n=COUNTS[key]||0;
+  const p=document.createElementNS(NS,'path');
+  p.setAttribute('d',st.d); p.setAttribute('fill',shade(n)); p.setAttribute('class', n?'has':'dim');
+  if(n){
+    p.addEventListener('mousemove',e=>{tip.style.opacity='1';
+      tip.innerHTML=(NAMES[key]||st.a)+' · <span class="price">'+n+' hospital'+(n>1?'s':'')+'</span>';
+      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';});
+    p.addEventListener('mouseleave',()=>{tip.style.opacity='0';});
+    p.addEventListener('click',()=>{location.hash='#/state/'+key;});
+  }
+  svg.appendChild(p);
+}
 </script>
 </body>
 </html>
