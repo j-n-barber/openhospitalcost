@@ -24,7 +24,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadEnv } from '../db/load-env.js';
 import { downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
-import { computeMrf, persistMrf, fetchCptMap } from './ingest-mrf.js';
+import { computeMrf, persistMrf, fetchCptMap, archiveRawMrf } from './ingest-mrf.js';
+import { r2Configured } from './archive/r2.js';
 
 function flag(name) {
   const i = process.argv.indexOf(`--${name}`);
@@ -58,11 +59,12 @@ async function main() {
     `INSERT INTO ingestion_runs (status, run_type) VALUES ('running', 'starter_batch') RETURNING id`
   )).rows[0];
 
-  const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, failures: [] };
+  const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, archived: 0, failures: [] };
   try {
     const pidByCpt = await fetchCptMap(pool);
     const cohort = await selectCohort(pool, { tier, limit, force });
     console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}).`);
+    if (!r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
 
     for (const h of cohort) {
       stats.attempted++;
@@ -76,16 +78,21 @@ async function main() {
           asOf: new Date().toISOString().slice(0, 10), pidByCpt,
         });
 
+        // Archive the raw MRF to R2 before the (short) DB write. Streamed upload,
+        // no DB connection held; returns null and logs if R2 is off or fails.
+        const r2RawKey = await archiveRawMrf({ ccn: h.ccn, filePath: tmp, computed, sourceUrl: h.mrf_file_url });
+        if (r2RawKey) stats.archived++;
+
         // Short work: hold a pooled connection only for the writes.
         const client = await pool.connect();
         try {
           const { fileId, inserted } = await persistMrf(client, {
-            hospitalId: h.id, url: h.mrf_file_url, filePath: tmp, computed, pidByCpt,
+            hospitalId: h.id, url: h.mrf_file_url, filePath: tmp, computed, pidByCpt, r2RawKey,
           });
           stats.ingested++;
           if (computed.score.eligibleForMoneyPages) stats.eligible++;
           console.log(`  ✓ ${h.name} (${h.ccn}): ${computed.metrics.format} FQS ${computed.score.score} ${computed.score.grade}` +
-            `${meta.tier === 2 ? ' [tier2]' : ''} +${inserted} (file ${fileId.slice(0, 8)})`);
+            `${meta.tier === 2 ? ' [tier2]' : ''}${r2RawKey ? ' [r2]' : ''} +${inserted} (file ${fileId.slice(0, 8)})`);
         } finally {
           client.release();
         }
@@ -107,7 +114,7 @@ async function main() {
       [run.id, JSON.stringify(stats)]
     );
 
-    console.log(`\nDone. ingested=${stats.ingested} (tier2=${stats.viaTier2}) eligible=${stats.eligible} ` +
+    console.log(`\nDone. ingested=${stats.ingested} (tier2=${stats.viaTier2}) archived=${stats.archived} eligible=${stats.eligible} ` +
       `downloadFail=${stats.downloadFail} parseFail=${stats.failed} of attempted=${stats.attempted}.`);
     if (stats.failures.length) {
       console.log('Failures:');

@@ -25,6 +25,7 @@ import { detectFormat, readHeadBytes } from './parse/detect-format.js';
 import { decompress } from './parse/decompress.js';
 import { extractCsvPriceRows, extractJsonPriceRows } from './parse/normalize.js';
 import { scoreFile } from './quality.js';
+import { r2Configured, rawKey, objectExists, uploadFile } from './archive/r2.js';
 
 function arg(name) {
   const i = process.argv.indexOf(`--${name}`);
@@ -79,18 +80,53 @@ export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
 }
 
 /**
- * Persist a computeMrf() result in one short transaction. Holds the connection
- * only for the inserts.
+ * Archive the raw MRF to R2 (raw/<ccn>/<date>/<hash>.<ext>), streaming so GB
+ * files never buffer in memory. Returns the object key, or null when R2 is not
+ * configured or the upload fails — archival must never block ingest. Skips the
+ * upload if an object with the same content-hash key already exists (re-run /
+ * unchanged file). Runs OUTSIDE the DB transaction; the key is handed to
+ * persistMrf to record.
  */
-export async function persistMrf(client, { hospitalId, url, filePath, computed, pidByCpt }) {
+export async function archiveRawMrf({ ccn, filePath, computed, sourceUrl }) {
+  if (!r2Configured()) return null;
+  const key = rawKey({
+    ccn,
+    fetchedAt: new Date(),
+    hash: computed.fileHash,
+    sourceUrl,
+    payload: computed.payload,
+  });
+  try {
+    if (await objectExists(key)) return key; // identical bytes already archived
+    const contentType = computed.payload === 'json' ? 'application/json'
+      : computed.payload === 'csv' ? 'text/csv'
+      : 'application/octet-stream';
+    await uploadFile({ key, filePath, contentType });
+    return key;
+  } catch (err) {
+    console.warn(`  ! R2 archive failed for ${ccn} (${key}): ${err.message}`);
+    return null;
+  }
+}
+
+/**
+ * Persist a computeMrf() result in one short transaction. Holds the connection
+ * only for the inserts. `r2RawKey` (from archiveRawMrf) is recorded on the
+ * mrf_files row; pass null when archival was skipped.
+ */
+export async function persistMrf(client, { hospitalId, url, filePath, computed, pidByCpt, r2RawKey = null }) {
   const { metrics, score, priceRows, fileHash, fileSize, effectiveDate } = computed;
   try {
     await client.query('BEGIN');
     const fileRow = (await client.query(
       `INSERT INTO mrf_files
          (hospital_id, url, file_hash, file_size_bytes, fetched_at, parsed_at, status,
-          record_count, quality_score, quality_metrics)
-       VALUES ($1,$2,$3,$4, now(), now(), $5, $6, $7, $8)
+          record_count, quality_score, quality_metrics,
+          r2_raw_key, r2_raw_uploaded_at, r2_raw_expires_at)
+       VALUES ($1,$2,$3,$4, now(), now(), $5, $6, $7, $8,
+          $9,
+          CASE WHEN $9::text IS NULL THEN NULL ELSE now() END,
+          CASE WHEN $9::text IS NULL THEN NULL ELSE now() + interval '30 days' END)
        RETURNING id`,
       [
         hospitalId,
@@ -101,6 +137,7 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
         metrics.rowsParsed,
         score.score,
         JSON.stringify({ ...score, metrics: undefined }),
+        r2RawKey,
       ]
     )).rows[0];
 
@@ -148,11 +185,13 @@ export async function ingestOne(client, { ccn, filePath, url, asOf, refresh }) {
   if (!hosp) throw new Error(`No hospital with ccn=${ccn}`);
   const pidByCpt = await fetchCptMap(client);
   const computed = await computeMrf({ filePath, url, asOf, pidByCpt });
-  const { fileId, inserted } = await persistMrf(client, { hospitalId: hosp.id, url, filePath, computed, pidByCpt });
+  const r2RawKey = await archiveRawMrf({ ccn, filePath, computed, sourceUrl: url });
+  const { fileId, inserted } = await persistMrf(client, { hospitalId: hosp.id, url, filePath, computed, pidByCpt, r2RawKey });
 
   console.log(
     `${hosp.name} (${ccn}): ${computed.metrics.format} | FQS ${computed.score.score} ${computed.score.grade} ` +
-    `| money ${computed.score.eligibleForMoneyPages} | price_records +${inserted} | file ${fileId}`
+    `| money ${computed.score.eligibleForMoneyPages} | price_records +${inserted} | file ${fileId}` +
+    `${r2RawKey ? ` | r2 ${r2RawKey}` : ''}`
   );
   if (refresh) {
     await client.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
