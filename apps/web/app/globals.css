@@ -175,7 +175,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .infotip { display: inline-flex; margin-left: 5px; vertical-align: middle; cursor: help; }
 .infotip-ico { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--muted); color: var(--muted); font-family: var(--serif); font-size: 10px; font-style: italic; line-height: 1; transition: .12s; }
 .infotip:hover .infotip-ico { border-color: var(--teal); color: var(--teal); }
-.tip.infotip-pop { white-space: normal; max-width: 250px; line-height: 1.45; font-family: var(--sans); font-size: 12.5px; font-weight: 400; text-transform: none; letter-spacing: normal; }
+.tip.infotip-pop { white-space: normal; width: max-content; max-width: 240px; text-align: left; line-height: 1.5; font-family: var(--sans); font-size: 12.5px; font-weight: 400; text-transform: none; letter-spacing: normal; padding: 9px 12px; }
 
 @media (max-width: 780px) {
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }
