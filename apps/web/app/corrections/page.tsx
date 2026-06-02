@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import CorrectionForm from "@/components/CorrectionForm";
 
 export const metadata: Metadata = {
   title: "Submit a correction — OpenHospitalCost",
@@ -9,11 +10,6 @@ export const metadata: Metadata = {
 };
 
 export default function CorrectionsPage() {
-  const subject = encodeURIComponent("Correction: ");
-  const body = encodeURIComponent(
-    "Page URL: \nWhat looks wrong: \nWhat you expected: \nSource (if known): \n"
-  );
-
   return (
     <>
       <SiteHeader />
@@ -27,29 +23,20 @@ export default function CorrectionsPage() {
           </p>
         </section>
 
-        <div className="copy">
-          <h2>What to send</h2>
-          <p>To help us verify quickly, include:</p>
-          <ul>
-            <li>The page where you saw the issue (copy the URL).</li>
-            <li>What looks wrong — a price, a procedure match, a hospital detail.</li>
-            <li>What you expected to see, and a source if you have one.</li>
-          </ul>
-
-          <h2>How to reach us</h2>
-          <p>
-            Email{" "}
-            <a href={`mailto:jake@openhospitalcost.com?subject=${subject}&body=${body}`}>
-              jake@openhospitalcost.com
-            </a>
-            {" "}— the link pre-fills a short template. We read every message.
-          </p>
+        <div className="copy" style={{ marginBottom: 24 }}>
           <p>
             A note on what we can fix: where a price is wrong because the hospital&apos;s own file is wrong, we&apos;ll
             flag it and cite the source, but the authoritative fix has to come from the hospital. Where the error is
             ours — a bad parse or a mismatched code — we&apos;ll correct it.
           </p>
         </div>
+
+        <CorrectionForm />
+
+        <p className="prov" style={{ margin: "0 0 72px" }}>
+          Prefer email? Send the details to{" "}
+          <a href="mailto:jake@openhospitalcost.com?subject=Correction">jake@openhospitalcost.com</a>.
+        </p>
       </main>
       <SiteFooter />
     </>
