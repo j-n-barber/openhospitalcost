@@ -107,19 +107,20 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
     let inserted = 0;
     if (metrics.parseStatus !== 'failed') {
       let batch = [];
-      const N = 8; // params per row; observed_at uses now() literal
+      const N = 12; // params per row; observed_at uses now() literal
       const flush = async () => {
         if (!batch.length) return;
         const ph = batch.map((_, i) => {
           const b = i * N;
-          return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7}, now(), $${b + 8})`;
+          return `($${b + 1},$${b + 2},$${b + 3},$${b + 4},$${b + 5},$${b + 6},$${b + 7},$${b + 8},$${b + 9},$${b + 10},$${b + 11}, now(), $${b + 12})`;
         }).join(', ');
         const params = batch.flatMap((r) => [
-          hospitalId, pidByCpt.get(r.cpt), r.charge_type, r.payer, r.plan, r.amount, fileRow.id, effectiveDate,
+          hospitalId, pidByCpt.get(r.cpt), r.charge_type, r.payer ?? null, r.plan ?? null, r.amount,
+          r.methodology ?? null, r.billing_class ?? null, r.setting ?? null, r.modifiers ?? null, fileRow.id, effectiveDate,
         ]);
         await client.query(
           `INSERT INTO price_records
-             (hospital_id, procedure_id, charge_type, payer, plan, amount, source_file_id, observed_at, effective_date)
+             (hospital_id, procedure_id, charge_type, payer, plan, amount, methodology, billing_class, setting, modifiers, source_file_id, observed_at, effective_date)
            VALUES ${ph}`,
           params
         );
