@@ -80,7 +80,8 @@ h1 em{font-style:italic;color:var(--teal-ink)}
 .usmap{display:block;width:100%;max-width:800px;height:auto;margin:2px auto 0}
 .usmap path{stroke:#fff;stroke-width:.8;stroke-linejoin:round;vector-effect:non-scaling-stroke;transition:fill .12s,stroke .12s}
 .usmap path.has{cursor:pointer}
-.usmap path.has:hover{stroke:var(--ink);stroke-width:1.5}
+.usmap path.has:hover{fill-opacity:.85}
+.usmap .hl{fill:none;stroke:var(--ink);stroke-width:1.6;vector-effect:non-scaling-stroke;pointer-events:none;opacity:0;transition:opacity .1s}
 .legend{display:flex;align-items:center;gap:14px;margin-top:22px;font-size:12px;color:var(--muted);flex-wrap:wrap}
 .legend .sw{display:inline-flex;align-items:center;gap:7px}
 .legend i{width:13px;height:13px;border-radius:3px;display:inline-block}
@@ -262,20 +263,22 @@ function shade(n){ if(!n)return'#EBE8E1'; if(n>=15)return'#15616d'; if(n>=10)ret
 const NS='http://www.w3.org/2000/svg';
 const svg=document.getElementById('usmap'); svg.setAttribute('viewBox',US_VIEWBOX);
 const tip=document.getElementById('tip');
+const hl=document.createElementNS(NS,'path'); hl.setAttribute('class','hl'); // top-most outline overlay
 for(const st of US_STATES){
   const key=st.a.toLowerCase(); const n=COUNTS[key]||0;
   const p=document.createElementNS(NS,'path');
   p.setAttribute('d',st.d); p.setAttribute('fill',shade(n)); p.setAttribute('class', n?'has':'dim');
   if(n){
-    p.addEventListener('mouseenter',()=>{svg.appendChild(p);}); // raise to front so the hover outline isn't overdrawn by neighbors
     p.addEventListener('mousemove',e=>{tip.style.opacity='1';
       tip.innerHTML=(NAMES[key]||st.a)+' · <span class="price">'+n+' hospital'+(n>1?'s':'')+'</span>';
-      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';});
-    p.addEventListener('mouseleave',()=>{tip.style.opacity='0';});
+      tip.style.left=(e.clientX+14)+'px'; tip.style.top=(e.clientY+14)+'px';
+      hl.setAttribute('d',st.d); hl.style.opacity='1';});
+    p.addEventListener('mouseleave',()=>{tip.style.opacity='0'; hl.style.opacity='0';});
     p.addEventListener('click',()=>{location.hash='#/state/'+key;});
   }
   svg.appendChild(p);
 }
+svg.appendChild(hl); // drawn last → on top, never overdrawn by neighbors
 </script>
 </body>
 </html>
