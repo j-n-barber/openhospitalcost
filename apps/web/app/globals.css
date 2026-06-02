@@ -32,6 +32,11 @@ body {
 a { color: var(--teal-ink); text-decoration: none; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
 
+/* Typography niceties: balance headings so they don't orphan a last word, and
+   pretty-wrap body copy so paragraphs don't leave a widow on the final line. */
+h1, h2, h3, h4 { text-wrap: balance; }
+p, .sub, .copy li { text-wrap: pretty; }
+
 /* top bar */
 header { border-bottom: 1px solid var(--border); background: rgba(250,249,246,.85); backdrop-filter: blur(6px); position: sticky; top: 0; z-index: 20; }
 .bar { display: flex; align-items: center; justify-content: space-between; height: 62px; }

@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { titleCase } from "@/lib/format";
+import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
 
 export const revalidate = 3600;
@@ -18,7 +18,8 @@ type Row = {
 
 async function getProcedure(slug: string): Promise<Proc | null> {
   const r = (await sql`SELECT name, code, description, category FROM procedures WHERE slug = ${slug}`) as Proc[];
-  return r[0] ?? null;
+  if (!r[0]) return null;
+  return { ...r[0], name: titleCaseProcedure(r[0].name) };
 }
 
 async function getHospitalPrices(slug: string): Promise<Row[]> {

@@ -75,7 +75,7 @@ export default async function Home() {
         <section className="sample">
           <div className="l">
             <div className="eyebrow">Sample · what you&apos;ll see</div>
-            <h3>MRI of the brain, without contrast</h3>
+            <h3>MRI of the Brain, without Contrast</h3>
             <p>Median negotiated price per hospital, with the full payer range. The same procedure swings wildly between hospitals — that gap is the whole point.</p>
           </div>
           <div className="r">

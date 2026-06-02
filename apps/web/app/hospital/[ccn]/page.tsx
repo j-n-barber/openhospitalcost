@@ -4,7 +4,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { STATE_NAMES } from "@/lib/states";
-import { titleCase } from "@/lib/format";
+import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableProcedures from "@/components/FilterableProcedures";
 
 export const revalidate = 3600;
@@ -32,7 +32,7 @@ async function getHospital(ccn: string): Promise<Hosp | null> {
 }
 
 async function getProcedures(hospitalId: string): Promise<Row[]> {
-  return (await sql`
+  const rows = (await sql`
     SELECT p.slug, p.name, p.code, p.category,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.amount END)::float      AS negotiated,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.min_amount END)::float  AS neg_lo,
@@ -45,6 +45,7 @@ async function getProcedures(hospitalId: string): Promise<Row[]> {
     WHERE s.hospital_id = ${hospitalId}
     GROUP BY p.slug, p.name, p.code, p.category
     ORDER BY max(p.search_priority) DESC NULLS LAST, p.name`) as Row[];
+  return rows.map((r) => ({ ...r, name: titleCaseProcedure(r.name) }));
 }
 
 export async function generateStaticParams() {

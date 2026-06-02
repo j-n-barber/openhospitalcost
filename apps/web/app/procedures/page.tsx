@@ -3,6 +3,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import ProcedureIndex, { type ProcIndexRow } from "@/components/ProcedureIndex";
+import { titleCaseProcedure } from "@/lib/format";
 
 export const revalidate = 3600;
 
@@ -15,7 +16,7 @@ export const metadata: Metadata = {
 // National per-procedure aggregate over hospitals with money-page-eligible data:
 // median of each hospital's facility median, plus the low–high spread between hospitals.
 async function getProcedures(): Promise<ProcIndexRow[]> {
-  return (await sql`
+  const rows = (await sql`
     SELECT p.slug, p.name, p.code, p.category,
       count(DISTINCT s.hospital_id)::int AS hospitals,
       percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'negotiated')::float      AS negotiated,
@@ -30,6 +31,7 @@ async function getProcedures(): Promise<ProcIndexRow[]> {
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
     GROUP BY p.slug, p.name, p.code, p.category
     ORDER BY hospitals DESC, p.name`) as ProcIndexRow[];
+  return rows.map((r) => ({ ...r, name: titleCaseProcedure(r.name) }));
 }
 
 export default async function ProceduresPage() {

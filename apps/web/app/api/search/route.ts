@@ -1,5 +1,5 @@
 import { sql } from "@/lib/db";
-import { titleCase } from "@/lib/format";
+import { titleCase, titleCaseProcedure } from "@/lib/format";
 
 export const revalidate = 3600; // cache the index, rebuilt hourly
 
@@ -21,7 +21,7 @@ export async function GET() {
     ORDER BY h.name`) as { ccn: string; name: string; city: string; state: string }[];
 
   const index = [
-    ...procs.map((p) => ({ t: "p", nm: p.name, meta: `CPT ${p.code}`, href: `/procedure/${p.slug}` })),
+    ...procs.map((p) => ({ t: "p", nm: titleCaseProcedure(p.name), meta: `CPT ${p.code}`, href: `/procedure/${p.slug}` })),
     ...hospitals.map((h) => ({
       t: "h",
       nm: titleCase(h.name),
