@@ -2,6 +2,13 @@
 import { useMemo, useState } from "react";
 import { titleCase, usd } from "@/lib/format";
 import NegotiatedCell from "@/components/NegotiatedCell";
+import InfoTip from "@/components/InfoTip";
+
+const TIP = {
+  negotiated: "Median rate insurers have negotiated with this hospital (facility prices), with the low–high range across plans.",
+  cash: "Discounted price for self-pay or uninsured patients paying cash.",
+  gross: "The hospital's full list price (chargemaster) before any discount or insurance.",
+};
 
 export type HPRow = {
   ccn: string; name: string; city: string; state: string;
@@ -56,9 +63,9 @@ export default function FilterableHospitalPrices({ rows }: { rows: HPRow[] }) {
         <thead>
           <tr>
             <th className="sortable" onClick={() => sortBy("name")}>Hospital {caret("name")}</th>
-            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("negotiated")}>Negotiated {caret("negotiated")}</th>
-            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("cash")}>Cash {caret("cash")}</th>
-            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("gross")}>Gross {caret("gross")}</th>
+            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("negotiated")}>Negotiated {caret("negotiated")}<InfoTip text={TIP.negotiated} /></th>
+            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("cash")}>Cash {caret("cash")}<InfoTip text={TIP.cash} /></th>
+            <th className="sortable" style={{ textAlign: "right" }} onClick={() => sortBy("gross")}>Gross {caret("gross")}<InfoTip text={TIP.gross} /></th>
           </tr>
         </thead>
         <tbody>

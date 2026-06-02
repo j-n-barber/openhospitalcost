@@ -171,6 +171,12 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .rb-track { position: relative; flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
 .rb-dot { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); transform: translate(-50%, -50%); }
 
+/* column info tooltips */
+.infotip { display: inline-flex; margin-left: 5px; vertical-align: middle; cursor: help; }
+.infotip-ico { display: inline-flex; align-items: center; justify-content: center; width: 14px; height: 14px; border-radius: 50%; border: 1px solid var(--muted); color: var(--muted); font-family: var(--serif); font-size: 10px; font-style: italic; line-height: 1; transition: .12s; }
+.infotip:hover .infotip-ico { border-color: var(--teal); color: var(--teal); }
+.tip.infotip-pop { white-space: normal; max-width: 250px; line-height: 1.45; font-family: var(--sans); font-size: 12.5px; font-weight: 400; text-transform: none; letter-spacing: normal; }
+
 @media (max-width: 780px) {
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }
   nav.top { display: none; } .stat-row { display: none; }
