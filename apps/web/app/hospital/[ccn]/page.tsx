@@ -4,7 +4,8 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { STATE_NAMES } from "@/lib/states";
-import { titleCase, usd } from "@/lib/format";
+import { titleCase } from "@/lib/format";
+import FilterableProcedures from "@/components/FilterableProcedures";
 
 export const revalidate = 3600;
 
@@ -65,8 +66,6 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   };
 }
 
-const money = (n: number | null) => (n == null ? "—" : usd(n));
-
 export default async function HospitalPage({ params }: Params) {
   const { ccn } = await params;
   const h = await getHospital(ccn);
@@ -110,31 +109,7 @@ export default async function HospitalPage({ params }: Params) {
           </p>
         </section>
 
-        <table className="ptable">
-          <thead>
-            <tr>
-              <th>Procedure</th>
-              <th style={{ textAlign: "right" }}>Negotiated (median)</th>
-              <th style={{ textAlign: "right" }}>Cash</th>
-              <th style={{ textAlign: "right" }}>Gross</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r) => (
-              <tr key={r.slug}>
-                <td><a href={`/procedure/${r.slug}`}>{r.name}</a> <span className="rng mono">CPT {r.code}</span></td>
-                <td className="num">
-                  {money(r.negotiated)}
-                  {r.neg_lo != null && r.neg_hi != null && r.neg_lo !== r.neg_hi && (
-                    <div className="rng">{usd(r.neg_lo)}–{usd(r.neg_hi)} · {r.payers ?? 0} payers</div>
-                  )}
-                </td>
-                <td className="num">{money(r.cash)}</td>
-                <td className="num">{money(r.gross)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <FilterableProcedures rows={rows} />
         <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
       </main>
       <SiteFooter />

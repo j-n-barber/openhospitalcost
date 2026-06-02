@@ -4,7 +4,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { STATE_NAMES } from "@/lib/states";
-import { titleCase } from "@/lib/format";
+import FilterableHospitals from "@/components/FilterableHospitals";
 
 export const revalidate = 3600;
 
@@ -63,15 +63,7 @@ export default async function StatePage({ params }: Params) {
           </p>
         </section>
 
-        <div className="hlist">
-          {hospitals.map((h) => (
-            <a className="hcard" key={h.ccn} href={`/hospital/${h.ccn}`}>
-              <span className="hn">{titleCase(h.name)}</span>
-              <span className="hc">{titleCase(h.city)}, {code.toUpperCase()}</span>
-              <span className="hp">{h.procedures} procedure{h.procedures !== 1 ? "s" : ""} priced →</span>
-            </a>
-          ))}
-        </div>
+        <FilterableHospitals hospitals={hospitals} stateCode={code} />
       </main>
       <SiteFooter />
     </>
