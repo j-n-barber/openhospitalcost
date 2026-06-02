@@ -24,8 +24,10 @@ async function getStates(): Promise<StateRow[]> {
     ORDER BY hospitals DESC, code`) as StateRow[];
 }
 
+const stateName = (code: string) => STATE_NAMES[code] ?? code.toUpperCase();
+
 export default async function StatesPage() {
-  const states = await getStates();
+  const states = (await getStates()).sort((a, b) => stateName(a.code).localeCompare(stateName(b.code)));
 
   return (
     <>
@@ -43,7 +45,7 @@ export default async function StatesPage() {
           <div className="hlist">
             {states.map((s) => (
               <a className="hcard" key={s.code} href={`/state/${s.code}`}>
-                <span className="hn">{STATE_NAMES[s.code] ?? s.code.toUpperCase()}</span>
+                <span className="hn">{stateName(s.code)}</span>
                 <span className="hp">{s.hospitals} hospital{s.hospitals !== 1 ? "s" : ""} priced →</span>
               </a>
             ))}
