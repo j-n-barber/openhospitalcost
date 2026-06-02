@@ -1,0 +1,80 @@
+name: Snapshots
+
+# Parquet archive of price_records → R2 (docs/PROJECT_BRIEF.md § 5 retention).
+#   weekly  (Sun 08:00 UTC) — kept 12 months; also prunes weeklies > 12 months
+#   monthly (1st 09:00 UTC) — kept forever
+# Manual runs: workflow_dispatch with a cadence input.
+on:
+  schedule:
+    - cron: '0 8 * * 0'   # weekly  — Sunday 08:00 UTC
+    - cron: '0 9 1 * *'   # monthly — 1st of month 09:00 UTC
+  workflow_dispatch:
+    inputs:
+      cadence:
+        description: Snapshot cadence
+        type: choice
+        options: [weekly, monthly]
+        default: weekly
+
+# Never let two snapshot runs overlap (they hit the same Neon branch + R2 keys).
+concurrency:
+  group: snapshots
+  cancel-in-progress: false
+
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install
+
+      # .bin/ is gitignored, so fetch the DuckDB CLI to the path duckdb.js expects.
+      # Pinned to the version used locally for parity.
+      - name: Install DuckDB CLI
+        run: |
+          mkdir -p .bin
+          curl -fsSL https://github.com/duckdb/duckdb/releases/download/v1.5.3/duckdb_cli-linux-amd64.zip -o /tmp/duckdb.zip
+          unzip -o /tmp/duckdb.zip -d .bin
+          chmod +x .bin/duckdb
+          .bin/duckdb --version
+
+      - name: Determine cadence
+        id: cad
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          INPUT_CADENCE: ${{ github.event.inputs.cadence }}
+          SCHEDULE: ${{ github.event.schedule }}
+        run: |
+          if [ "$EVENT_NAME" = "workflow_dispatch" ]; then
+            # Normalise to the only two valid values; default to weekly otherwise.
+            case "$INPUT_CADENCE" in monthly) C=monthly ;; *) C=weekly ;; esac
+          elif [ "$SCHEDULE" = "0 9 1 * *" ]; then
+            C=monthly
+          else
+            C=weekly
+          fi
+          echo "cadence=$C" >> "$GITHUB_OUTPUT"
+
+      - name: Write snapshot
+        env:
+          CADENCE: ${{ steps.cad.outputs.cadence }}
+        run: npm run snapshot:write -- --cadence "$CADENCE"
+
+      # Retention is code-driven (token can't set lifecycle on snapshots/). Prune
+      # only on weekly runs; monthlies are kept forever so there's nothing to drop.
+      - name: Prune old weekly snapshots
+        if: steps.cad.outputs.cadence == 'weekly'
+        run: npm run snapshot:prune
