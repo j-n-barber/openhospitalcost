@@ -1,0 +1,25 @@
+# OpenHospitalCost
+
+> A free, public-interest index of real U.S. hospital prices — gross, cash, and
+> negotiated rates — extracted from the machine-readable files hospitals are
+> required to publish under 45 CFR §180, and cited to the source file and date.
+
+## What makes this data different
+Every price is an actual figure reported by the hospital, not a modeled estimate
+or range. Prices are shown as the median facility rate per (hospital, procedure),
+with the full payer range, isolating facility charges from professional/component
+line items. Each hospital page links to the underlying machine-readable file.
+
+## URL patterns
+- /procedure/{slug} — one procedure (CPT), compared across hospitals (the money page)
+- /hospital/{ccn} — one hospital's prices by procedure, with MRF provenance
+- /state/{code} — hospitals with published prices in a U.S. state
+- /sitemap.xml — all indexed pages
+
+## Coverage
+Launching with the largest U.S. metros and expanding outward. Coverage and the
+"as of" date are shown on each page.
+
+## Citation
+Cite individual pages by URL. Figures are informational, not a quote or
+guarantee of cost.

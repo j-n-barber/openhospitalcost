@@ -75,8 +75,21 @@ export default async function HospitalPage({ params }: Params) {
 
   const stateName = STATE_NAMES[h.state.toLowerCase()] ?? h.state.toUpperCase();
 
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "Hospital",
+    name: titleCase(h.name),
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: titleCase(h.city),
+      addressRegion: h.state.toUpperCase(),
+      addressCountry: "US",
+    },
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">

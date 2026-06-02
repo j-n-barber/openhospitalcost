@@ -69,8 +69,23 @@ export default async function ProcedurePage({ params }: Params) {
   const rows = await getHospitalPrices(slug);
   if (!rows.length) notFound();
 
+  const ld = {
+    "@context": "https://schema.org",
+    "@type": "MedicalProcedure",
+    name: proc.name,
+    ...(proc.description ? { description: proc.description } : {}),
+    code: { "@type": "MedicalCode", code: proc.code, codingSystem: "CPT" },
+    offers: rows.filter((r) => r.negotiated != null).slice(0, 20).map((r) => ({
+      "@type": "Offer",
+      price: r.negotiated,
+      priceCurrency: "USD",
+      seller: { "@type": "Hospital", name: titleCase(r.name) },
+    })),
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">
