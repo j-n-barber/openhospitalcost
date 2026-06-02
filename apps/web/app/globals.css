@@ -160,8 +160,16 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .ptable th.sortable { cursor: pointer; user-select: none; }
 .ptable th.sortable:hover { color: var(--ink); }
 .ptable th .caret { color: var(--teal); margin-left: 4px; }
-.ptable thead th { position: sticky; top: 62px; background: var(--surface); z-index: 5; }
 .empty { padding: 44px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+
+/* negotiated cell — median + range bar */
+.negcell { display: inline-flex; flex-direction: column; align-items: flex-end; gap: 5px; }
+.negcell .med { font-family: var(--mono); font-variant-numeric: tabular-nums; font-size: 15px; color: var(--ink); }
+.rangebar { display: flex; align-items: center; gap: 7px; width: 168px; }
+.rb-lo, .rb-hi { font-family: var(--mono); font-size: 10.5px; color: var(--muted); white-space: nowrap; min-width: 34px; }
+.rb-hi { text-align: right; }
+.rb-track { position: relative; flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
+.rb-dot { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); transform: translate(-50%, -50%); }
 
 @media (max-width: 780px) {
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }

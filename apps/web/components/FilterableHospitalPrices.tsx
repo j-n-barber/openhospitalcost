@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { titleCase, usd } from "@/lib/format";
+import NegotiatedCell from "@/components/NegotiatedCell";
 
 export type HPRow = {
   ccn: string; name: string; city: string; state: string;
@@ -67,12 +68,7 @@ export default function FilterableHospitalPrices({ rows }: { rows: HPRow[] }) {
                 <a href={`/hospital/${r.ccn}`}>{titleCase(r.name)}</a>
                 <div className="rng">{titleCase(r.city)}, {r.state.toUpperCase()}</div>
               </td>
-              <td className="num">
-                {money(r.negotiated)}
-                {r.neg_lo != null && r.neg_hi != null && r.neg_lo !== r.neg_hi && (
-                  <div className="rng">{usd(r.neg_lo)}–{usd(r.neg_hi)} · {r.payers ?? 0} payers</div>
-                )}
-              </td>
+              <td className="num"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
               <td className="num">{money(r.cash)}</td>
               <td className="num">{money(r.gross)}</td>
             </tr>

@@ -1,6 +1,7 @@
 "use client";
 import { useMemo, useState } from "react";
 import { usd } from "@/lib/format";
+import NegotiatedCell from "@/components/NegotiatedCell";
 
 export type ProcRow = {
   slug: string; name: string; code: string; category: string | null;
@@ -84,12 +85,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
           {view.map((r) => (
             <tr key={r.slug}>
               <td><a href={`/procedure/${r.slug}`}>{r.name}</a> <span className="rng mono">CPT {r.code}</span></td>
-              <td className="num">
-                {money(r.negotiated)}
-                {r.neg_lo != null && r.neg_hi != null && r.neg_lo !== r.neg_hi && (
-                  <div className="rng">{usd(r.neg_lo)}–{usd(r.neg_hi)} · {r.payers ?? 0} payers</div>
-                )}
-              </td>
+              <td className="num"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
               <td className="num">{money(r.cash)}</td>
               <td className="num">{money(r.gross)}</td>
             </tr>
