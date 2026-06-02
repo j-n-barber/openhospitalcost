@@ -19,7 +19,7 @@ import { createHash } from 'node:crypto';
 import { createReadStream, statSync } from 'node:fs';
 import { pipeline } from 'node:stream/promises';
 import { loadEnv } from '../db/load-env.js';
-import { parseCsv, itemHeaderColumns } from './parse/parsers/csv.js';
+import { parseCsv } from './parse/parsers/csv.js';
 import { parseJson } from './parse/parsers/json.js';
 import { detectFormat, readHeadBytes } from './parse/detect-format.js';
 import { decompress } from './parse/decompress.js';
@@ -69,7 +69,7 @@ export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
     const cptList = [...pidByCpt.keys()];
     priceRows = payload === 'json'
       ? extractJsonPriceRows({ path: workingPath, cptList })
-      : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: itemHeaderColumns(workingPath), cptList });
+      : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: metrics.cols, skip: metrics.skip, cptList });
   }
 
   return {
