@@ -11,7 +11,7 @@
 //   - gzip: node:zlib streaming (built in, no dependency).
 
 import { spawnSync } from 'node:child_process';
-import { createReadStream, createWriteStream, mkdirSync } from 'node:fs';
+import { createReadStream, createWriteStream, mkdirSync, rmSync } from 'node:fs';
 import { createGunzip } from 'node:zlib';
 import { pipeline } from 'node:stream/promises';
 import { tmpdir } from 'node:os';
@@ -55,15 +55,21 @@ export async function decompress({ filePath, container, workDir }) {
   const dir = workDir ?? join(tmpdir(), `ohc-mrf-${basename(filePath)}`);
   mkdirSync(dir, { recursive: true });
 
-  let outPath;
-  if (container === 'zip') {
-    outPath = unzipSingleEntry(filePath, dir);
-  } else if (container === 'gzip') {
-    outPath = join(dir, basename(filePath).replace(/\.gz$/i, '') || 'mrf.out');
-    await pipeline(createReadStream(filePath), createGunzip(), createWriteStream(outPath));
-  } else {
-    throw new Error(`Unsupported container: ${container}`);
+  try {
+    let outPath;
+    if (container === 'zip') {
+      outPath = unzipSingleEntry(filePath, dir);
+    } else if (container === 'gzip') {
+      outPath = join(dir, basename(filePath).replace(/\.gz$/i, '') || 'mrf.out');
+      await pipeline(createReadStream(filePath), createGunzip(), createWriteStream(outPath));
+    } else {
+      throw new Error(`Unsupported container: ${container}`);
+    }
+    return { path: outPath, payload: reDetectPayload(outPath) };
+  } catch (err) {
+    // On failure (e.g. no usable entry in the zip), remove the dir we created so
+    // failed extractions don't leak temp dirs. Only if we own it (default dir).
+    if (!workDir) { try { rmSync(dir, { recursive: true, force: true }); } catch { /* best effort */ } }
+    throw err;
   }
-
-  return { path: outPath, payload: reDetectPayload(outPath) };
 }
