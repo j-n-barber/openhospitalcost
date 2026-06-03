@@ -14,6 +14,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://openhospitalcost.com"),
   title: "OpenHospitalCost — What hospitals actually charge",
   description: DESCRIPTION,
+  alternates: { canonical: "/" },
   openGraph: {
     title: "OpenHospitalCost — What hospitals actually charge",
     description: DESCRIPTION,

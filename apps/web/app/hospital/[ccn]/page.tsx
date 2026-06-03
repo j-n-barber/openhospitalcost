@@ -64,6 +64,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: `${titleCase(h.name)} — prices | OpenHospitalCost`,
     description: `Real negotiated, cash, and gross prices at ${titleCase(h.name)}, ${titleCase(h.city)}, ${h.state.toUpperCase()}, sourced from its machine-readable file.`,
+    alternates: { canonical: `/hospital/${ccn}` },
   };
 }
 

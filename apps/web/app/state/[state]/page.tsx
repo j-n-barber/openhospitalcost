@@ -38,6 +38,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   return {
     title: `Hospital prices in ${name} — OpenHospitalCost`,
     description: `Compare real gross, cash, and negotiated hospital prices across ${name}, sourced from each hospital's machine-readable file.`,
+    alternates: { canonical: `/state/${state.toLowerCase()}` },
   };
 }
 
