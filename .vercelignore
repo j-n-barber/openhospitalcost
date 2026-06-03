@@ -1,0 +1,31 @@
+# The Vercel build only uses apps/web (Root Directory = apps/web, self-contained
+# with its own package.json/lockfile). Everything else is data-pipeline tooling,
+# large MRF samples, and build caches that must not be uploaded.
+
+# Dependencies & build artifacts
+node_modules/
+**/node_modules/
+.next/
+**/.next/
+apps/web/out/
+
+# Data pipeline (1.7GB of MRF samples, duckdb binary, snapshots) — not used by the web app
+pipeline/
+data/
+db/
+scripts/
+test/
+.bin/
+
+# Design / brand source assets (not needed at build)
+design/
+brand/
+Logo.ai
+
+# Local + tooling
+.git/
+.github/
+.claude/
+.agents/
+*.log
+.DS_Store
