@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_1" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 427 400">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #13283a;
+      }
+
+      .cls-2 {
+        fill: #1a6b7a;
+      }
+    </style>
+  </defs>
+  <rect class="cls-1" x="146.04" y="-2.37" width="134.91" height="404.74" rx="20" ry="20" transform="translate(203.95 -92.39) rotate(45)"/>
+  <g>
+    <g>
+      <circle class="cls-2" cx="211.12" cy="145.15" r="5.62"/>
+      <circle class="cls-2" cx="225.42" cy="159.46" r="5.62"/>
+      <circle class="cls-2" cx="239.73" cy="173.77" r="5.62"/>
+      <circle class="cls-2" cx="254.04" cy="188.08" r="5.62"/>
+      <circle class="cls-2" cx="268.35" cy="202.38" r="5.62"/>
+    </g>
+    <g>
+      <circle class="cls-2" cx="176.14" cy="180.13" r="5.62"/>
+      <circle class="cls-2" cx="190.45" cy="194.44" r="5.62"/>
+      <circle class="cls-2" cx="204.76" cy="208.74" r="5.62"/>
+      <circle class="cls-2" cx="219.06" cy="223.05" r="5.62"/>
+      <circle class="cls-2" cx="233.37" cy="237.36" r="5.62"/>
+    </g>
+    <g>
+      <circle class="cls-2" cx="158.65" cy="197.62" r="5.62"/>
+      <circle class="cls-2" cx="172.96" cy="211.92" r="5.62"/>
+      <circle class="cls-2" cx="187.27" cy="226.23" r="5.62"/>
+      <circle class="cls-2" cx="201.58" cy="240.54" r="5.62"/>
+      <circle class="cls-2" cx="215.88" cy="254.85" r="5.62"/>
+    </g>
+    <g>
+      <circle class="cls-2" cx="193.63" cy="162.64" r="5.62"/>
+      <circle class="cls-2" cx="207.94" cy="176.95" r="5.62"/>
+      <circle class="cls-2" cx="222.24" cy="191.26" r="5.62"/>
+      <circle class="cls-2" cx="236.55" cy="205.56" r="5.62"/>
+      <circle class="cls-2" cx="250.86" cy="219.87" r="5.62"/>
+    </g>
+  </g>
+  <g>
+    <path class="cls-1" d="M143.64,34.74c-15.9-15.9-41.67-15.9-57.56,0l-38,38c-15.81,15.81-15.81,41.43,0,57.24l53.9,53.9c7.11,7.11,18.65,7.11,25.76,0l69.64-69.64c7.11-7.11,7.11-18.65,0-25.76l-53.74-53.74Z"/>
+    <path class="cls-1" d="M283.24,365.14c15.9,15.9,41.67,15.9,57.56,0l38-38c15.81-15.81,15.81-41.43,0-57.24l-53.9-53.9c-7.11-7.11-18.65-7.11-25.76,0l-69.64,69.64c-7.11,7.11-7.11,18.65,0,25.76l53.74,53.74Z"/>
+  </g>
+</svg>

@@ -41,7 +41,7 @@ p, .sub, .copy li { text-wrap: pretty; }
 header { border-bottom: 1px solid var(--border); background: rgba(250,249,246,.85); backdrop-filter: blur(6px); position: sticky; top: 0; z-index: 20; }
 .bar { display: flex; align-items: center; justify-content: space-between; height: 62px; }
 .brand { display: flex; align-items: center; gap: 11px; font-family: var(--serif); font-weight: 700; font-size: 21px; letter-spacing: -.01em; color: var(--ink); }
-.brand .logo { width: 30px; height: 30px; color: var(--ink); flex: none; }
+.brand .logo { width: 32px; height: 30px; flex: none; }
 .brand .o { color: var(--teal); }
 nav.top { display: flex; gap: 30px; font-size: 14.5px; font-weight: 500; }
 nav.top a { color: var(--muted); }
