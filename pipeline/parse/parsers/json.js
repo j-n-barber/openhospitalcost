@@ -45,21 +45,18 @@ function buildJsonSql(filePath) {
   return `
   WITH raw AS (
     SELECT
-      version AS v,
-      last_updated_on AS lu,
-      len(location_name) AS nloc,
       to_json(unnest(standard_charge_information)) AS item
     FROM read_json_auto(${sqlStr(filePath)}, maximum_object_size=${MAX_OBJECT_SIZE})
   ),
   perItem AS (
-    SELECT v, lu, nloc,
+    SELECT
       len(list_filter(from_json(item->'$.code_information', '["json"]'),
           lambda x: upper(trim(json_extract_string(x, '$.type'))) IN (${typeList}))) > 0 AS hasStdCode,
       coalesce(from_json(item->'$.standard_charges', '["json"]'), []::JSON[]) AS charges
     FROM raw
   ),
   flags AS (
-    SELECT v, lu, nloc, hasStdCode,
+    SELECT hasStdCode,
       len(list_filter(charges, lambda c: json_extract_string(c, '$.gross_charge') IS NOT NULL)) > 0 AS hasGross,
       len(list_filter(charges, lambda c: json_extract_string(c, '$.discounted_cash') IS NOT NULL)) > 0 AS hasCash,
       len(list_filter(charges, lambda c: json_extract_string(c, '$.minimum') IS NOT NULL AND json_extract_string(c, '$.maximum') IS NOT NULL)) > 0 AS hasMinMax,
@@ -70,9 +67,6 @@ function buildJsonSql(filePath) {
     FROM perItem
   )
   SELECT
-    any_value(v) AS "specVersion",
-    any_value(lu) AS "lastUpdatedOn",
-    max(nloc) AS "nloc",
     count(*) AS "rowsParsed",
     sum(hasGross::INT) AS "withGross",
     sum(hasCash::INT) AS "withDiscountedCash",
@@ -80,6 +74,22 @@ function buildJsonSql(filePath) {
     sum(hasMinMax::INT) AS "withDeidMinMax",
     sum(hasStdCode::INT) AS "withStandardizedCode"
   FROM flags`;
+}
+
+// Top-level metadata (version / last_updated_on / location count), read with an
+// EXPLICIT column schema so a file that omits any of these fields yields SQL NULL
+// instead of a hard binder error. Direct column access on read_json_auto fails to
+// bind when a field is absent from the inferred struct (see header note) — that
+// killed otherwise-valid files (e.g. Willis Knighton, no top-level `version`).
+function buildMetaSql(filePath) {
+  return `
+  SELECT
+    version AS "specVersion",
+    last_updated_on AS "lastUpdatedOn",
+    coalesce(json_array_length(location_name), 1)::INT AS "nloc"
+  FROM read_json(${sqlStr(filePath)},
+    columns={version: 'VARCHAR', last_updated_on: 'VARCHAR', location_name: 'JSON'},
+    maximum_object_size=${MAX_OBJECT_SIZE})`;
 }
 
 // Distinct payer names across the whole file (separate pass keeps the main query simple).
@@ -112,6 +122,12 @@ function normalizeDate(raw) {
  */
 export async function parseJson({ path }) {
   const agg = duckdbQuery(buildJsonSql(path))[0] || {};
+  let meta = {};
+  try {
+    meta = duckdbQuery(buildMetaSql(path))[0] || {};
+  } catch {
+    meta = {}; // metadata is non-essential — never let it fail the parse
+  }
   let distinctPayers = 0;
   try {
     distinctPayers = Number(duckdbQuery(buildPayerSql(path))[0]?.distinctPayers ?? 0);
@@ -122,12 +138,12 @@ export async function parseJson({ path }) {
   const rowsParsed = Number(agg.rowsParsed ?? 0);
   return {
     parseStatus: rowsParsed === 0 ? 'failed' : 'ok',
-    specVersion: (agg.specVersion || 'unknown').toString().trim() || 'unknown',
+    specVersion: (meta.specVersion || 'unknown').toString().trim() || 'unknown',
     format: 'json',
     rowsTotal: rowsParsed,
     rowsParsed,
     rowsQuarantined: 0, // JSON parses whole-or-nothing; a failure throws above.
-    lastUpdatedOn: normalizeDate(agg.lastUpdatedOn),
+    lastUpdatedOn: normalizeDate(meta.lastUpdatedOn),
     withGross: Number(agg.withGross ?? 0),
     withDiscountedCash: Number(agg.withDiscountedCash ?? 0),
     withNegotiated: Number(agg.withNegotiated ?? 0),
@@ -135,6 +151,6 @@ export async function parseJson({ path }) {
     withStandardizedCode: Number(agg.withStandardizedCode ?? 0),
     distinctPayers,
     distinctStandardizedCodes: 0,
-    multiLocation: Number(agg.nloc ?? 1) > 1,
+    multiLocation: Number(meta.nloc ?? 1) > 1,
   };
 }
