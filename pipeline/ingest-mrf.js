@@ -109,10 +109,44 @@ export async function archiveRawMrf({ ccn, filePath, computed, sourceUrl }) {
   }
 }
 
+// Derive procedure_hospital_summary rows for one file from the _stage TEMP table
+// and replace the hospital's existing summary. This is the migration-008
+// representative-price logic (facility-preferred tier → ≥$1 → median/min/max/
+// payer_count), so the numbers are identical to the old matview. Raw detail does
+// NOT persist in Postgres — _stage is a per-transaction TEMP table (ON COMMIT
+// DROP), so the live price_records table is never written and there is zero
+// bloat. The raw rows live in R2 (lakehouse offload).
+async function refreshSummaryFromStage(client, { hospitalId }) {
+  await client.query('DELETE FROM procedure_hospital_summary WHERE hospital_id = $1', [hospitalId]);
+  await client.query(
+    `INSERT INTO procedure_hospital_summary
+       (hospital_id, procedure_id, charge_type, observations, payer_count, amount, min_amount, max_amount, observed_at, source_file_id, basis)
+     WITH pr AS (
+       SELECT hospital_id, procedure_id, charge_type, payer, amount, source_file_id, observed_at,
+         CASE WHEN lower(billing_class) = 'facility' AND lower(setting) LIKE 'out%' THEN 1
+              WHEN lower(billing_class) = 'facility' THEN 2 ELSE 3 END AS pref
+       FROM _stage
+       WHERE amount >= 1
+     ),
+     ranked AS (
+       SELECT *, min(pref) OVER (PARTITION BY hospital_id, procedure_id, charge_type) AS best FROM pr
+     )
+     SELECT hospital_id, procedure_id, charge_type,
+       count(*)::int, count(DISTINCT payer)::int,
+       round(percentile_cont(0.5) WITHIN GROUP (ORDER BY amount)::numeric, 2),
+       round(min(amount)::numeric, 2), round(max(amount)::numeric, 2),
+       max(observed_at), (array_agg(source_file_id))[1],
+       CASE min(pref) WHEN 1 THEN 'facility_outpatient' WHEN 2 THEN 'facility' ELSE 'all' END
+     FROM ranked WHERE pref = best
+     GROUP BY hospital_id, procedure_id, charge_type`
+  );
+}
+
 /**
- * Persist a computeMrf() result in one short transaction. Holds the connection
- * only for the inserts. `r2RawKey` (from archiveRawMrf) is recorded on the
- * mrf_files row; pass null when archival was skipped.
+ * Persist a computeMrf() result in one short transaction. Stages the price rows,
+ * derives the hospital's summary from them, archives nothing here (raw MRF was
+ * already streamed to R2 by archiveRawMrf), then clears the staged rows so
+ * Postgres holds only the summary. `r2RawKey` is recorded on the mrf_files row.
  */
 export async function persistMrf(client, { hospitalId, url, filePath, computed, pidByCpt, r2RawKey = null }) {
   const { metrics, score, priceRows, fileHash, fileSize, effectiveDate } = computed;
@@ -143,6 +177,9 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
 
     let inserted = 0;
     if (metrics.parseStatus !== 'failed') {
+      // Stage this file's rows in a per-transaction TEMP table (auto-dropped on
+      // commit) so the live price_records table is never written — no bloat.
+      await client.query('CREATE TEMP TABLE _stage (LIKE price_records INCLUDING DEFAULTS) ON COMMIT DROP');
       let batch = [];
       const N = 12; // params per row; observed_at uses now() literal
       const flush = async () => {
@@ -156,7 +193,7 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
           r.methodology ?? null, r.billing_class ?? null, r.setting ?? null, r.modifiers ?? null, fileRow.id, effectiveDate,
         ]);
         await client.query(
-          `INSERT INTO price_records
+          `INSERT INTO _stage
              (hospital_id, procedure_id, charge_type, payer, plan, amount, methodology, billing_class, setting, modifiers, source_file_id, observed_at, effective_date)
            VALUES ${ph}`,
           params
@@ -170,6 +207,8 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
         if (batch.length >= 500) await flush();
       }
       await flush();
+      // Derive the summary from the staged rows; the TEMP table drops on commit.
+      await refreshSummaryFromStage(client, { hospitalId });
     }
     await client.query('COMMIT');
     return { fileId: fileRow.id, inserted };
@@ -193,10 +232,9 @@ export async function ingestOne(client, { ccn, filePath, url, asOf, refresh }) {
     `| money ${computed.score.eligibleForMoneyPages} | price_records +${inserted} | file ${fileId}` +
     `${r2RawKey ? ` | r2 ${r2RawKey}` : ''}`
   );
-  if (refresh) {
-    await client.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
-    console.log('Refreshed procedure_hospital_summary.');
-  }
+  // procedure_hospital_summary is maintained incrementally by persistMrf now
+  // (it's a table, not a matview) — no refresh needed. `refresh` kept for CLI compat.
+  void refresh;
   return { score: computed.score, inserted };
 }
 

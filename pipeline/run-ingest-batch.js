@@ -23,7 +23,7 @@ import { unlink } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { loadEnv } from '../db/load-env.js';
-import { downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
+import { downloadToFile, downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
 import { computeMrf, persistMrf, fetchCptMap, archiveRawMrf } from './ingest-mrf.js';
 import { r2Configured } from './archive/r2.js';
 
@@ -50,6 +50,10 @@ async function main() {
   const limit = flag('limit');
   const force = !!flag('force');
   const doRefresh = !flag('no-refresh');
+  // Bulk-speed levers (see docs): skip the slow Tier-2 Playwright fallback on
+  // download failure, and skip the raw-MRF→R2 archival upload.
+  const noTier2 = !!flag('no-tier2');
+  const noArchive = !!flag('no-archive');
 
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
   // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
@@ -63,24 +67,28 @@ async function main() {
   try {
     const pidByCpt = await fetchCptMap(pool);
     const cohort = await selectCohort(pool, { tier, limit, force });
-    console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}).`);
-    if (!r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
+    console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'})` +
+      `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}.`);
+    if (!noArchive && !r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
 
     for (const h of cohort) {
       stats.attempted++;
       const tmp = join(tmpdir(), `ohc-mrf-${h.ccn}`);
       try {
-        // Long work: no DB connection held.
-        const meta = await downloadWithFallback(h.mrf_file_url, tmp);
+        // Long work: no DB connection held. --no-tier2 skips the Playwright fallback.
+        const meta = noTier2
+          ? await downloadToFile(h.mrf_file_url, tmp)
+          : await downloadWithFallback(h.mrf_file_url, tmp);
         if (meta.tier === 2) stats.viaTier2++;
         const computed = await computeMrf({
           filePath: tmp, url: h.mrf_file_url,
           asOf: new Date().toISOString().slice(0, 10), pidByCpt,
         });
 
-        // Archive the raw MRF to R2 before the (short) DB write. Streamed upload,
-        // no DB connection held; returns null and logs if R2 is off or fails.
-        const r2RawKey = await archiveRawMrf({ ccn: h.ccn, filePath: tmp, computed, sourceUrl: h.mrf_file_url });
+        // Archive the raw MRF to R2 before the (short) DB write (skipped by --no-archive).
+        const r2RawKey = noArchive
+          ? null
+          : await archiveRawMrf({ ccn: h.ccn, filePath: tmp, computed, sourceUrl: h.mrf_file_url });
         if (r2RawKey) stats.archived++;
 
         // Short work: hold a pooled connection only for the writes.
@@ -106,9 +114,9 @@ async function main() {
       }
     }
 
-    if (doRefresh && stats.ingested > 0) {
-      await pool.query('REFRESH MATERIALIZED VIEW CONCURRENTLY procedure_hospital_summary');
-    }
+    // procedure_hospital_summary is now a table maintained incrementally per
+    // hospital in persistMrf (lakehouse offload) — no end-of-batch refresh.
+    void doRefresh;
     await pool.query(
       `UPDATE ingestion_runs SET status='completed', ended_at=now(), stats=$2 WHERE id=$1`,
       [run.id, JSON.stringify(stats)]
