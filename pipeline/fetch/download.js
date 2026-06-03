@@ -10,7 +10,7 @@ import { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
 const USER_AGENT =
-  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: jake@openhospitalcost.com)';
+  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
 
 async function streamToFile(url, destPath, headers, timeoutMs) {
   const ac = new AbortController();

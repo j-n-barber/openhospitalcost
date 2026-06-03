@@ -16,7 +16,7 @@
 import { chromium } from 'playwright';
 
 const USER_AGENT =
-  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: jake@openhospitalcost.com)';
+  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
 const NAV_TIMEOUT_MS = 30_000;
 const SETTLE_MS = 2_500; // give JS challenges time to complete
 

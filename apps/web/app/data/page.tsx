@@ -41,7 +41,7 @@ export default function DataPage() {
             We archive periodic snapshots of the normalized price dataset as Parquet — a compact, analysis-ready
             columnar format — so the data can be studied in bulk rather than scraped page by page. If you&apos;re a
             researcher, journalist, or developer who wants the dataset, email{" "}
-            <a href="mailto:jake@openhospitalcost.com?subject=Data%20export%20request">jake@openhospitalcost.com</a>{" "}
+            <a href="mailto:contact@openhospitalcost.com?subject=Data%20export%20request">contact@openhospitalcost.com</a>{" "}
             and tell us what you&apos;re working on.
           </p>
           <p>

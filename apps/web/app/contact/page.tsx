@@ -37,7 +37,7 @@ export default function ContactPage() {
 
         <p className="prov" style={{ margin: "0 0 72px" }}>
           Prefer email? Reach us directly at{" "}
-          <a href="mailto:jake@openhospitalcost.com">jake@openhospitalcost.com</a>. We&apos;re a small operation, so
+          <a href="mailto:contact@openhospitalcost.com">contact@openhospitalcost.com</a>. We&apos;re a small operation, so
           replies may take a little time — but every message is read.
         </p>
       </main>

@@ -35,7 +35,7 @@ export default function CorrectionsPage() {
 
         <p className="prov" style={{ margin: "0 0 72px" }}>
           Prefer email? Send the details to{" "}
-          <a href="mailto:jake@openhospitalcost.com?subject=Correction">jake@openhospitalcost.com</a>.
+          <a href="mailto:contact@openhospitalcost.com?subject=Correction">contact@openhospitalcost.com</a>.
         </p>
       </main>
       <SiteFooter />

@@ -23,7 +23,7 @@ import pg from 'pg';
 import { loadEnv } from '../../db/load-env.js';
 
 const USER_AGENT =
-  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: jake@openhospitalcost.com)';
+  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
 const FETCH_TIMEOUT_MS = 12_000;
 const HOST_RATE_LIMIT_MS = 1_100;
 const MAX_PATHS_PER_HOSPITAL = 12;

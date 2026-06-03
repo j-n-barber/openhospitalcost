@@ -31,7 +31,7 @@ import { loadEnv } from '../../db/load-env.js';
 import { slugify } from './slugify.js';
 
 const USER_AGENT =
-  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: jake@openhospitalcost.com)';
+  'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
 const FETCH_TIMEOUT_MS = 20_000;
 const HOST_RATE_LIMIT_MS = 1_100;
 const MAX_ATTEMPTS = 3;
