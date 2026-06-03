@@ -16,6 +16,7 @@ on:
       timeout:   { description: per-download timeout (s), type: string, default: '300' }
       order:     { description: beds order (asc=small-first, desc=big-first), type: choice, options: [asc, desc], default: asc }
       retry_failed: { description: re-attempt prior permanent failures, type: boolean, default: false }
+      refresh_stale: { description: also re-ingest parses older than N days (0=off/backfill), type: string, default: '0' }
       no_archive:   { description: skip R2 raw archival (faster), type: boolean, default: true }
 
 concurrency:
@@ -54,10 +55,12 @@ jobs:
           TO: ${{ inputs.timeout }}
           ORD: ${{ inputs.order }}
           RF: ${{ inputs.retry_failed }}
+          RS: ${{ inputs.refresh_stale }}
           NA: ${{ inputs.no_archive }}
         run: |
           ARGS="--tier $T --limit $L --timeout $TO --order $ORD --no-tier2"
           [ "$RF" = "true" ] && ARGS="$ARGS --retry-failed"
           [ "$NA" = "true" ] && ARGS="$ARGS --no-archive"
+          [ "$RS" != "0" ] && [ -n "$RS" ] && ARGS="$ARGS --refresh-stale $RS"
           echo "ingest args: $ARGS"
           npm run ingest:batch -- $ARGS

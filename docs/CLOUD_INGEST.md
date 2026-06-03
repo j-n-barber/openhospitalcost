@@ -29,11 +29,15 @@ to respect — they're why the workflow is parameterized:
   enable, add a `npx playwright install --with-deps chromium` step and drop
   `--no-tier2` from the args.
 
-## Known gap (follow-up)
-The cohort selector currently skips **all** already-ingested hospitals (backfill
-mode) — it does not yet re-ingest *stale* ones for the monthly freshness model.
-A "due for refresh" selector (re-ingest where `parsed_at < now() - 30d`) is the
-natural next step before this becomes a true recurring refresh job.
+## Recurring refresh
+`--refresh-stale N` (workflow input `refresh_stale`) re-ingests hospitals whose
+latest parse is older than N days, on top of any never-ingested ones — this is
+what makes a scheduled run a true *refresh* rather than a one-time backfill.
+- **Backfill phase** (now): leave `refresh_stale: 0` to only pick up new/fixed
+  hospitals until coverage plateaus.
+- **Steady state**: set `refresh_stale: 30` so each run also refreshes month-old
+  data, matching the freshness model. The `ingest_attempts` cooldown still keeps
+  it from re-grinding permanent failures.
 
 ## Heavy-backfill alternative: Railway
 For the one-time bulk backfill (thousands of hospitals, Tier-2 on, no 6 h cap),
