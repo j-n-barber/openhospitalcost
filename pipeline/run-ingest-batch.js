@@ -63,9 +63,15 @@ function flag(name) {
   return i !== -1 ? (process.argv[i + 1] ?? true) : undefined;
 }
 
-async function selectCohort(pool, { tier, limit, force, order, retryFailed, failCooldownDays = 14 }) {
-  // Skip hospitals already ingested (have an mrf_files row).
-  const skipDone = force ? '' : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
+async function selectCohort(pool, { tier, limit, force, order, retryFailed, refreshStaleDays, failCooldownDays = 14 }) {
+  // Skip already-ingested hospitals. Default: skip if ever ingested (backfill).
+  // With --refresh-stale N: only skip those whose latest successful parse is
+  // NEWER than N days, so stale hospitals get re-ingested (recurring freshness,
+  // per the monthly refresh model). never-ingested are always included.
+  const skipDone = force ? ''
+    : refreshStaleDays != null
+      ? `AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id AND f.status = 'parsed' AND f.parsed_at > now() - interval '${parseInt(refreshStaleDays, 10)} days')`
+      : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
   // Skip hospitals whose most recent attempt was a PERMANENT failure within the
   // cooldown — this stops re-grinding 404/403/unrecognized/etc. every pass.
   // Transient failures are NOT skipped (they get retried). --retry-failed or
@@ -106,6 +112,10 @@ async function main() {
   // Re-attempt hospitals that previously failed permanently (skips successes only).
   // For targeted retry passes (e.g. Tier-2 on blocked, after a discovery refresh).
   const retryFailed = !!flag('retry-failed');
+  // Recurring-freshness mode: also re-ingest hospitals whose latest parse is older
+  // than N days (e.g. --refresh-stale 30). Default off (pure backfill).
+  const refreshStaleArg = flag('refresh-stale');
+  const refreshStaleDays = refreshStaleArg !== undefined ? parseInt(refreshStaleArg, 10) : null;
 
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
   // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
@@ -118,9 +128,10 @@ async function main() {
   const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, archived: 0, failures: [] };
   try {
     const pidByCpt = await fetchCptMap(pool);
-    const cohort = await selectCohort(pool, { tier, limit, force, order, retryFailed });
+    const cohort = await selectCohort(pool, { tier, limit, force, order, retryFailed, refreshStaleDays });
     console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}, beds ${order})` +
-      `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}${retryFailed ? ' [retry-failed]' : ''}.`);
+      `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}${retryFailed ? ' [retry-failed]' : ''}` +
+      `${refreshStaleDays != null ? ` [refresh-stale>${refreshStaleDays}d]` : ''}.`);
     if (!noArchive && !r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
 
     const PARSE_CLASSES = new Set(['parse', 'giant_json', 'oom', 'zip_no_csv', 'unrecognized', 'other']);
