@@ -9,7 +9,7 @@ set -u
 cd /Users/jakebarber/Documents/JNBARBER/Projects/OpenHospitalCost
 for i in $(seq 1 10); do
   echo "===== SWEEP PASS $i started $(date) ====="
-  npm run ingest:batch -- --tier 3 --limit 5000 --no-tier2 --no-archive --timeout 300
+  npm run ingest:batch -- --tier 3 --limit 5000 --no-tier2 --no-archive --timeout 300 --order asc
   code=$?
   echo "===== PASS $i exit=$code $(date) ====="
   [ "$code" -eq 0 ] && { echo "clean completion"; break; }

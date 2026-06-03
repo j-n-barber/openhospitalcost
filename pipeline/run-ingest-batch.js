@@ -32,14 +32,18 @@ function flag(name) {
   return i !== -1 ? (process.argv[i + 1] ?? true) : undefined;
 }
 
-async function selectCohort(pool, { tier, limit, force }) {
+async function selectCohort(pool, { tier, limit, force, order }) {
   const skip = force ? '' : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
   const lim = limit ? `LIMIT ${parseInt(limit, 10)}` : '';
+  // Default biggest-first (most-trafficked hospitals). --order asc processes the
+  // small-hospital tail first: useful for a recovery run that may be interrupted,
+  // since the big top cluster mostly needs separate fixes (discovery/streaming).
+  const dir = order === 'asc' ? 'ASC' : 'DESC';
   return (await pool.query(`
     SELECT h.id, h.ccn, h.name, h.mrf_file_url
     FROM hospitals h
     WHERE h.refresh_tier = ${parseInt(tier, 10)} AND h.mrf_file_url IS NOT NULL ${skip}
-    ORDER BY h.beds DESC NULLS LAST ${lim}
+    ORDER BY h.beds ${dir} NULLS LAST ${lim}
   `)).rows;
 }
 
@@ -57,6 +61,7 @@ async function main() {
   // Per-download timeout in seconds (default 600). Lower it for a fast bulk sweep
   // so giant/hung files abort quickly and get deferred to a later patient pass.
   const timeoutMs = (parseInt(flag('timeout'), 10) || 600) * 1000;
+  const order = flag('order') === 'asc' ? 'asc' : 'desc';
 
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
   // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
@@ -69,8 +74,8 @@ async function main() {
   const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, archived: 0, failures: [] };
   try {
     const pidByCpt = await fetchCptMap(pool);
-    const cohort = await selectCohort(pool, { tier, limit, force });
-    console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'})` +
+    const cohort = await selectCohort(pool, { tier, limit, force, order });
+    console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}, beds ${order})` +
       `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}.`);
     if (!noArchive && !r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
 
