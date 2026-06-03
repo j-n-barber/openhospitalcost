@@ -5,18 +5,20 @@ tying up a local machine, risking the local disk, or dying on account switches._
 
 ## Status: scaffolded, not yet enabled
 
-`.github/workflows/ingest.yml` is added but ships **manual-trigger only** (the
-weekly `schedule:` cron is commented out). Nothing runs automatically until you
-opt in. The required secrets **already exist** (the Snapshots workflow uses the
-same ones): `DATABASE_URL`, `R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`,
-`R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
+`.github/workflows/ingest.yml` is **live**: smoke-tested green end-to-end
+(deps → DuckDB CLI → migrate → ingest), and runs **weekly (Mon 07:00 UTC)** plus
+on manual dispatch. Secrets already exist (shared with Snapshots): `DATABASE_URL`,
+`R2_ACCOUNT_ID`, `R2_ACCESS_KEY_ID`, `R2_SECRET_ACCESS_KEY`, `R2_BUCKET`.
 
-## To turn it on
-1. **Confirm `DATABASE_URL`** (repo → Settings → Secrets → Actions) points at the
-   DB you want ingest writing to (prod vs dev branch).
-2. **Try a manual run:** Actions → "Ingest (backfill / catch-up)" → Run workflow.
-   Start small (`limit: 50`) to confirm it works end-to-end in CI.
-3. **Enable the schedule:** uncomment the `schedule:` block in the workflow.
+The weekly run uses fallback defaults (tier 3, limit 800, timeout 300, big-first,
+**`--refresh-stale 30`**), so it **no-ops until hospitals are >30 days stale**,
+then refreshes ~800/run. Manual dispatch defaults to `refresh_stale: 0` (backfill)
+and exposes all inputs.
+
+## Manual run
+Actions → "Ingest (backfill / catch-up)" → Run workflow (tune tier/limit/timeout/
+order/retry-failed/refresh-stale). To pause the auto-schedule, comment the
+`schedule:` block (or disable the workflow in the Actions UI).
 
 ## Why GitHub Actions (and its limits)
 Matches our infra default (free tier) and reuses the Snapshots setup. Constraints

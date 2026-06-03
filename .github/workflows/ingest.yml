@@ -4,11 +4,14 @@ name: Ingest (backfill / catch-up)
 # Processes remaining un-ingested + newly-fixed hospitals; the attempt log
 # (ingest_attempts) makes it idempotent — it skips done + recently-permanent-fails.
 #
-# SAFETY: ships manual-only. The weekly schedule is COMMENTED OUT — uncomment it
-# (and confirm DATABASE_URL points where you want) to turn on automatic runs.
+# Runs weekly (refresh-stale 30) AND on manual dispatch. The weekly run no-ops
+# until hospitals are >30 days stale; once they are, it refreshes ~limit/run. The
+# attempt log (ingest_attempts) makes it idempotent — skips done + recent fails.
+# Scheduled runs get the fallback defaults in the "Run ingest" step (dispatch
+# input defaults do NOT apply to schedule events).
 on:
-  # schedule:
-  #   - cron: '0 7 * * 1'   # weekly — Monday 07:00 UTC
+  schedule:
+    - cron: '0 7 * * 1'   # weekly — Monday 07:00 UTC (offset from Snapshots' Sunday)
   workflow_dispatch:
     inputs:
       tier:      { description: refresh_tier, type: string, default: '3' }
@@ -58,6 +61,10 @@ jobs:
           RS: ${{ inputs.refresh_stale }}
           NA: ${{ inputs.no_archive }}
         run: |
+          # Fallbacks: scheduled runs get no dispatch inputs, so default here.
+          # Weekly schedule => refresh-stale 30 (refresh month-old data, big-first).
+          T="${T:-3}"; L="${L:-800}"; TO="${TO:-300}"; ORD="${ORD:-desc}"
+          RF="${RF:-false}"; NA="${NA:-true}"; RS="${RS:-30}"
           ARGS="--tier $T --limit $L --timeout $TO --order $ORD --no-tier2"
           [ "$RF" = "true" ] && ARGS="$ARGS --retry-failed"
           [ "$NA" = "true" ] && ARGS="$ARGS --no-archive"
