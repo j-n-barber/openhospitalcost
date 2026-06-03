@@ -14,8 +14,10 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 export const DUCKDB_BIN = resolve(__dirname, '..', '..', '.bin', 'duckdb');
 
 // Cleveland Clinic decompresses to 1.5 GB; big JSON files run hundreds of MB.
-// Give DuckDB a generous buffer and timeout, configurable per call.
-const DEFAULT_TIMEOUT_MS = 10 * 60 * 1000;
+// Give DuckDB a generous buffer and timeout, configurable per call. 5 min is
+// plenty for legit files; pathological giant-JSON unnests (e.g. a 900 MB single
+// object) would otherwise grind for ages while spilling GBs to disk.
+const DEFAULT_TIMEOUT_MS = 5 * 60 * 1000;
 const MAX_BUFFER_BYTES = 512 * 1024 * 1024;
 
 export function duckdbAvailable() {
@@ -43,6 +45,10 @@ export function duckdbQuery(sql, opts = {}) {
     encoding: 'utf8',
     timeout: opts.timeoutMs ?? DEFAULT_TIMEOUT_MS,
     maxBuffer: opts.maxBuffer ?? MAX_BUFFER_BYTES,
+    // SIGKILL, not the default SIGTERM: DuckDB traps SIGTERM to cancel the query
+    // and clean up its spill, which can hang on a pathological parse — so the
+    // timeout never actually terminates it. SIGKILL can't be trapped.
+    killSignal: 'SIGKILL',
   });
   if (result.error) throw result.error;
   if (result.status !== 0) {

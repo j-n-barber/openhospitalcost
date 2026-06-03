@@ -88,6 +88,9 @@ export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
     if (decompressDir) {
       try { rmSync(decompressDir, { recursive: true, force: true }); } catch { /* best effort */ }
     }
+    // Clear DuckDB's spill dir too: a SIGKILL'd giant-JSON parse can leave GBs of
+    // spill behind, which would otherwise accumulate and refill the disk.
+    try { rmSync('/tmp/ohc-duckdb-spill', { recursive: true, force: true }); } catch { /* best effort */ }
   }
 }
 
