@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Source_Serif_4, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
+import { Analytics } from "@/components/Analytics";
+import { AdSense } from "@/components/AdSense";
 
 // Direction B brand type — locked in brand/palette.md.
 const serif = Source_Serif_4({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-serif", display: "swap" });
@@ -35,6 +37,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
       <body>{children}</body>
+      <Analytics />
+      <AdSense />
     </html>
   );
 }
