@@ -16,7 +16,8 @@
 
 import pg from 'pg';
 import { createHash } from 'node:crypto';
-import { createReadStream, statSync } from 'node:fs';
+import { createReadStream, statSync, rmSync } from 'node:fs';
+import { dirname } from 'node:path';
 import { pipeline } from 'node:stream/promises';
 import { loadEnv } from '../db/load-env.js';
 import { parseCsv } from './parse/parsers/csv.js';
@@ -53,30 +54,41 @@ export async function computeMrf({ filePath, url, asOf, pidByCpt }) {
   const fmt = detectFormat({ headBytes: readHeadBytes(filePath), url });
   let workingPath = filePath;
   let payload = fmt.payload;
+  let decompressDir = null;
   if (fmt.container !== 'plain') {
     const d = await decompress({ filePath, container: fmt.container });
     workingPath = d.path;
+    decompressDir = dirname(d.path); // ohc-mrf-ohc-mrf-<ccn>/ — clean it after parsing
     payload = d.payload && d.payload !== 'unknown' ? d.payload : payload;
   }
 
-  const metrics = payload === 'json'
-    ? await parseJson({ path: workingPath })
-    : await parseCsv({ path: workingPath });
-  const score = scoreFile(metrics, { asOf });
+  try {
+    const metrics = payload === 'json'
+      ? await parseJson({ path: workingPath })
+      : await parseCsv({ path: workingPath });
+    const score = scoreFile(metrics, { asOf });
 
-  let priceRows = [];
-  if (metrics.parseStatus !== 'failed') {
-    const cptList = [...pidByCpt.keys()];
-    priceRows = payload === 'json'
-      ? extractJsonPriceRows({ path: workingPath, cptList })
-      : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: metrics.cols, skip: metrics.skip, cptList });
+    let priceRows = [];
+    if (metrics.parseStatus !== 'failed') {
+      const cptList = [...pidByCpt.keys()];
+      priceRows = payload === 'json'
+        ? extractJsonPriceRows({ path: workingPath, cptList })
+        : extractCsvPriceRows({ path: workingPath, format: metrics.format, cols: metrics.cols, skip: metrics.skip, cptList });
+    }
+
+    return {
+      payload, metrics, score, priceRows,
+      fileHash: await sha256(filePath), fileSize: statSync(filePath).size,
+      effectiveDate: metrics.lastUpdatedOn || null,
+    };
+  } finally {
+    // Remove the decompressed temp dir (can be GBs, e.g. Cleveland's 1.5 GB) so
+    // bulk runs don't fill the local disk. The original download is cleaned by
+    // the caller's finally; this is the extracted copy.
+    if (decompressDir) {
+      try { rmSync(decompressDir, { recursive: true, force: true }); } catch { /* best effort */ }
+    }
   }
-
-  return {
-    payload, metrics, score, priceRows,
-    fileHash: await sha256(filePath), fileSize: statSync(filePath).size,
-    effectiveDate: metrics.lastUpdatedOn || null,
-  };
 }
 
 /**
