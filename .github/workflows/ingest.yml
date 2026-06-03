@@ -1,0 +1,63 @@
+name: Ingest (backfill / catch-up)
+
+# Scheduled/​manual bulk ingest off the laptop (docs/CLOUD_INGEST.md, INGEST_RETRO #3).
+# Processes remaining un-ingested + newly-fixed hospitals; the attempt log
+# (ingest_attempts) makes it idempotent — it skips done + recently-permanent-fails.
+#
+# SAFETY: ships manual-only. The weekly schedule is COMMENTED OUT — uncomment it
+# (and confirm DATABASE_URL points where you want) to turn on automatic runs.
+on:
+  # schedule:
+  #   - cron: '0 7 * * 1'   # weekly — Monday 07:00 UTC
+  workflow_dispatch:
+    inputs:
+      tier:      { description: refresh_tier, type: string, default: '3' }
+      limit:     { description: max hospitals this run (6h job cap), type: string, default: '800' }
+      timeout:   { description: per-download timeout (s), type: string, default: '300' }
+      order:     { description: beds order (asc=small-first, desc=big-first), type: choice, options: [asc, desc], default: asc }
+      retry_failed: { description: re-attempt prior permanent failures, type: boolean, default: false }
+      no_archive:   { description: skip R2 raw archival (faster), type: boolean, default: true }
+
+concurrency:
+  group: ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 350   # under GitHub's 360-min hard cap
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      R2_ACCOUNT_ID: ${{ secrets.R2_ACCOUNT_ID }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      R2_BUCKET: ${{ secrets.R2_BUCKET }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version: '20', cache: 'npm' }
+      - name: Install dependencies
+        run: npm install
+      - name: Install DuckDB CLI
+        run: |
+          mkdir -p .bin
+          curl -fsSL https://github.com/duckdb/duckdb/releases/download/v1.5.3/duckdb_cli-linux-amd64.zip -o /tmp/duckdb.zip
+          unzip -o /tmp/duckdb.zip -d .bin
+          chmod +x .bin/duckdb
+          .bin/duckdb --version
+      - name: Apply migrations
+        run: npm run migrate:up
+      - name: Run ingest
+        env:
+          T: ${{ inputs.tier }}
+          L: ${{ inputs.limit }}
+          TO: ${{ inputs.timeout }}
+          ORD: ${{ inputs.order }}
+          RF: ${{ inputs.retry_failed }}
+          NA: ${{ inputs.no_archive }}
+        run: |
+          ARGS="--tier $T --limit $L --timeout $TO --order $ORD --no-tier2"
+          [ "$RF" = "true" ] && ARGS="$ARGS --retry-failed"
+          [ "$NA" = "true" ] && ARGS="$ARGS --no-archive"
+          echo "ingest args: $ARGS"
+          npm run ingest:batch -- $ARGS
