@@ -54,6 +54,9 @@ async function main() {
   // download failure, and skip the raw-MRF→R2 archival upload.
   const noTier2 = !!flag('no-tier2');
   const noArchive = !!flag('no-archive');
+  // Per-download timeout in seconds (default 600). Lower it for a fast bulk sweep
+  // so giant/hung files abort quickly and get deferred to a later patient pass.
+  const timeoutMs = (parseInt(flag('timeout'), 10) || 600) * 1000;
 
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
   // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
@@ -77,8 +80,8 @@ async function main() {
       try {
         // Long work: no DB connection held. --no-tier2 skips the Playwright fallback.
         const meta = noTier2
-          ? await downloadToFile(h.mrf_file_url, tmp)
-          : await downloadWithFallback(h.mrf_file_url, tmp);
+          ? await downloadToFile(h.mrf_file_url, tmp, { timeoutMs })
+          : await downloadWithFallback(h.mrf_file_url, tmp, { timeoutMs });
         if (meta.tier === 2) stats.viaTier2++;
         const computed = await computeMrf({
           filePath: tmp, url: h.mrf_file_url,
