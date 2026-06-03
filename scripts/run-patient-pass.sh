@@ -14,7 +14,7 @@ echo "fast sweep done — starting patient pass $(date)"
 
 for i in $(seq 1 6); do
   echo "===== PATIENT PASS $i started $(date) ====="
-  npm run ingest:batch -- --tier 3 --limit 5000 --no-archive --timeout 1200 --order desc
+  npm run ingest:batch -- --tier 3 --limit 5000 --no-archive --timeout 1200 --order desc --retry-failed
   code=$?
   echo "===== PATIENT PASS $i exit=$code $(date) ====="
   [ "$code" -eq 0 ] && { echo "clean completion"; break; }

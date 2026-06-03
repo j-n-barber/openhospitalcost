@@ -26,14 +26,55 @@ import { loadEnv } from '../db/load-env.js';
 import { downloadToFile, downloadWithFallback, closeBrowserIfOpen } from './fetch/download.js';
 import { computeMrf, persistMrf, fetchCptMap, archiveRawMrf } from './ingest-mrf.js';
 import { r2Configured } from './archive/r2.js';
+import { classifyFailure } from './fetch/failure-class.js';
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+
+// Record an attempt outcome (best-effort: logging must never break ingest).
+async function recordAttempt(pool, runId, hospitalId, fields) {
+  try {
+    await pool.query(
+      `INSERT INTO ingest_attempts (hospital_id, run_id, status, failure_class, transient, http_code, bytes, duration_ms, detail)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)`,
+      [hospitalId, runId, fields.status, fields.failureClass ?? null, !!fields.transient,
+       fields.httpCode ?? null, fields.bytes ?? null, fields.durationMs ?? null, fields.detail ?? null]
+    );
+  } catch { /* ignore */ }
+}
+
+// Download with bounded retry on transient errors (network blips, 429, 5xx, timeout).
+async function downloadWithRetry(fn, { tries = 3 } = {}) {
+  let lastErr;
+  for (let attempt = 1; attempt <= tries; attempt++) {
+    try {
+      return await fn();
+    } catch (err) {
+      lastErr = err;
+      const { transient } = classifyFailure(err.message);
+      if (!transient || attempt === tries) throw err;
+      await sleep(2000 * attempt * attempt); // 2s, 8s
+    }
+  }
+  throw lastErr;
+}
 
 function flag(name) {
   const i = process.argv.indexOf(`--${name}`);
   return i !== -1 ? (process.argv[i + 1] ?? true) : undefined;
 }
 
-async function selectCohort(pool, { tier, limit, force, order }) {
-  const skip = force ? '' : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
+async function selectCohort(pool, { tier, limit, force, order, retryFailed, failCooldownDays = 14 }) {
+  // Skip hospitals already ingested (have an mrf_files row).
+  const skipDone = force ? '' : 'AND NOT EXISTS (SELECT 1 FROM mrf_files f WHERE f.hospital_id = h.id)';
+  // Skip hospitals whose most recent attempt was a PERMANENT failure within the
+  // cooldown — this stops re-grinding 404/403/unrecognized/etc. every pass.
+  // Transient failures are NOT skipped (they get retried). --retry-failed or
+  // --force overrides this (used by targeted Tier-2/discovery passes).
+  const skipFailed = (force || retryFailed) ? '' : `AND NOT EXISTS (
+    SELECT 1 FROM ingest_attempts a
+    WHERE a.hospital_id = h.id AND a.status = 'fail' AND a.transient = false
+      AND a.attempted_at > now() - interval '${parseInt(failCooldownDays, 10)} days'
+  )`;
   const lim = limit ? `LIMIT ${parseInt(limit, 10)}` : '';
   // Default biggest-first (most-trafficked hospitals). --order asc processes the
   // small-hospital tail first: useful for a recovery run that may be interrupted,
@@ -42,7 +83,7 @@ async function selectCohort(pool, { tier, limit, force, order }) {
   return (await pool.query(`
     SELECT h.id, h.ccn, h.name, h.mrf_file_url
     FROM hospitals h
-    WHERE h.refresh_tier = ${parseInt(tier, 10)} AND h.mrf_file_url IS NOT NULL ${skip}
+    WHERE h.refresh_tier = ${parseInt(tier, 10)} AND h.mrf_file_url IS NOT NULL ${skipDone} ${skipFailed}
     ORDER BY h.beds ${dir} NULLS LAST ${lim}
   `)).rows;
 }
@@ -62,6 +103,9 @@ async function main() {
   // so giant/hung files abort quickly and get deferred to a later patient pass.
   const timeoutMs = (parseInt(flag('timeout'), 10) || 600) * 1000;
   const order = flag('order') === 'asc' ? 'asc' : 'desc';
+  // Re-attempt hospitals that previously failed permanently (skips successes only).
+  // For targeted retry passes (e.g. Tier-2 on blocked, after a discovery refresh).
+  const retryFailed = !!flag('retry-failed');
 
   const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL, max: 4 });
   // Swallow idle-client errors (Neon drops idle connections); the pool evicts them.
@@ -74,19 +118,22 @@ async function main() {
   const stats = { attempted: 0, ingested: 0, failed: 0, downloadFail: 0, eligible: 0, viaTier2: 0, archived: 0, failures: [] };
   try {
     const pidByCpt = await fetchCptMap(pool);
-    const cohort = await selectCohort(pool, { tier, limit, force, order });
+    const cohort = await selectCohort(pool, { tier, limit, force, order, retryFailed });
     console.log(`Cohort: ${cohort.length} hospitals (tier ${tier}${force ? ', force' : ', skip already-ingested'}, beds ${order})` +
-      `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}.`);
+      `${noTier2 ? ' [no-tier2]' : ''}${noArchive ? ' [no-archive]' : ''}${retryFailed ? ' [retry-failed]' : ''}.`);
     if (!noArchive && !r2Configured()) console.warn('R2 not configured — raw MRFs will NOT be archived (set R2_* in .env).');
 
+    const PARSE_CLASSES = new Set(['parse', 'giant_json', 'oom', 'zip_no_csv', 'unrecognized', 'other']);
     for (const h of cohort) {
       stats.attempted++;
       const tmp = join(tmpdir(), `ohc-mrf-${h.ccn}`);
+      const t0 = Date.now();
       try {
         // Long work: no DB connection held. --no-tier2 skips the Playwright fallback.
-        const meta = noTier2
-          ? await downloadToFile(h.mrf_file_url, tmp, { timeoutMs })
-          : await downloadWithFallback(h.mrf_file_url, tmp, { timeoutMs });
+        // Transient download errors (network/429/5xx/timeout) are retried with backoff.
+        const meta = await downloadWithRetry(() => (noTier2
+          ? downloadToFile(h.mrf_file_url, tmp, { timeoutMs })
+          : downloadWithFallback(h.mrf_file_url, tmp, { timeoutMs })));
         if (meta.tier === 2) stats.viaTier2++;
         const computed = await computeMrf({
           filePath: tmp, url: h.mrf_file_url,
@@ -112,11 +159,16 @@ async function main() {
         } finally {
           client.release();
         }
+        await recordAttempt(pool, run.id, h.id, { status: 'ok', bytes: computed.fileSize, durationMs: Date.now() - t0 });
       } catch (err) {
-        const isDownload = /HTTP \d|tier1:|tier2:|fetch|aborted|empty response|timeout/i.test(err.message);
-        if (isDownload) stats.downloadFail++; else stats.failed++;
-        stats.failures.push({ ccn: h.ccn, name: h.name, error: err.message.slice(0, 160) });
-        console.warn(`  ✗ ${h.name} (${h.ccn}): ${err.message.slice(0, 140)}`);
+        const cls = classifyFailure(err.message);
+        if (PARSE_CLASSES.has(cls.failureClass)) stats.failed++; else stats.downloadFail++;
+        stats.failures.push({ ccn: h.ccn, name: h.name, class: cls.failureClass, error: err.message.slice(0, 160) });
+        console.warn(`  ✗ ${h.name} (${h.ccn}) [${cls.failureClass}]: ${err.message.slice(0, 130)}`);
+        await recordAttempt(pool, run.id, h.id, {
+          status: 'fail', failureClass: cls.failureClass, transient: cls.transient,
+          httpCode: cls.httpCode, durationMs: Date.now() - t0, detail: err.message.slice(0, 240),
+        });
       } finally {
         await unlink(tmp).catch(() => {});
       }
@@ -133,8 +185,10 @@ async function main() {
     console.log(`\nDone. ingested=${stats.ingested} (tier2=${stats.viaTier2}) archived=${stats.archived} eligible=${stats.eligible} ` +
       `downloadFail=${stats.downloadFail} parseFail=${stats.failed} of attempted=${stats.attempted}.`);
     if (stats.failures.length) {
-      console.log('Failures:');
-      for (const f of stats.failures) console.log(`  - ${f.name} (${f.ccn}): ${f.error}`);
+      const byClass = {};
+      for (const f of stats.failures) byClass[f.class || 'other'] = (byClass[f.class || 'other'] || 0) + 1;
+      const hist = Object.entries(byClass).sort((a, b) => b[1] - a[1]).map(([k, v]) => `${k}=${v}`).join(' ');
+      console.log(`Failures by class: ${hist}`);
     }
   } catch (err) {
     await pool.query(
