@@ -4,11 +4,10 @@
 // metadata, it: detects format -> decompresses if needed -> routes to the CSV
 // or JSON parser -> scores the resulting metrics with pipeline/quality.js.
 //
-// The control flow here is complete; the format-specific parsing (csv.js,
-// json.js) and decompression (decompress.js) are Phase C stubs that throw with
-// an inline implementation spec. Fetching is a separate stage (see
-// pipeline/fetch/ + ACQUISITION_STRATEGY.md tiers); this module starts from a
-// file already on disk.
+// CSV (tall/wide), JSON, and zip/gzip decompression are all implemented and
+// verified against real MRFs (see csv.js, json.js, decompress.js). Fetching is
+// a separate stage (see pipeline/fetch/ + ACQUISITION_STRATEGY.md tiers); this
+// module starts from a file already on disk.
 
 import { scoreFile, normalizeFileMetrics } from '../quality.js';
 import { detectFormat, readHeadBytes } from './detect-format.js';
