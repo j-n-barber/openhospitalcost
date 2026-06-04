@@ -5,8 +5,11 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
+import { AdSlot } from "@/components/AdSlot";
 
 export const revalidate = 3600;
+// Show the right rail when there's rail content (related links) or once ads are on.
+const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Params = { params: Promise<{ slug: string }> };
 type Proc = { name: string; code: string; description: string | null; category: string | null };
@@ -40,6 +43,22 @@ async function getHospitalPrices(slug: string): Promise<Row[]> {
     ORDER BY payers DESC NULLS LAST, negotiated ASC NULLS LAST`) as Row[];
 }
 
+// Related procedures in the same category that also have published data — for the
+// rail (internal linking + a useful "what else can I price?" path).
+async function getRelated(slug: string, category: string | null): Promise<{ slug: string; name: string }[]> {
+  if (!category) return [];
+  const r = (await sql`
+    SELECT DISTINCT p.slug, p.name
+    FROM procedures p
+    JOIN procedure_hospital_summary s ON s.procedure_id = p.id
+    JOIN hospitals h ON h.id = s.hospital_id
+    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+    WHERE p.category = ${category} AND p.slug <> ${slug}
+      AND (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+    ORDER BY p.name LIMIT 6`) as { slug: string; name: string }[];
+  return r.map((x) => ({ ...x, name: titleCaseProcedure(x.name) }));
+}
+
 export async function generateStaticParams() {
   const rows = (await sql`
     SELECT DISTINCT p.slug
@@ -68,6 +87,8 @@ export default async function ProcedurePage({ params }: Params) {
   if (!proc) notFound();
   const rows = await getHospitalPrices(slug);
   if (!rows.length) notFound();
+  const related = await getRelated(slug, proc.category);
+  const showRail = related.length > 0 || ADSENSE_ON;
 
   const ld = {
     "@context": "https://schema.org",
@@ -96,8 +117,32 @@ export default async function ProcedurePage({ params }: Params) {
           </p>
         </section>
 
-        <FilterableHospitalPrices rows={rows} />
-        <p className="prov">Median facility price per hospital, sourced from each hospital&apos;s machine-readable file. Negotiated shows the median across payers with the full range.</p>
+        {showRail ? (
+          <div className="moneygrid">
+            <div className="mg-main">
+              <FilterableHospitalPrices rows={rows} />
+              <p className="prov">Median facility price per hospital, sourced from each hospital&apos;s machine-readable file. Negotiated shows the median across payers with the full range.</p>
+            </div>
+            <aside className="mg-rail">
+              <div className="mg-rail-inner">
+                <AdSlot slot={process.env.NEXT_PUBLIC_AD_SLOT_RAIL} className="adrail" />
+                {related.length > 0 && (
+                  <nav className="relbox" aria-label="Related procedures">
+                    <h3>Related procedures</h3>
+                    {related.map((r) => (
+                      <a key={r.slug} href={`/procedure/${r.slug}`}>{r.name}</a>
+                    ))}
+                  </nav>
+                )}
+              </div>
+            </aside>
+          </div>
+        ) : (
+          <>
+            <FilterableHospitalPrices rows={rows} />
+            <p className="prov">Median facility price per hospital, sourced from each hospital&apos;s machine-readable file. Negotiated shows the median across payers with the full range.</p>
+          </>
+        )}
       </main>
       <SiteFooter />
     </>
