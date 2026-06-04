@@ -38,7 +38,7 @@ export default function AboutPage() {
           <h2>How it works</h2>
           <ul>
             <li>We identify hospitals from the CMS provider directory and locate each one&apos;s published price file.</li>
-            <li>We download and parse the file, matching line items to standard CPT procedure codes.</li>
+            <li>We download and parse the file, matching line items to standard procedure codes.</li>
             <li>We compute a representative facility price per procedure and surface the negotiated, cash, and gross rates.</li>
             <li>Every hospital page cites its source file and the date we ingested it, so you can verify the numbers yourself.</li>
           </ul>

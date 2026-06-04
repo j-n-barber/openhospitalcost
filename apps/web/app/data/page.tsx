@@ -31,7 +31,7 @@ export default function DataPage() {
 
           <h2>How we process it</h2>
           <p>
-            We parse each MRF, match line items to CPT codes, score data quality, and compute a representative
+            We parse each MRF, match line items to procedure codes, score data quality, and compute a representative
             facility price per procedure. The full pipeline is described in our{" "}
             <a href="/methodology">methodology</a>.
           </p>
