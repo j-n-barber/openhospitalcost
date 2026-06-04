@@ -64,7 +64,7 @@ h1 em { font-style: italic; color: var(--teal-ink); }
 .search-box input::placeholder { color: #8a939c; }
 .chips { margin-top: 14px; display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .chips .lbl { font-size: 12.5px; color: var(--muted); margin-right: 2px; }
-.chip { font-size: 13px; border: 1px solid var(--border); background: var(--surface); padding: 5px 11px; border-radius: 100px; color: #34495a; cursor: pointer; transition: .15s; }
+.chip { font-size: 13px; border: 1px solid var(--border); background: var(--surface); padding: 5px 11px; border-radius: 100px; color: #34495a; cursor: pointer; transition: .15s; text-decoration: none; display: inline-block; }
 .chip:hover { border-color: var(--teal); color: var(--teal-ink); }
 .results { position: absolute; top: 62px; left: 0; right: 0; background: var(--surface); border: 1.5px solid var(--ink); border-radius: 3px; box-shadow: 5px 6px 0 rgba(19,40,58,.08); overflow: hidden; z-index: 30; }
 .res { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--border); cursor: pointer; }

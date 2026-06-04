@@ -2,9 +2,9 @@
 import { useRef, useState } from "react";
 
 type Item = { t: "h" | "p"; nm: string; meta: string; href: string };
-const CHIPS = ["MRI brain", "Hemodialysis", "Vitamin D", "Holter monitor", "Montefiore"];
+type Chip = { label: string; href: string };
 
-export default function SearchBar() {
+export default function SearchBar({ chips = [] }: { chips?: Chip[] }) {
   const [q, setQ] = useState("");
   const [open, setOpen] = useState(false);
   const [index, setIndex] = useState<Item[] | null>(null);
@@ -58,12 +58,14 @@ export default function SearchBar() {
           )}
         </div>
       )}
-      <div className="chips">
-        <span className="lbl">Try:</span>
-        {CHIPS.map((c) => (
-          <span className="chip" key={c} onMouseDown={(e) => { e.preventDefault(); setQ(c); setOpen(true); load(); }}>{c}</span>
-        ))}
-      </div>
+      {chips.length > 0 && (
+        <div className="chips">
+          <span className="lbl">Try:</span>
+          {chips.map((c) => (
+            <a className="chip" key={c.href} href={c.href}>{c.label}</a>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

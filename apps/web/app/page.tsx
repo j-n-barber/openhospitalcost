@@ -3,7 +3,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import SearchBar from "@/components/SearchBar";
 import CoverageMap from "@/components/CoverageMap";
-import { titleCase, usd } from "@/lib/format";
+import { titleCase, titleCaseProcedure, usd } from "@/lib/format";
 
 export const revalidate = 3600; // ISR: rebuild at most hourly
 
@@ -33,6 +33,37 @@ export default async function Home() {
     WHERE p.code = '70551' AND s.charge_type = 'negotiated'
     ORDER BY s.amount LIMIT 5`) as { name: string; city: string; state: string; amount: number; payers: number }[];
 
+  // Search "Try:" chips — built from real data (top-coverage procedures + a few
+  // short-named big hospitals) and linked straight to their pages, so they can
+  // never silently break. Shuffled + sliced here, so the set rotates each hourly
+  // ISR regeneration. (Computed server-side -> stable prop -> no hydration churn.)
+  const chipProcs = (await sql`
+    SELECT p.slug, p.name, count(DISTINCT s.hospital_id)::int AS n
+    FROM procedures p
+    JOIN procedure_hospital_summary s ON s.procedure_id = p.id
+    JOIN hospitals h ON h.id = s.hospital_id
+    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+    GROUP BY p.slug, p.name ORDER BY n DESC LIMIT 12`) as { slug: string; name: string; n: number }[];
+  const chipHosps = (await sql`
+    SELECT h.ccn, h.name
+    FROM hospitals h
+    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean AND length(h.name) <= 24
+    ORDER BY h.beds DESC NULLS LAST LIMIT 5`) as { ccn: string; name: string }[];
+  const shuffle = <T,>(a: T[]): T[] => {
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  };
+  // 4 procedures (the primary use case) + 1 hospital, each rotated from its pool.
+  const chips = shuffle([
+    ...shuffle(chipProcs.map((p) => ({ label: titleCaseProcedure(p.name), href: `/procedure/${p.slug}` }))).slice(0, 4),
+    ...shuffle(chipHosps.map((h) => ({ label: titleCase(h.name), href: `/hospital/${h.ccn}` }))).slice(0, 1),
+  ]);
+
   return (
     <>
       <SiteHeader />
@@ -42,7 +73,7 @@ export default async function Home() {
           <div className="eyebrow">Sourced from federally-mandated price files</div>
           <h1>See what hospitals <em>actually</em> charge.</h1>
           <p className="sub">Real gross, cash, and negotiated prices — pulled straight from each hospital&apos;s machine-readable file and cited to the source. Not estimates. Not ranges. The actual numbers.</p>
-          <SearchBar />
+          <SearchBar chips={chips} />
         </section>
 
         <section className="mapwrap">
