@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 // median of each hospital's facility median, plus the low–high spread between hospitals.
 async function getProcedures(): Promise<ProcIndexRow[]> {
   const rows = (await sql`
-    SELECT p.slug, p.name, p.code, p.category,
+    SELECT p.slug, p.name, p.category,
       count(DISTINCT s.hospital_id)::int AS hospitals,
       percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'negotiated')::float      AS negotiated,
       min(s.amount) FILTER (WHERE s.charge_type = 'negotiated')::float                                              AS neg_lo,
@@ -29,7 +29,7 @@ async function getProcedures(): Promise<ProcIndexRow[]> {
     JOIN hospitals h ON h.id = s.hospital_id
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
-    GROUP BY p.slug, p.name, p.code, p.category
+    GROUP BY p.slug, p.name, p.category
     ORDER BY hospitals DESC, p.name`) as ProcIndexRow[];
   return rows.map((r) => ({ ...r, name: titleCaseProcedure(r.name) }));
 }

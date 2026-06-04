@@ -11,7 +11,7 @@ const TIP = {
 };
 
 export type ProcRow = {
-  slug: string; name: string; code: string; category: string | null;
+  slug: string; name: string; category: string | null;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
 };
@@ -41,7 +41,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
   const view = useMemo(() => {
     const s = q.trim().toLowerCase();
     const out = rows.filter(
-      (r) => (cat === "all" || r.category === cat) && (!s || r.name.toLowerCase().includes(s) || r.code.includes(s))
+      (r) => (cat === "all" || r.category === cat) && (!s || r.name.toLowerCase().includes(s))
     );
     out.sort((a, b) => {
       if (key === "name") {
@@ -91,7 +91,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
         <tbody>
           {view.map((r) => (
             <tr key={r.slug}>
-              <td><a href={`/procedure/${r.slug}`}>{r.name}</a> <span className="rng mono">CPT {r.code}</span></td>
+              <td><a href={`/procedure/${r.slug}`}>{r.name}</a></td>
               <td className="num"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
               <td className="num">{money(r.cash)}</td>
               <td className="num">{money(r.gross)}</td>

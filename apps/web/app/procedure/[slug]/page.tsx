@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   if (!proc) return { title: "Procedure — OpenHospitalCost" };
   return {
     title: `${proc.name} — hospital prices compared | OpenHospitalCost`,
-    description: `Real negotiated, cash, and gross prices for ${proc.name} (CPT ${proc.code}) across hospitals, sourced from machine-readable files.`,
+    description: `Real negotiated, cash, and gross prices for ${proc.name} across hospitals, sourced from machine-readable files.`,
     alternates: { canonical: `/procedure/${slug}` },
   };
 }
@@ -74,7 +74,6 @@ export default async function ProcedurePage({ params }: Params) {
     "@type": "MedicalProcedure",
     name: proc.name,
     ...(proc.description ? { description: proc.description } : {}),
-    code: { "@type": "MedicalCode", code: proc.code, codingSystem: "CPT" },
     offers: rows.filter((r) => r.negotiated != null).slice(0, 20).map((r) => ({
       "@type": "Offer",
       price: r.negotiated,
@@ -91,10 +90,7 @@ export default async function ProcedurePage({ params }: Params) {
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / <a href="/procedures">Procedures</a> / {proc.name}</div>
           <h1>{proc.name}</h1>
-          <p className="sub">
-            <span className="mono" style={{ color: "var(--teal)" }}>CPT {proc.code}</span>
-            {proc.description ? ` · ${proc.description}` : ""}
-          </p>
+          {proc.description ? <p className="sub">{proc.description}</p> : null}
           <p className="sub">
             Facility prices across {rows.length} hospital{rows.length > 1 ? "s" : ""} with published data — sorted cheapest-first by default. Filter or re-sort below; the same procedure can swing widely between hospitals.
           </p>
