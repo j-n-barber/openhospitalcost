@@ -14,4 +14,8 @@ export const STATE_NAMES: Record<string, string> = {
   oh: "Ohio", ok: "Oklahoma", or: "Oregon", pa: "Pennsylvania", ri: "Rhode Island", sc: "South Carolina",
   sd: "South Dakota", tn: "Tennessee", tx: "Texas", ut: "Utah", vt: "Vermont", va: "Virginia",
   wa: "Washington", wv: "West Virginia", wi: "Wisconsin", wy: "Wyoming",
+  // U.S. territories — appear in CMS hospital data; needed so /state/<code> resolves
+  // (otherwise the page 404s while still being counted + listed in the sitemap).
+  pr: "Puerto Rico", gu: "Guam", vi: "U.S. Virgin Islands", as: "American Samoa",
+  mp: "Northern Mariana Islands", um: "U.S. Minor Outlying Islands",
 };
