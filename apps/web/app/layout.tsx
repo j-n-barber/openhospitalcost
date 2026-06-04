@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { Source_Serif_4, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
-import { Analytics } from "@/components/Analytics";
+import { Analytics } from "@vercel/analytics/next";
 import { AdSense } from "@/components/AdSense";
 
 // Direction B brand type — locked in brand/palette.md.
@@ -36,9 +36,11 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${serif.variable} ${sans.variable} ${mono.variable}`}>
-      <body>{children}</body>
-      <Analytics />
-      <AdSense />
+      <body>
+        {children}
+        <Analytics />
+        <AdSense />
+      </body>
     </html>
   );
 }

@@ -4,17 +4,15 @@ Everything below is **pre-staged and inert** until you add the env vars, so it
 has zero effect on the site until you're ready. Do this after the site is
 deployed and verified.
 
-## 1. Analytics (Google Analytics 4) — ~2 min, do first
-Measure traffic from day one so you can see what's getting indexed/visited.
-1. analytics.google.com → create a GA4 property for `openhospitalcost.com` → copy
-   the Measurement ID (`G-XXXXXXXXXX`).
-2. Vercel → Project → Settings → Environment Variables → add
-   `NEXT_PUBLIC_GA_ID = G-XXXXXXXXXX` → redeploy.
-3. Done — `components/Analytics.tsx` (already wired into the root layout) starts
-   loading gtag site-wide.
+## 1. Analytics (Vercel Analytics) — already wired, just enable
+We use **Vercel Analytics** (`@vercel/analytics`). The `<Analytics/>` component is
+already in the root layout, so there's **no key/env var** — you just turn it on:
+1. Vercel → Project → **Analytics** tab → **Enable**.
+2. Redeploy (or it picks up on the next deploy). Done — page views start flowing.
 
-> Privacy note: if you'd rather use a cookieless analytics tool (Plausible/Umami),
-> the same pattern applies — swap the component; the rest stays.
+> It's privacy-friendly (no cookie banner needed) and free at low volume; usage
+> beyond the free tier is billed by Vercel. If you later want funnel/event depth
+> or AdSense-ecosystem reporting, GA4 can be added alongside it.
 
 ## 2. Ads (Google AdSense) — after you have some traffic
 AdSense won't approve an empty/no-traffic site, so launch + get indexed first.
@@ -43,7 +41,6 @@ spot is a small, clearly-labeled module on the procedure/hospital pages near the
 price context. Keep it disclosed (FTC) and visually distinct from the data.
 
 ## Files
-- `components/Analytics.tsx` — GA4 loader (gated on `NEXT_PUBLIC_GA_ID`)
+- Analytics: `@vercel/analytics/next` `<Analytics/>` in `app/layout.tsx` (enable in dashboard)
 - `components/AdSense.tsx` — AdSense script (gated on `NEXT_PUBLIC_ADSENSE_CLIENT`)
 - `components/AdSlot.tsx` — a single ad unit (gated on client + `slot`)
-- both loaders are already rendered in `app/layout.tsx`
