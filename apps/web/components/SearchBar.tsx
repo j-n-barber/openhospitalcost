@@ -2,7 +2,7 @@
 import { useRef, useState } from "react";
 
 type Item = { t: "h" | "p"; nm: string; meta: string; href: string };
-const CHIPS = ["MRI brain", "Hemodialysis", "Vitamin D test", "Holter monitor", "Montefiore"];
+const CHIPS = ["MRI brain", "Hemodialysis", "Vitamin D", "Holter monitor", "Montefiore"];
 
 export default function SearchBar() {
   const [q, setQ] = useState("");
