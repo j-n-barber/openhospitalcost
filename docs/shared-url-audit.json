@@ -1,0 +1,843 @@
+{
+  "generated_for_review": true,
+  "counts": {
+    "shared_urls": 135,
+    "generic_portal": 54,
+    "likely_system_file": 40,
+    "misassignment": 41,
+    "wrong_parsed_hospitals": 40
+  },
+  "purge_candidates": [
+    {
+      "ccn": "100093",
+      "hospital_id": "d8876bb0-c70b-4839-8d98-9a7167874637",
+      "name": "BAPTIST HOSPITAL",
+      "state": "fl",
+      "wrong_url": "https://baptisthealth.net/-/media/Documents/Patient-Resources/Patient-Pricing/Apr-2026/590872594_south-miami-hospital_standardcharges.zip",
+      "owner_ccn": "100154",
+      "cross_state": false
+    },
+    {
+      "ccn": "100053",
+      "hospital_id": "ff8b5b8d-46df-45a4-a8fe-359d08e2bd67",
+      "name": "HIALEAH HOSPITAL",
+      "state": "fl",
+      "wrong_url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/hillcrest-mentor",
+      "owner_ccn": "360230",
+      "cross_state": true
+    },
+    {
+      "ccn": "100315",
+      "hospital_id": "436b4fa6-a0e6-4e4a-86bd-9be3439218fd",
+      "name": "VIERA HOSPITAL",
+      "state": "fl",
+      "wrong_url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/lutheran",
+      "owner_ccn": "360087",
+      "cross_state": true
+    },
+    {
+      "ccn": "030010",
+      "hospital_id": "44edb096-185e-42b4-8750-f1762da5d9c3",
+      "name": "ST. MARY'S HOSPITAL",
+      "state": "az",
+      "wrong_url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/marymount",
+      "owner_ccn": "360143",
+      "cross_state": true
+    },
+    {
+      "ccn": "031304",
+      "hospital_id": "99105d31-5dfd-47e2-9378-15eccef9bc78",
+      "name": "PAGE HOSPITAL",
+      "state": "az",
+      "wrong_url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/mercy",
+      "owner_ccn": "361306",
+      "cross_state": true
+    },
+    {
+      "ccn": "031301",
+      "hospital_id": "558a8113-09e4-49b9-be1d-68ed71964ce8",
+      "name": "BENSON HOSPITAL",
+      "state": "az",
+      "wrong_url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/union",
+      "owner_ccn": "360010",
+      "cross_state": true
+    },
+    {
+      "ccn": "184004",
+      "hospital_id": "1adeec09-0e43-4a93-8411-23b21c02bcb0",
+      "name": "EASTERN STATE HOSPITAL",
+      "state": "ky",
+      "wrong_url": "https://cleverleypteusstatic.blob.core.windows.net/readable/616001218_university-of-kentucky-hospital_standardcharges.json",
+      "owner_ccn": "180067",
+      "cross_state": false
+    },
+    {
+      "ccn": "143301",
+      "hospital_id": "6daff599-21aa-47df-95cd-15ec4e6fff42",
+      "name": "LARABIDA CHILDRENS HOSPITAL I",
+      "state": "il",
+      "wrong_url": "https://osf-p-001.sitecorecontenthub.cloud/api/public/content/370662569_osf-saint-francis-medical-center_standardcharges.json",
+      "owner_ccn": "140067",
+      "cross_state": false
+    },
+    {
+      "ccn": "021312",
+      "hospital_id": "088858ab-84cc-4987-9b79-9cefe98272c6",
+      "name": "SAMUEL SIMMONDS MEMORIAL HOSPITAL",
+      "state": "ak",
+      "wrong_url": "https://pricetransparency.providence.org/norcal/live/814791043_providence-santa-rosa-memorial-hospital_standardcharges.json",
+      "owner_ccn": "050174",
+      "cross_state": true
+    },
+    {
+      "ccn": "021304",
+      "hospital_id": "132d1ce2-82d6-4c3e-a894-ff3e7d1d26c1",
+      "name": "PETERSBURG MEDICAL CENTER",
+      "state": "ak",
+      "wrong_url": "https://pricetransparency.providence.org/txnm/live/822913146_covenant-medical-center_standardcharges.json",
+      "owner_ccn": "450040",
+      "cross_state": true
+    },
+    {
+      "ccn": "020006",
+      "hospital_id": "9938d71b-2945-4b5a-81db-addc0ce576c9",
+      "name": "MAT-SU REGIONAL MEDICAL CENTER",
+      "state": "ak",
+      "wrong_url": "https://pricetransparency.providence.org/wamt/live/910655392_kadlec-regional-medical-center_standardcharges.json",
+      "owner_ccn": "500058",
+      "cross_state": true
+    },
+    {
+      "ccn": "150158",
+      "hospital_id": "838a5a65-d8a3-4e90-bae5-235b9eff31d5",
+      "name": "IU HEALTH WEST HOSPITAL",
+      "state": "in",
+      "wrong_url": "https://riverview.org/sites/default/files/pdf/25-005054-1_riverview-health_standardcharges.csv",
+      "owner_ccn": "150059",
+      "cross_state": false
+    },
+    {
+      "ccn": "050785",
+      "hospital_id": "92784ad6-6c25-4d38-9c2e-f7433b73dcef",
+      "name": "DOCS SURGICAL HOSPITAL",
+      "state": "ca",
+      "wrong_url": "https://stctrprodsnsvc00455826e6.blob.core.windows.net/pt-final-posting-files/95-2321136_LOS-ROBLES-HOSPITAL-AND-MEDICAL-CENTER_standardcharges.json?si=pt-json-access-policy&spr=https&sv=2024-11-04&sr=c&sig=o5IofreS%2F7ETlsnhPakPWCwHVVUZRobywQ5wUKGjVuQ%3D",
+      "owner_ccn": "050549",
+      "cross_state": false
+    },
+    {
+      "ccn": "060054",
+      "hospital_id": "d52ca288-7fba-4746-a6f9-3ac36a19041d",
+      "name": "COMMUNITY HOSPITAL",
+      "state": "co",
+      "wrong_url": "https://sthpiprd.blob.core.windows.net/machine-readable-files/11273/840175870_boulder-community-health_standardcharges.csv",
+      "owner_ccn": "060027",
+      "cross_state": false
+    },
+    {
+      "ccn": "060034",
+      "hospital_id": "0febe386-b5f8-415d-96c8-5b49b7b45567",
+      "name": "HCA-HEALTHONE DBA SWEDISH MEDICAL CENTER",
+      "state": "co",
+      "wrong_url": "https://sthpiprd.blob.core.windows.net/machine-readable-files/7840/841343242_denver-health-and-hospital-authority_standardcharges.csv",
+      "owner_ccn": "060011",
+      "cross_state": false
+    },
+    {
+      "ccn": "100025",
+      "hospital_id": "df0e68b4-7b47-46f7-9aa4-f2780b8de06f",
+      "name": "SACRED HEART HOSPITAL",
+      "state": "fl",
+      "wrong_url": "https://sthpiprd.blob.core.windows.net/machine-readable-files/8112/350593390_deaconess-hospital,-inc_standardcharges.csv",
+      "owner_ccn": "150082",
+      "cross_state": true
+    },
+    {
+      "ccn": "150097",
+      "hospital_id": "62c84fa3-e093-4491-9e1b-1ddeca378b67",
+      "name": "MAJOR HOSPITAL",
+      "state": "in",
+      "wrong_url": "https://sthpiprd.blob.core.windows.net/machine-readable-files/8112/350593390_deaconess-hospital,-inc_standardcharges.csv",
+      "owner_ccn": "150082",
+      "cross_state": true
+    },
+    {
+      "ccn": "291314",
+      "hospital_id": "645519ae-7b1e-42d4-9e63-c56439faea93",
+      "name": "SOUTH LYON MEDICAL CENTER",
+      "state": "nv",
+      "wrong_url": "https://uhsfilecdn.eskycity.net/ac/232973511_valley-hospital-medical-center_standardcharges.csv",
+      "owner_ccn": "290021",
+      "cross_state": false
+    },
+    {
+      "ccn": "510048",
+      "hospital_id": "c0c1f49d-35ec-4da2-9899-195cdab3710a",
+      "name": "LOGAN REGIONAL MEDICAL CENTER",
+      "state": "wv",
+      "wrong_url": "https://www.arh.org/wp-content/uploads/2026/04/822577178_Highlands-ARH-Regional-Medical-Center_standardcharges.csv",
+      "owner_ccn": "180005",
+      "cross_state": true
+    },
+    {
+      "ccn": "440011",
+      "hospital_id": "78d43cc1-cc98-445f-a814-21be7d7d86d7",
+      "name": "BLOUNT MEMORIAL HOSPITAL",
+      "state": "tn",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/540544705_johnston-memorial-hospital_standardcharges.zip",
+      "owner_ccn": "490053",
+      "cross_state": true
+    },
+    {
+      "ccn": "441322",
+      "hospital_id": "3f76a51d-734c-41e1-ada5-a0bd84db62c6",
+      "name": "HOUSTON COUNTY COMMUNITY HOSPITAL",
+      "state": "tn",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/540794913_smyth-county-community-hospital_standardcharges.zip",
+      "owner_ccn": "490038",
+      "cross_state": true
+    },
+    {
+      "ccn": "491300",
+      "hospital_id": "74b5f335-95e6-49e0-a4ef-30e3d4bf3647",
+      "name": "BATH COMMUNITY HOSPITAL",
+      "state": "va",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/620476282_indian-path-community-hospital_standardcharges.zip",
+      "owner_ccn": "440176",
+      "cross_state": true
+    },
+    {
+      "ccn": "490020",
+      "hospital_id": "0fe2a25c-3fed-4c8c-9cd3-3974f4abcd1d",
+      "name": "JOHN RANDOLPH MEDICAL CENTER",
+      "state": "va",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/620476282_johnson-city-medical-center_standardcharges.zip",
+      "owner_ccn": "440063",
+      "cross_state": true
+    },
+    {
+      "ccn": "491309",
+      "hospital_id": "7c6e32a8-85d6-4172-8d9d-ec594a9ef1df",
+      "name": "LEE COUNTY COMMUNITY HOSPITAL",
+      "state": "va",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/620476282_johnson-county-community-hospital_standardcharges.zip",
+      "owner_ccn": "441304",
+      "cross_state": true
+    },
+    {
+      "ccn": "441305",
+      "hospital_id": "943a9182-f0d5-4565-a5cd-5d4bb240e90d",
+      "name": "MACON COMMUNITY HOSPITAL",
+      "state": "tn",
+      "wrong_url": "https://www.balladhealth.org/sites/default/files/2026-03/770599553_dickenson-community-hospital_standardcharges.zip",
+      "owner_ccn": "491303",
+      "cross_state": true
+    },
+    {
+      "ccn": "420004",
+      "hospital_id": "eefb74b3-4c4b-4265-984f-8df69e0eaf8f",
+      "name": "MUSC MEDICAL CENTER",
+      "state": "sc",
+      "wrong_url": "https://www.bonsecours.com/-/media/bon-secours/patients-and-visitors/corporate/pricing/311716973_bon-secours-st-francis-medical-center-llc_standardcharges.ashx",
+      "owner_ccn": "490136",
+      "cross_state": true
+    },
+    {
+      "ccn": "420098",
+      "hospital_id": "5eadd785-bc76-4c98-aaa3-895bcd3652d5",
+      "name": "TIDELANDS WACCAMAW COMMUNITY HOSPITAL",
+      "state": "sc",
+      "wrong_url": "https://www.bonsecours.com/-/media/bon-secours/patients-and-visitors/corporate/pricing/540647482_bon-secours-richmond-community-hospital-llc_standardcharges.ashx",
+      "owner_ccn": "490094",
+      "cross_state": true
+    },
+    {
+      "ccn": "070025",
+      "hospital_id": "7d58ca4f-bd14-4a0c-83df-f0a2bdafc33f",
+      "name": "HARTFORD HOSPITAL",
+      "state": "ct",
+      "wrong_url": "https://www.bridgeporthospital.org/-/media/Files/YNHHS/sc/06-0646554-Bridgeport-Hospital_standard_charges-1.ashx",
+      "owner_ccn": "070010",
+      "cross_state": false
+    },
+    {
+      "ccn": "164007",
+      "hospital_id": "4519f4fd-cffa-4005-96d9-1800979f074d",
+      "name": "CLIVE BEHAVIORAL HEALTH",
+      "state": "ia",
+      "wrong_url": "https://www.chihealth.com/content/dam/chihealthcom/documents/patients-and-visitors/financial-assistance/price-transparency-standard-charges/470379755_chi-health-good-samaritan_standardcharges.json",
+      "owner_ccn": "280009",
+      "cross_state": true
+    },
+    {
+      "ccn": "040020",
+      "hospital_id": "562a5cff-44fa-4906-b045-3110e1fde700",
+      "name": "ST BERNARDS MEDICAL CENTER",
+      "state": "ar",
+      "wrong_url": "https://www.commonspirit.org/content/dam/commonspiritorg/en/bslmc/soho/finance/price-transparency/741161938_baylor-st-lukes-medical-center-mcnair-campus_standardcharges.json",
+      "owner_ccn": "450193",
+      "cross_state": true
+    },
+    {
+      "ccn": "180024",
+      "hospital_id": "c8a3feb4-852d-4bb1-9283-9046dd9e37cb",
+      "name": "SPRING VIEW HOSPITAL",
+      "state": "ky",
+      "wrong_url": "https://www.commonspirit.org/content/dam/commonspiritorg/en/chisv/soar/finance/price-transparency/710236913_chi-st-vincent-hospital-hot-springs_standardcharges.json",
+      "owner_ccn": "040026",
+      "cross_state": true
+    },
+    {
+      "ccn": "040072",
+      "hospital_id": "c85c40e9-f91e-48ab-8470-64a6a9095db2",
+      "name": "BAPTIST HEALTH MEDICAL CENTER-STUTTGART",
+      "state": "ar",
+      "wrong_url": "https://www.commonspirit.org/content/dam/commonspiritorg/en/stluh/soho/finance/price-transparency/273280598_st-lukes-health-patients-medical-center_standardcharges.json",
+      "owner_ccn": "670031",
+      "cross_state": true
+    },
+    {
+      "ccn": "180070",
+      "hospital_id": "658f6dc1-5faf-4064-acbc-62df183c81bf",
+      "name": "OWENSBORO HEALTH TWIN LAKES MEDICAL CENTER",
+      "state": "ky",
+      "wrong_url": "https://www.commonspirit.org/content/dam/commonspiritorg/en/stluh/soho/finance/price-transparency/273280598_st-lukes-health-patients-medical-center_standardcharges.json",
+      "owner_ccn": "670031",
+      "cross_state": true
+    },
+    {
+      "ccn": "330115",
+      "hospital_id": "5955db5f-ed21-4d5d-81de-b608435e9783",
+      "name": "ONEIDA HEALTH HOSPITAL",
+      "state": "ny",
+      "wrong_url": "https://www.ecuhealth.org/mrf-files/560989789_ecu-health-north-hospital_standardcharges.zip",
+      "owner_ccn": "340151",
+      "cross_state": true
+    },
+    {
+      "ccn": "360137",
+      "hospital_id": "67c1a253-d691-4e6d-9fa1-a4a9d977cb30",
+      "name": "UH CLEVELAND MEDICAL CENTER",
+      "state": "oh",
+      "wrong_url": "https://www.metrohealth.org/globalassets/metrohealth-documents/patients-and-visitors/pricing-transparency-2026/346004382_metrohealth-system_standardcharges.csv",
+      "owner_ccn": "360059",
+      "cross_state": false
+    },
+    {
+      "ccn": "261324",
+      "hospital_id": "f7d5c7ec-16d5-4e98-bd9d-89d8e0b4f303",
+      "name": "CASS REGIONAL MEDICAL CENTER",
+      "state": "mo",
+      "wrong_url": "https://www.muhealth.org/sites/default/files/finance/436003859_university-of-missouri-health-care_standardcharges.csv",
+      "owner_ccn": "260141",
+      "cross_state": true
+    },
+    {
+      "ccn": "260193",
+      "hospital_id": "dfae7517-e5aa-4417-afaa-b968e07a4852",
+      "name": "ST MARY'S MEDICAL CENTER",
+      "state": "mo",
+      "wrong_url": "https://www.muhealth.org/sites/default/files/finance/436003859_university-of-missouri-health-care_standardcharges.csv",
+      "owner_ccn": "260141",
+      "cross_state": true
+    },
+    {
+      "ccn": "263302",
+      "hospital_id": "f5f4acb2-498b-4409-897e-e1b1c1b8a524",
+      "name": "THE CHILDREN'S MERCY HOSPITAL",
+      "state": "mo",
+      "wrong_url": "https://www.muhealth.org/sites/default/files/finance/436003859_university-of-missouri-health-care_standardcharges.csv",
+      "owner_ccn": "260141",
+      "cross_state": true
+    },
+    {
+      "ccn": "140197",
+      "hospital_id": "d66cc3f0-bd17-4e19-8f6b-f589042972a3",
+      "name": "METHODIST HOSPITAL OF CHICAGO",
+      "state": "il",
+      "wrong_url": "https://www.thorek.org/hubfs/files/366000085_thorek-memorial-hospital-andersonville_standardcharges.json",
+      "owner_ccn": "140115",
+      "cross_state": false
+    },
+    {
+      "ccn": "330235",
+      "hospital_id": "17be017d-1c26-431b-9d9b-7829b0f3d1fe",
+      "name": "AUBURN  COMMUNITY  HOSPITAL",
+      "state": "ny",
+      "wrong_url": "https://www.upstate.edu/hospital/files/161469571_upstate-university-hospital_standardcharges.csv",
+      "owner_ccn": "330160",
+      "cross_state": false
+    }
+  ],
+  "generic_portal_urls": [
+    {
+      "url": "http://rca.elevatepfs.com/ptapp/api/cdm/export/oneclick?recno=c03ea0e53387f2e22f8262e5ee5ac871e45c53fb6ce9ca014b7159b7175da354",
+      "hospitals": [
+        "050776",
+        "054157"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "http://rca.elevatepfs.com/ptapp/api/cdm/export/oneclick?recno=d4ccc071fab9c79f17e52dc5b243ef668affc5e569aafa907c5b4c81f0a89284",
+      "hospitals": [
+        "194117",
+        "340061"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apim.services.craneware.com/api-pricing-transparency/api/public/ea6d74d45d610b52f5492adfe02e8f87/charges/mrf",
+      "hospitals": [
+        "340071",
+        "340020"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://app.box.com/shared/static/sbpdvwskj3p5v03pymtbh1rk1xx1hx27.csv",
+      "hospitals": [
+        "511313",
+        "510022",
+        "511315"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbAHSHSAINTHELENACA&type=CDMWithoutLabel",
+      "hospitals": [
+        "050013",
+        "054074"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbBHRRICHMONDKY&type=CDMWithoutLabel&fileType=CSV",
+      "hospitals": [
+        "150044",
+        "180049"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbJMHMiamiFL&type=CDMWithoutLabel&fileType=CSV",
+      "hospitals": [
+        "100142",
+        "141352"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbJWMCMIAMIFL&type=CDMWithoutLabel&fileType=CSV",
+      "hospitals": [
+        "010128",
+        "100268"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbPMHCHOLDREGENE&type=CDMWithoutLabel",
+      "hospitals": [
+        "260017",
+        "281362"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.para-hcfs.com/PTT/FinalLinks/Reports.aspx?dbName=dbSARHCSITKAAK&type=CDMWithoutLabel",
+      "hospitals": [
+        "021305",
+        "021314"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.trihealth.com/static/pricing/310537122_BETHESDAHOSPITALINC_STANDARDCHARGES.csv",
+      "hospitals": [
+        "360170",
+        "360179"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://apps.trihealth.com/static/pricing/310537486_THEGOODSAMARITANHOSPITAL_STANDARDCHARGES.csv",
+      "hospitals": [
+        "360358",
+        "360134"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://assets.changehealthcare.com/Shop/PROD/static/ConcordHospital/300001_ConcordHospital_standardcharges.xlsx.zip",
+      "hospitals": [
+        "300001",
+        "301306",
+        "300005"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://baptistjacksonville.pt.panaceainc.com/MRFDownload/baptistjacksonville/baptistjacksonville",
+      "hospitals": [
+        "100088",
+        "100140"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://brightwellbehavioral.com/s/831779940_brightwellbehavioralhealth_machine_readable_file.csv",
+      "hospitals": [
+        "154066",
+        "234044"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://bynder.uwhealth.org/m/1d39d4b3bd3ce8bb/original/362222696_SwedishAmerican-Hospital_standardcharges.csv",
+      "hospitals": [
+        "140239",
+        "140114"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://clevelandclinic.pt.panaceainc.com/MRFDownload/clevelandclinic/indianriver",
+      "hospitals": [
+        "030113",
+        "100105"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://hennepinhealthcare.pt.panaceainc.com/MRFDownload/hennepinhealthcare/hennepinhealthcare",
+      "hospitals": [
+        "240004",
+        "241336"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://hospitalpricedisclosure.com/Download.aspx?pi=U1LG5vSPbQV514lZH7upqQ*-*",
+      "hospitals": [
+        "330058",
+        "330259"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://hospitalpricedisclosure.com/download.aspx?pi=A7H2v*_*svHhuGAp2wfaahGA*-*",
+      "hospitals": [
+        "100007",
+        "100363"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://hospitalpricedisclosure.com/download.aspx?pi=AEq1Okiq8l6y84nlCfk8rw*-*&f=p22CpYLrWLxCnt4HoK7iZA*-*",
+      "hospitals": [
+        "100217",
+        "400137"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://hospitalpricedisclosure.com/download.aspx?pi=fhyUnGceR0ZpzaBBOhDvhg*-*&f=p22CpYLrWLxCnt4HoK7iZA*-*",
+      "hospitals": [
+        "140095",
+        "370149"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://hospitalpricedisclosure.com/download.aspx?pi=r5C56pFicSGYmflCJ5*__*QXg*-*&f=p22CpYLrWLxCnt4HoK7iZA*-*",
+      "hospitals": [
+        "010092",
+        "101309",
+        "100006"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://liveutmb.sharepoint.com/:x:/s/collaboration/webfiles/EXxx-KfEbOZNqDZ52D-EicQBE8nnpDp5CQyKD0F86zxp4A?download=1",
+      "hospitals": [
+        "450709",
+        "450018"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://mhs.pt.panaceainc.com/MRFDownload/mhs/regional",
+      "hospitals": [
+        "103300",
+        "100038"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://mrf.panaceainc.com/Download.aspx",
+      "hospitals": [
+        "121300",
+        "121302",
+        "121306",
+        "140046",
+        "260011",
+        "260081",
+        "260005",
+        "260200",
+        "341328",
+        "281363",
+        "281361",
+        "310011",
+        "371322",
+        "370094",
+        "440104",
+        "451309",
+        "521321",
+        "520057",
+        "520208",
+        "520028",
+        "521327"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://mrfs.hyvehealthcare.com/Emerus/352635546_IACC-EHI-NW_LLC_standardcharges.csv",
+      "hospitals": [
+        "370240",
+        "370016"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://nbhospitals.com/standard-services/Pricing-guidelinesNeuro.csv",
+      "hospitals": [
+        "104084",
+        "104085"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://omh.ny.gov/omhweb/adults/141663311_nysomh_standardcharges.csv",
+      "hospitals": [
+        "334046",
+        "334012",
+        "334001",
+        "334021",
+        "334067",
+        "334009",
+        "334015",
+        "334066",
+        "334064"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://onlinepatientestimation.com/PatientPortal/site/andersonregionalmedicalcenter",
+      "hospitals": [
+        "250104",
+        "250081"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://southwestgeneral.pt.panaceainc.com/MRFDownload/southwestgeneral/southwestgeneral",
+      "hospitals": [
+        "360070",
+        "360155"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://stevie.cms.uwmedicine.org/sites/stevie/files/2022-07/Price%20Transprency%20Json%20Files%20%282%29.zip",
+      "hospitals": [
+        "500064",
+        "500008"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://sthpiprd.blob.core.windows.net/machine-readable-files/9382/746002164_bexar-county-hospital-district_standardcharges.csv",
+      "hospitals": [
+        "454018",
+        "450213",
+        "450686"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://sundelaware.com/wp-content/uploads/2021/01/ein_sundelawarebehavioralheaalth_standardcharges.csv",
+      "hospitals": [
+        "084005",
+        "184006"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://ufhealth.pt.panaceainc.com/MRFDownload/ufhealth/uf-jax",
+      "hospitals": [
+        "100086",
+        "100001"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://ukhspricetransparency.blob.core.windows.net/ukhs-price-transparency/48-1201402_TheUniversityOfKansasHealthSystemKansasCityCampus_standardcharges.csv",
+      "hospitals": [
+        "170016",
+        "170040"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.adventhealth.com/sites/default/files/CDM/2022/452694620_Texas%20Health%20Huguley%20Hospital%20Fort%20Worth%20South_standardcharges.json",
+      "hospitals": [
+        "451358",
+        "451386",
+        "450235"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.alamedahealthsystem.org/wp-content/uploads/2021/06/Price-Transparency-Machine-Readable_2022.xlsx",
+      "hospitals": [
+        "050211",
+        "050320"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.bjc.org/hpt/21/436057893_ChristianHospital_standardcharges.json",
+      "hospitals": [
+        "080001",
+        "260180"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.bjc.org/hpt/86/370635502_MemorialHospital_standardcharges.json",
+      "hospitals": [
+        "171381",
+        "261307"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.bonsecours.com/-/media/bon-secours/patients-and-visitors/corporate/pricing/843041473_bon-secours-mercy-health-franklin-llc_standardcharges.ashx",
+      "hospitals": [
+        "420072",
+        "49006F"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.bonsecours.com/-/media/bon-secours/patients-and-visitors/corporate/pricing/843050337_bon-secours-mercy-health-petersburg-llc_standardcharges.ashx",
+      "hospitals": [
+        "420082",
+        "490052"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.capecodhealth.org/app/files/public/10895/2021-cchc-services-charges.csv|https://www.capecodhealth.org/app/files/public/10896/2021-cchc-pharmacy-charges.csv|https://www.capecodhealth.org/app/files/public/10894/2021-cchc-supply-charges.csv",
+      "hospitals": [
+        "220012",
+        "220135"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.commonspirit.org/content/dam/commonspiritorg/en/chime/sotg/finance/price-transparency/620532345_chi-memorial-hospital-hixson_standardcharges.json",
+      "hospitals": [
+        "040011",
+        "180079",
+        "451331"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.curryhealthnetwork.com/docs/930937095_CURRYGENERALHOSPITAL_STANDARDCHARGES.csv",
+      "hospitals": [
+        "670781",
+        "451312"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.deltahealthsystem.org/documents/CDM-05.15.20.xlsx",
+      "hospitals": [
+        "250082",
+        "250172"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.gradyhealth.org/files/263037695_GradyMemorialHospitalCorporation_standardcharges.csv.zip",
+      "hospitals": [
+        "111306",
+        "110079"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.hiltonheadregional.com/docs/global/standard-charges/752550947_hiltonheadhospital_standardcharges.json",
+      "hospitals": [
+        "420101",
+        "420080"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.nahealth.com/wp-content/uploads/2026/03/860100882_VERDEVALLEYMEDICALCENTER_standardcharges.zip",
+      "hospitals": [
+        "03033F",
+        "030007"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.neuropsychiatrichospitals.net/wp-content/uploads/2022/04/NPH-Price-Tranparency-Pricing.xlsx",
+      "hospitals": [
+        "154058",
+        "154061",
+        "154065",
+        "454151"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.sentara.com/Documents/s/sentarawilliamsburgregionalmedicalcenterstandardchargesxlsx-1395261",
+      "hospitals": [
+        "340064",
+        "490066"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.sghs.org/documents/581911751_SGHS_standardcharges05.01.2022.json",
+      "hospitals": [
+        "110146",
+        "110025"
+      ],
+      "any_parsed": false
+    },
+    {
+      "url": "https://www.slhn.org/-/media/sluhn/billing/pdf/standard-charges/22-1494454_stlukeswarrenhospital_standardcharges.ashx",
+      "hospitals": [
+        "310060",
+        "390335"
+      ],
+      "any_parsed": true
+    },
+    {
+      "url": "https://www.valleyhealthlink.com/documents/pricing%20transparency/2022-VAL_VLY_FullCdm_PriceTransparency.1)6.8.22.xlsx",
+      "hospitals": [
+        "491307",
+        "491305",
+        "490005",
+        "511311",
+        "511309"
+      ],
+      "any_parsed": false
+    }
+  ]
+}
