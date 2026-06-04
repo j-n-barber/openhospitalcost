@@ -226,7 +226,16 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
 
 @media (max-width: 780px) {
+  .wrap { padding: 0 16px; }                 /* more usable width on phones */
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }
-  nav.top { display: none; } .stat-row { display: none; }
+  nav.top { display: none; } .stat-row { display: none; } /* nav lives in the footer on mobile */
   .ptable thead th { position: static; }
+  /* Tighten the price tables so 4 columns read cleanly on a phone. */
+  .ptable th, .ptable td { padding: 10px 10px; }
+  .ptable td { font-size: 13.5px; }
+  .ptable th { font-size: 10px; letter-spacing: .05em; }
+  .negcell .rangebar { display: none; }      /* keep the median $; drop the range bar to declutter */
+  .mapwrap { padding: 22px 16px; }
+  .val { padding: 20px 18px; }
+  .sample .l, .sample .r { padding: 22px 20px; }
 }
