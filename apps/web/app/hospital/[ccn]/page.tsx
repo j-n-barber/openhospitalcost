@@ -6,8 +6,10 @@ import SiteFooter from "@/components/SiteFooter";
 import { STATE_NAMES } from "@/lib/states";
 import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableProcedures from "@/components/FilterableProcedures";
+import { MoneyRail } from "@/components/MoneyRail";
 
 export const revalidate = 3600;
+const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Params = { params: Promise<{ ccn: string }> };
 type Hosp = {
@@ -48,6 +50,18 @@ async function getProcedures(hospitalId: string): Promise<Row[]> {
   return rows.map((r) => ({ ...r, name: titleCaseProcedure(r.name) }));
 }
 
+// Other hospitals in the same state with published data — rail (comparison + links).
+async function getRelatedHospitals(state: string, ccn: string): Promise<{ ccn: string; name: string }[]> {
+  const r = (await sql`
+    SELECT h.ccn, h.name
+    FROM hospitals h
+    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+    WHERE lower(h.state) = ${state.toLowerCase()} AND h.ccn <> ${ccn}
+      AND (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+    ORDER BY h.beds DESC NULLS LAST LIMIT 6`) as { ccn: string; name: string }[];
+  return r.map((x) => ({ ...x, name: titleCase(x.name) }));
+}
+
 export async function generateStaticParams() {
   const rows = (await sql`
     SELECT h.ccn
@@ -73,8 +87,9 @@ export default async function HospitalPage({ params }: Params) {
   const h = await getHospital(ccn);
   if (!h || !h.eligible) notFound();
   const rows = await getProcedures(h.id);
-
   const stateName = STATE_NAMES[h.state.toLowerCase()] ?? h.state.toUpperCase();
+  const related = await getRelatedHospitals(h.state, ccn);
+  const showRail = related.length > 0 || ADSENSE_ON;
 
   const ld = {
     "@context": "https://schema.org",
@@ -111,8 +126,20 @@ export default async function HospitalPage({ params }: Params) {
           </p>
         </section>
 
-        <FilterableProcedures rows={rows} />
-        <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
+        {showRail ? (
+          <div className="moneygrid">
+            <div className="mg-main">
+              <FilterableProcedures rows={rows} />
+              <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
+            </div>
+            <MoneyRail title={`Other hospitals in ${stateName}`} items={related.map((r) => ({ href: `/hospital/${r.ccn}`, label: r.name }))} />
+          </div>
+        ) : (
+          <>
+            <FilterableProcedures rows={rows} />
+            <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
+          </>
+        )}
       </main>
       <SiteFooter />
     </>

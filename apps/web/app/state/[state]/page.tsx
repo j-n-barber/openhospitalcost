@@ -4,9 +4,12 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { STATE_NAMES } from "@/lib/states";
+import { titleCaseProcedure } from "@/lib/format";
 import FilterableHospitals from "@/components/FilterableHospitals";
+import { MoneyRail } from "@/components/MoneyRail";
 
 export const revalidate = 3600;
+const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Hosp = { ccn: string; name: string; city: string; procedures: number };
 type Params = { params: Promise<{ state: string }> };
@@ -20,6 +23,19 @@ async function getHospitals(code: string): Promise<Hosp[]> {
     WHERE lower(h.state) = ${code} AND (f.quality_metrics->>'eligibleForMoneyPages')::boolean
     GROUP BY h.ccn, h.name, h.city
     ORDER BY procedures DESC, h.name`) as Hosp[];
+}
+
+// Most-covered procedures overall — rail ("what can I price?" cross-nav).
+async function getPopularProcedures(): Promise<{ slug: string; name: string }[]> {
+  const r = (await sql`
+    SELECT p.slug, p.name, count(DISTINCT s.hospital_id)::int AS n
+    FROM procedures p
+    JOIN procedure_hospital_summary s ON s.procedure_id = p.id
+    JOIN hospitals h ON h.id = s.hospital_id
+    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+    GROUP BY p.slug, p.name ORDER BY n DESC LIMIT 6`) as { slug: string; name: string; n: number }[];
+  return r.map((x) => ({ slug: x.slug, name: titleCaseProcedure(x.name) }));
 }
 
 // Pre-render only states that actually have eligible data (no thin/empty pages).
@@ -50,6 +66,8 @@ export default async function StatePage({ params }: Params) {
 
   const hospitals = await getHospitals(code);
   if (!hospitals.length) notFound();
+  const related = await getPopularProcedures();
+  const showRail = related.length > 0 || ADSENSE_ON;
 
   return (
     <>
@@ -64,7 +82,16 @@ export default async function StatePage({ params }: Params) {
           </p>
         </section>
 
-        <FilterableHospitals hospitals={hospitals} stateCode={code} />
+        {showRail ? (
+          <div className="moneygrid">
+            <div className="mg-main">
+              <FilterableHospitals hospitals={hospitals} stateCode={code} />
+            </div>
+            <MoneyRail title="Popular procedures" items={related.map((r) => ({ href: `/procedure/${r.slug}`, label: r.name }))} />
+          </div>
+        ) : (
+          <FilterableHospitals hospitals={hospitals} stateCode={code} />
+        )}
       </main>
       <SiteFooter />
     </>
