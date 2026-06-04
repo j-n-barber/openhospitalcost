@@ -12,7 +12,7 @@ export default function ContactPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / Contact</div>
           <h1>Contact</h1>

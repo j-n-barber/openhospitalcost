@@ -12,7 +12,7 @@ export default function MethodologyPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / Methodology</div>
           <h1>Methodology</h1>

@@ -31,6 +31,8 @@ body {
 }
 a { color: var(--teal-ink); text-decoration: none; }
 .wrap { max-width: 1120px; margin: 0 auto; padding: 0 28px; }
+/* Text/editorial pages: a single narrow, centered reading column (no left-pinned void). */
+.wrap.prose { max-width: 700px; }
 
 /* Typography niceties: balance headings so they don't orphan a last word, and
    pretty-wrap body copy so paragraphs don't leave a widow on the final line. */

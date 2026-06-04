@@ -12,7 +12,7 @@ export default function AboutPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / About</div>
           <h1>About OpenHospitalCost</h1>

@@ -12,7 +12,7 @@ export default function DataPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / Data</div>
           <h1>Data sources &amp; export</h1>

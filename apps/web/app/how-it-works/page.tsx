@@ -12,7 +12,7 @@ export default function HowItWorksPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / How it works</div>
           <h1>How it works</h1>

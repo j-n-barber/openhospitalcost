@@ -13,7 +13,7 @@ export default function CorrectionsPage() {
   return (
     <>
       <SiteHeader />
-      <main className="wrap">
+      <main className="wrap prose">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / Corrections</div>
           <h1>Submit a correction</h1>
