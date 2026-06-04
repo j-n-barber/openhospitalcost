@@ -44,11 +44,16 @@ this record.
 
 ## Current site posture (reconciliation — important)
 The application (6/3) described the product as **displaying** the CPT code on each
-page. **Since then, the live site has been updated to NOT display CPT codes or
-descriptors** — codes were removed from all pages, JSON-LD, meta, and client
-payloads; codes are now used **only internally** to match line items from the public
-MRFs. This was a deliberate exposure-reduction step while the licensing/pricing
-questions are open. Net: **current public use is *narrower* than what was applied
+page. **Public-facing CPT codes were then removed the same day** and the cleanup
+completed the next day, while awaiting the AMA's response:
+- **2026-06-03** — removed displayed codes + the JSON-LD `MedicalCode` block + the
+  code from search results and procedure/list payloads (commit `f8dd0f9`).
+- **2026-06-04** — generalized the remaining prose references on methodology /
+  about / data (commits `2ff9009`, `c8ec5fb`, `ab0a51e`). Verified: 0 "CPT" in the
+  built HTML.
+
+Codes are now used **only internally** to match line items from the public MRFs —
+a deliberate exposure-reduction step while the licensing/pricing questions are open. Net: **current public use is *narrower* than what was applied
 for** (we applied for the broader display use in good faith; we're operating
 conservatively pending the answer).
 
