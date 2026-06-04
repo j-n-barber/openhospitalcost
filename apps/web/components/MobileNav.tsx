@@ -11,6 +11,7 @@ const LINKS = [
   { href: "/states", label: "States" },
   { href: "/reports", label: "Reports" },
   { href: "/how-it-works", label: "How It Works" },
+  { href: "/faq", label: "FAQ & Guides" },
   { href: "/methodology", label: "Methodology" },
   { href: "/about", label: "About" },
 ];
