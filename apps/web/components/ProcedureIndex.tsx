@@ -95,10 +95,10 @@ export default function ProcedureIndex({ rows }: { rows: ProcIndexRow[] }) {
           {view.map((r) => (
             <tr key={r.slug}>
               <td><a href={`/procedure/${r.slug}`}>{r.name}</a></td>
-              <td className="num">{r.hospitals}</td>
-              <td className="num"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={null} /></td>
-              <td className="num">{money(r.cash)}</td>
-              <td className="num">{money(r.gross)}</td>
+              <td className="num" data-label="Hospitals">{r.hospitals}</td>
+              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={null} /></td>
+              <td className="num" data-label="Cash">{money(r.cash)}</td>
+              <td className="num" data-label="Gross">{money(r.gross)}</td>
             </tr>
           ))}
           {!view.length && <tr><td colSpan={5} className="empty">No procedures match your filter.</td></tr>}
