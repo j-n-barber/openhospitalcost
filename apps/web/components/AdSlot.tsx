@@ -6,7 +6,7 @@
 // impact until you flip it on. Usage: <AdSlot slot="1234567890" />
 import { useEffect } from "react";
 
-const CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
+const CLIENT = process.env.NEXT_PUBLIC_ADSENSE_CLIENT || "ca-pub-9074357617415731";
 
 declare global {
   interface Window {
