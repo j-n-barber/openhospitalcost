@@ -26,7 +26,10 @@ function sqlIdent(c) {
   return `"${c.replace(/"/g, '""')}"`;
 }
 function read(path, skip = 2) {
-  return `read_csv(${sqlStr(path)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true)`;
+  // delim=',' forced for the same reason as parsers/csv.js: pipe-dense wide MRFs
+  // fool DuckDB's delimiter sniffer into picking '|'. Must match the detector's
+  // read so the resolved column names (code|1, standard_charge|gross, …) bind.
+  return `read_csv(${sqlStr(path)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true, delim=',')`;
 }
 // Find a column by normalized name (case-insensitive, pipe-spacing collapsed —
 // handles "settIng", "STANDARD_CHARGE | GROSS", etc.) and return a quoted

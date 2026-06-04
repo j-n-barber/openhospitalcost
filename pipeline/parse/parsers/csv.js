@@ -96,7 +96,7 @@ function headerScore(cols) {
 function describeAt(filePath, skip) {
   try {
     return duckdbQuery(
-      `DESCRIBE SELECT * FROM read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true)`
+      `DESCRIBE SELECT * FROM read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true, delim=',')`
     ).map((r) => r.column_name);
   } catch {
     return [];
@@ -152,7 +152,7 @@ export function detectCsvLayout(filePath) {
 
 export function itemHeaderColumns(filePath, skip = 2) {
   const rows = duckdbQuery(
-    `DESCRIBE SELECT * FROM read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true)`
+    `DESCRIBE SELECT * FROM read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true, delim=',')`
   );
   return rows.map((r) => r.column_name);
 }
@@ -175,7 +175,11 @@ function readMetrics(filePath, sql) {
 }
 
 function readCsv(filePath, skip, withRejects = false) {
-  return `read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true${withRejects ? ', store_rejects=true' : ''})`;
+  // Force comma delimiter: CMS MRF CSVs are comma-delimited by spec, but the v3
+  // "wide" layout is so dense with '|' (hundreds of standard_charge|payer|plan|…
+  // columns) that DuckDB's auto-sniffer guesses '|' and shatters every column.
+  // See PARSER_NOTES § 13.
+  return `read_csv(${sqlStr(filePath)}, skip=${skip}, header=true, all_varchar=true, ignore_errors=true, delim=','${withRejects ? ', store_rejects=true' : ''})`;
 }
 
 function buildTallSql(filePath, cols, skip) {

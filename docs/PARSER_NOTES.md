@@ -175,6 +175,12 @@ Cleveland Clinic types its 5-digit CPT codes as `HCPCS` (CPT is HCPCS Level I), 
 - **Where the SAS token comes from:** HCA's blob URL requires a SAS token that we extracted from the HTML of the hospital's transparency page. The page-scrape → URL-extract → file-fetch pipeline needs to handle this generically. Plan a generic "discover MRF URL" stage that re-runs against each hospital's transparency page weekly to refresh signed URLs.
 - **Sample retention:** All five sample files stay in `pipeline/parse/samples/` (gitignored). Re-download via the URLs at the top of this doc if anything is lost.
 
+### 13. Pipe-dense wide MRFs fool DuckDB's delimiter sniffer (2026-06-04)
+
+Many large v3 **wide** CSVs (MedStar, Baptist Health, South Texas Health System, …) were being rejected as "Not a recognizable CSV MRF (columns: description,code, 1,code, 1, type…)". The file is a perfectly valid comma-delimited MRF — the header is `description,code|1,code|1|type,…` — but the wide layout carries *hundreds* of `standard_charge|<payer>|<plan>|negotiated_*` columns, so the line is far denser in `|` than in `,`. DuckDB's auto delimiter sniffer therefore picks **`|`** and shatters every column (MedStar: 721 garbage columns vs. 307 correct ones), after which `assertLooksLikeMrf` finds no `description`/`code|1`/`standard_charge|gross` and bails.
+
+**Fix:** force `delim=','` on every `read_csv` (parsers/csv.js `describeAt`/`itemHeaderColumns`/`readCsv` **and** normalize.js `read`). CMS MRF CSVs are comma-delimited by spec, so this is a no-op for files the sniffer already got right and a rescue for the pipe-dense ones. Verified on MedStar Washington (155 MB): 193k rows parsed, 412 dictionary price rows. This bucket was ~39 confirmed real `.csv` files in the unrecognized pile (the rest of that pile is genuine HTML/portal stubs needing Tier-2). The normalize.js read MUST match the detector's read or the resolved `code|1`/`standard_charge|gross` names won't bind.
+
 ---
 
 ## Re-running this spike
