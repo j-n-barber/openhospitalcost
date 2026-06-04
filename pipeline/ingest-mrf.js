@@ -141,7 +141,7 @@ async function refreshSummaryFromStage(client, { hospitalId }) {
          CASE WHEN lower(billing_class) = 'facility' AND lower(setting) LIKE 'out%' THEN 1
               WHEN lower(billing_class) = 'facility' THEN 2 ELSE 3 END AS pref
        FROM _stage
-       WHERE amount >= 1
+       WHERE amount >= 1 AND amount <= 1000000   -- drop placeholder/junk extremes (e.g. the sentinel $1,157,776 seen in a couple of files); no legit shoppable-procedure price is this high
      ),
      ranked AS (
        SELECT *, min(pref) OVER (PARTITION BY hospital_id, procedure_id, charge_type) AS best FROM pr
