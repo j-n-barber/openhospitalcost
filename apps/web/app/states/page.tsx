@@ -9,7 +9,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Browse hospital prices by state — OpenHospitalCost",
   description:
-    "Every U.S. state with published, machine-readable hospital price data. Pick a state to compare negotiated, cash, and gross rates by hospital and procedure.",
+    "Every U.S. state, plus D.C. and territories, with published, machine-readable hospital price data. Pick one to compare negotiated, cash, and gross rates by hospital and procedure.",
 };
 
 type StateRow = { code: string; hospitals: number };
@@ -37,7 +37,7 @@ export default async function StatesPage() {
           <div className="crumb"><a href="/">Home</a> / States</div>
           <h1>Browse by state</h1>
           <p className="sub">
-            {states.length} state{states.length !== 1 ? "s" : ""}{" "}with published hospital price data. Pick one to see its hospitals.
+            {states.length} states &amp; territories with published hospital price data. Pick one to see its hospitals.
           </p>
         </section>
 
@@ -51,7 +51,7 @@ export default async function StatesPage() {
             ))}
           </div>
         ) : (
-          <div className="empty">No states with published data yet.</div>
+          <div className="empty">No states or territories with published data yet.</div>
         )}
       </main>
       <SiteFooter />

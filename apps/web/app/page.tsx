@@ -84,7 +84,7 @@ export default async function Home() {
             </div>
             <div className="stat-row">
               <div className="stat"><div className="n">{hospitals}</div><div className="l">Hospitals</div></div>
-              <div className="stat"><div className="n">{states}</div><div className="l">States</div></div>
+              <div className="stat"><div className="n">{states}</div><div className="l">States &amp; territories</div></div>
               <div className="stat"><div className="n">{procedures}</div><div className="l">Procedures</div></div>
             </div>
           </div>

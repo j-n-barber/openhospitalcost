@@ -35,7 +35,7 @@ export default async function HospitalsPage() {
           <div className="crumb"><a href="/">Home</a> / Hospitals</div>
           <h1>Browse hospitals</h1>
           <p className="sub">
-            {hospitals.length} hospital{hospitals.length !== 1 ? "s" : ""} across {stateCount} state{stateCount !== 1 ? "s" : ""} with
+            {hospitals.length} hospital{hospitals.length !== 1 ? "s" : ""} across {stateCount} states &amp; territories with
             published, machine-readable prices. Pick one to see its negotiated, cash, and gross rates by procedure.
           </p>
         </section>
