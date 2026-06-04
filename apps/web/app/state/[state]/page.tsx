@@ -80,6 +80,11 @@ export default async function StatePage({ params }: Params) {
             {hospitals.length} hospital{hospitals.length > 1 ? "s" : ""} with published, machine-readable prices.
             Pick one to see its negotiated, cash, and gross rates by procedure.
           </p>
+          {hospitals.length >= 6 && (
+            <p style={{ margin: "4px 0 0" }}>
+              <a href={`/reports/state/${code}`}>See the {name} price report →</a>
+            </p>
+          )}
         </section>
 
         {showRail ? (

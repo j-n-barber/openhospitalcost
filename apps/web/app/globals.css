@@ -259,6 +259,10 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .signup-row .btn { white-space: nowrap; }
 @media (max-width: 560px) { .signup-row { flex-direction: column; } .signup-row .btn { align-self: stretch; text-align: center; } }
 
+/* per-state report link hub on /reports */
+.statereports { list-style: none; padding: 0; margin: 12px 0 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 4px 18px; }
+.statereports li { margin: 0; }
+
 @media (max-width: 780px) {
   .wrap { padding: 0 16px; }                 /* more usable width on phones */
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }

@@ -3,6 +3,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { titleCaseProcedure, usd } from "@/lib/format";
+import { STATE_NAMES } from "@/lib/states";
 import SubscribeForm from "@/components/SubscribeForm";
 
 export const revalidate = 3600;
@@ -58,6 +59,25 @@ async function getSavings(): Promise<Saving[]> {
     LIMIT 8`) as Saving[];
 }
 
+// States that have at least one procedure with enough eligible hospitals (>= 6,
+// matching the per-state report threshold) to render a real report — so every
+// link here resolves instead of 404ing.
+async function getReportStates(): Promise<{ code: string; name: string }[]> {
+  const rows = (await sql`
+    SELECT code FROM (
+      SELECT lower(h.state) AS code, s.procedure_id, count(*)::int AS n
+      FROM procedure_hospital_summary s
+      JOIN hospitals h ON h.id = s.hospital_id
+      JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
+      WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean AND s.charge_type = 'negotiated'
+      GROUP BY 1, 2
+    ) t WHERE n >= 6
+    GROUP BY code ORDER BY code`) as { code: string }[];
+  return rows
+    .filter((r) => STATE_NAMES[r.code])
+    .map((r) => ({ code: r.code, name: STATE_NAMES[r.code] }));
+}
+
 async function getHospitalCount(): Promise<number> {
   const r = (await sql`
     SELECT count(*)::int AS n FROM hospitals h
@@ -67,11 +87,12 @@ async function getHospitalCount(): Promise<number> {
 }
 
 export default async function ReportsPage() {
-  const [swings, priciest, savings, hospitals] = await Promise.all([
+  const [swings, priciest, savings, hospitals, reportStates] = await Promise.all([
     getSwings(),
     getPriciest(),
     getSavings(),
     getHospitalCount(),
+    getReportStates(),
   ]);
   const proc = (s: { slug: string; name: string }) => (
     <a href={`/procedure/${s.slug}`}>{titleCaseProcedure(s.name)}</a>
@@ -175,8 +196,21 @@ export default async function ReportsPage() {
           <p style={{ marginTop: 28 }}>
             <a href="/procedures">Browse every procedure →</a> &nbsp;·&nbsp; <a href="/hospitals">Browse hospitals →</a>
           </p>
-          <p style={{ color: "var(--muted)", fontSize: 14 }}>
-            Per-state reports and a monthly edition are on the way.
+          {reportStates.length > 0 && (
+            <>
+              <h2 id="by-state" style={{ marginTop: 36 }}>Hospital price reports by state</h2>
+              <p>Drill into any state for its own price swings, cash-vs-list savings, and priciest procedures.</p>
+              <ul className="statereports">
+                {reportStates.map((s) => (
+                  <li key={s.code}>
+                    <a href={`/reports/state/${s.code}`}>{s.name}</a>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
+          <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 24 }}>
+            A monthly edition is on the way.
           </p>
           <SubscribeForm source="reports" />
         </div>
