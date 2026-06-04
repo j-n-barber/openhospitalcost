@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { renderEmail, emailHeading, emailButton } from "@/lib/email-layout";
 
 // Server-side newsletter signup. Neon is the source of truth (email_subscribers);
 // each subscriber is then best-effort mirrored into a Resend audience so we can
@@ -39,15 +40,17 @@ export async function handleSubscribe(input: SubscribeInput, meta: Meta): Promis
   }
 
   // Upsert: re-subscribing flips status back to 'subscribed' and refreshes source.
-  // Only counts against the rate limit when it's genuinely a new row.
+  // `(xmax = 0) AS inserted` distinguishes a brand-new row from a conflict update,
+  // so the welcome email only fires for genuinely new subscribers.
   const rows = (await sql`
     INSERT INTO email_subscribers (email, source, user_agent, ip)
     VALUES (${email}, ${source}, ${meta.ua}, ${meta.ip || null})
     ON CONFLICT (email) DO UPDATE
       SET status = 'subscribed', source = COALESCE(EXCLUDED.source, email_subscribers.source),
           updated_at = now()
-    RETURNING id, resend_synced`) as { id: string; resend_synced: boolean }[];
-  const { id, resend_synced } = rows[0];
+    RETURNING id, resend_synced, (xmax = 0) AS inserted`) as
+    { id: string; resend_synced: boolean; inserted: boolean }[];
+  const { id, resend_synced, inserted } = rows[0];
 
   if (!resend_synced) {
     const contactId = await addToResendList(email);
@@ -56,7 +59,51 @@ export async function handleSubscribe(input: SubscribeInput, meta: Meta): Promis
     }
   }
 
+  // Welcome only new subscribers. Best-effort — never block or fail the signup.
+  if (inserted) await sendWelcome(email);
+
   return { ok: true };
+}
+
+// Sends the branded single-opt-in welcome email. Best-effort: logs and returns
+// on any failure so a mail hiccup never breaks the signup.
+async function sendWelcome(email: string): Promise<void> {
+  const apiKey = process.env.RESEND_API_KEY;
+  const from = process.env.RESEND_FROM;
+  if (!apiKey || !from) {
+    console.error("Resend not configured (RESEND_API_KEY/RESEND_FROM). Welcome email skipped.");
+    return;
+  }
+
+  const html = renderEmail({
+    title: "Welcome to OpenHospitalCost",
+    preheader: "You're on the list — here's what to expect.",
+    contentHtml:
+      emailHeading("You're on the list") +
+      `<p style="margin:0 0 14px;">Thanks for subscribing. About once a month we'll send you the biggest hospital price swings, where cash beats the list price, and what we've newly added — drawn straight from hospitals' machine-readable files.</p>` +
+      `<p style="margin:0 0 14px;">In the meantime, you can explore what hospitals actually charge:</p>` +
+      emailButton("https://openhospitalcost.com/reports", "See the national price report") +
+      `<p style="margin:18px 0 0;color:#5B6670;font-size:13px;">Didn't sign up? You can ignore this email, or unsubscribe below and we won't contact you again.</p>`,
+    unsubscribe: {
+      url: "mailto:contact@openhospitalcost.com?subject=Unsubscribe",
+      label: "Unsubscribe",
+    },
+  });
+
+  try {
+    const res = await fetch("https://api.resend.com/emails", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+        "Idempotency-Key": `welcome/${email}`,
+      },
+      body: JSON.stringify({ from, to: [email], subject: "Welcome to OpenHospitalCost", html }),
+    });
+    if (!res.ok) console.error("Welcome email failed:", res.status, await res.text().catch(() => ""));
+  } catch (err) {
+    console.error("Welcome email error:", (err as Error).message);
+  }
 }
 
 // Mirrors the subscriber into Resend via the current Contacts API

@@ -1,4 +1,5 @@
 import { sql } from "@/lib/db";
+import { renderEmail, emailHeading } from "@/lib/email-layout";
 
 // Server-side handling for the contact + correction forms. Submissions are
 // stored in form_submissions (so nothing is lost if email fails) and the
@@ -91,14 +92,26 @@ async function sendNotification(s: Notify): Promise<boolean> {
       ? `[OpenHospitalCost] Correction — ${s.pageUrl || "site"}`
       : `[OpenHospitalCost] Contact — ${s.name || s.email}`;
 
-  const lines: string[] = [];
-  if (s.name) lines.push(`<p><strong>From:</strong> ${esc(s.name)} &lt;${esc(s.email)}&gt;</p>`);
-  else lines.push(`<p><strong>From:</strong> ${esc(s.email)}</p>`);
-  if (s.pageUrl) lines.push(`<p><strong>Page:</strong> ${esc(s.pageUrl)}</p>`);
-  lines.push(`<p><strong>${s.kind === "correction" ? "What looks wrong" : "Message"}:</strong><br>${esc(s.message).replace(/\n/g, "<br>")}</p>`);
-  if (s.details?.expected) lines.push(`<p><strong>Expected:</strong><br>${esc(s.details.expected).replace(/\n/g, "<br>")}</p>`);
-  if (s.details?.source) lines.push(`<p><strong>Source:</strong> ${esc(s.details.source)}</p>`);
-  lines.push(`<hr><p style="color:#888;font-size:12px">Submission ${s.id} · reply to this email to respond to the sender.</p>`);
+  const row = (label: string, value: string) =>
+    `<p style="margin:0 0 12px;"><strong>${label}:</strong> ${value}</p>`;
+  const block = (label: string, value: string) =>
+    `<p style="margin:0 0 12px;"><strong>${label}:</strong><br>${value.replace(/\n/g, "<br>")}</p>`;
+
+  const lines: string[] = [emailHeading(s.kind === "correction" ? "New correction" : "New contact message")];
+  lines.push(row("From", s.name ? `${esc(s.name)} &lt;${esc(s.email)}&gt;` : esc(s.email)));
+  if (s.pageUrl) lines.push(row("Page", esc(s.pageUrl)));
+  lines.push(block(s.kind === "correction" ? "What looks wrong" : "Message", esc(s.message)));
+  if (s.details?.expected) lines.push(block("Expected", esc(s.details.expected)));
+  if (s.details?.source) lines.push(row("Source", esc(s.details.source)));
+  lines.push(
+    `<p style="margin:18px 0 0;padding-top:14px;border-top:1px solid #E5E3DD;color:#5B6670;font-size:13px;">Submission ${s.id} · reply to this email to respond to the sender.</p>`
+  );
+
+  const html = renderEmail({
+    title: subject,
+    preheader: s.kind === "correction" ? `Correction on ${s.pageUrl || "the site"}` : `Message from ${s.name || s.email}`,
+    contentHtml: lines.join("\n"),
+  });
 
   try {
     const res = await fetch(RESEND_ENDPOINT, {
@@ -108,7 +121,7 @@ async function sendNotification(s: Notify): Promise<boolean> {
         "Content-Type": "application/json",
         "Idempotency-Key": `form/${s.id}`,
       },
-      body: JSON.stringify({ from, to: [to], reply_to: s.email, subject, html: lines.join("\n") }),
+      body: JSON.stringify({ from, to: [to], reply_to: s.email, subject, html }),
     });
     if (!res.ok) {
       console.error("Resend send failed:", res.status, await res.text().catch(() => ""));
