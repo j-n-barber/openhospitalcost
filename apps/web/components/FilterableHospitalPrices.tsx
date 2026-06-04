@@ -75,9 +75,9 @@ export default function FilterableHospitalPrices({ rows }: { rows: HPRow[] }) {
                 <a href={`/hospital/${r.ccn}`}>{titleCase(r.name)}</a>
                 <div className="rng">{titleCase(r.city)}, {r.state.toUpperCase()}</div>
               </td>
-              <td className="num"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
-              <td className="num">{money(r.cash)}</td>
-              <td className="num">{money(r.gross)}</td>
+              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
+              <td className="num" data-label="Cash">{money(r.cash)}</td>
+              <td className="num" data-label="Gross">{money(r.gross)}</td>
             </tr>
           ))}
           {!view.length && <tr><td colSpan={4} className="empty">No hospitals match your filter.</td></tr>}

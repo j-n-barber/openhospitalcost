@@ -44,6 +44,22 @@ a { color: var(--teal-ink); text-decoration: none; }
 .relbox a:first-of-type { border-top: 0; padding-top: 2px; }
 .relbox a:hover { color: var(--teal); text-decoration: underline; }
 .adrail { min-height: 250px; display: block; }   /* reserves space only when an ad actually renders */
+
+/* Back-to-top button — echoes the logo (teal fill, ink border) + the site's hard
+   offset shadow / translate interaction. Hidden until you scroll. */
+.backtotop {
+  position: fixed; right: 22px; bottom: 22px; z-index: 40;
+  width: 46px; height: 46px; border-radius: 13px;
+  background: var(--teal); color: #fff; border: 1.5px solid var(--ink);
+  display: grid; place-items: center; cursor: pointer;
+  box-shadow: 3px 4px 0 rgba(19,40,58,.22);
+  opacity: 0; transform: translateY(10px); pointer-events: none;
+  transition: opacity .2s ease, transform .2s ease, box-shadow .15s ease;
+}
+.backtotop.show { opacity: 1; transform: translateY(0); pointer-events: auto; }
+.backtotop:hover { box-shadow: 5px 6px 0 var(--ink); transform: translate(-1px, -1px); }
+.backtotop:active { transform: translate(0, 1px); box-shadow: 2px 2px 0 var(--ink); }
+@media (max-width: 780px) { .backtotop { right: 14px; bottom: 14px; width: 44px; height: 44px; } }
 @media (max-width: 940px) { .moneygrid { grid-template-columns: 1fr; gap: 24px; } .mg-rail-inner { position: static; } }
 
 /* Typography niceties: balance headings so they don't orphan a last word, and
@@ -228,7 +244,9 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 @media (max-width: 780px) {
   .wrap { padding: 0 16px; }                 /* more usable width on phones */
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }
-  nav.top { display: none; } .stat-row { display: none; } /* nav lives in the footer on mobile */
+  nav.top { display: none; }                       /* nav lives in the footer on mobile */
+  .stat-row { flex-wrap: wrap; gap: 16px 22px; }   /* keep the trust stats visible on mobile */
+  .prov { margin: 8px 0 44px; }                    /* reset the desktop negative pull on phones */
   .ptable thead th { position: static; }
   /* Tighten the price tables so 4 columns read cleanly on a phone. */
   .ptable th, .ptable td { padding: 10px 10px; }
@@ -238,4 +256,22 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
   .mapwrap { padding: 22px 16px; }
   .val { padding: 20px 18px; }
   .sample .l, .sample .r { padding: 22px 20px; }
+}
+
+/* Phone: render the price tables as stacked cards (one card per row) — far more
+   legible than a squished 4-column table. Headers hidden; each value row shows its
+   label via data-label. */
+@media (max-width: 640px) {
+  .ptable, .ptable tbody, .ptable tr, .ptable td { display: block; }
+  .ptable thead { display: none; }
+  .ptable { width: 100%; border: 0; border-radius: 0; background: transparent; overflow: visible; }
+  .ptable tr { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 4px 15px 9px; margin-bottom: 12px; }
+  .ptable tbody tr:hover { background: var(--surface); }
+  .ptable td { padding: 9px 0; border-bottom: 1px solid var(--border); font-size: 14px; }
+  .ptable td:last-child { border-bottom: 0; }
+  .ptable td:first-child { padding: 12px 0 8px; border-bottom: 1.5px solid var(--border); }     /* card title */
+  .ptable td:first-child a { font-size: 15.5px; font-weight: 600; }
+  .ptable td.num { display: flex; justify-content: space-between; align-items: baseline; }       /* LABEL … $value */
+  .ptable td.num::before { content: attr(data-label); font-family: var(--mono); font-size: 10.5px; font-weight: 500; text-transform: uppercase; letter-spacing: .06em; color: var(--muted); }
+  .ptable .empty { border: 1px solid var(--border); border-radius: 8px; }
 }
