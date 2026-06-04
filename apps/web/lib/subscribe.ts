@@ -48,9 +48,9 @@ export async function handleSubscribe(input: SubscribeInput, meta: Meta): Promis
     ON CONFLICT (email) DO UPDATE
       SET status = 'subscribed', source = COALESCE(EXCLUDED.source, email_subscribers.source),
           updated_at = now()
-    RETURNING id, resend_synced, (xmax = 0) AS inserted`) as
-    { id: string; resend_synced: boolean; inserted: boolean }[];
-  const { id, resend_synced, inserted } = rows[0];
+    RETURNING id, resend_synced, unsubscribe_token, (xmax = 0) AS inserted`) as
+    { id: string; resend_synced: boolean; unsubscribe_token: string; inserted: boolean }[];
+  const { id, resend_synced, unsubscribe_token, inserted } = rows[0];
 
   if (!resend_synced) {
     const contactId = await addToResendList(email);
@@ -60,20 +60,25 @@ export async function handleSubscribe(input: SubscribeInput, meta: Meta): Promis
   }
 
   // Welcome only new subscribers. Best-effort — never block or fail the signup.
-  if (inserted) await sendWelcome(email);
+  if (inserted) await sendWelcome(email, unsubscribe_token);
 
   return { ok: true };
 }
 
+const SITE = "https://openhospitalcost.com";
+
 // Sends the branded single-opt-in welcome email. Best-effort: logs and returns
 // on any failure so a mail hiccup never breaks the signup.
-async function sendWelcome(email: string): Promise<void> {
+async function sendWelcome(email: string, unsubToken: string): Promise<void> {
   const apiKey = process.env.RESEND_API_KEY;
   const from = process.env.RESEND_FROM;
   if (!apiKey || !from) {
     console.error("Resend not configured (RESEND_API_KEY/RESEND_FROM). Welcome email skipped.");
     return;
   }
+
+  const unsubUrl = `${SITE}/unsubscribe?token=${unsubToken}`;
+  const oneClickUrl = `${SITE}/api/unsubscribe?token=${unsubToken}`;
 
   const html = renderEmail({
     title: "Welcome to OpenHospitalCost",
@@ -82,12 +87,9 @@ async function sendWelcome(email: string): Promise<void> {
       emailHeading("You're on the list") +
       `<p style="margin:0 0 14px;">Thanks for subscribing. About once a month we'll send you the biggest hospital price swings, where cash beats the list price, and what we've newly added — drawn straight from hospitals' machine-readable files.</p>` +
       `<p style="margin:0 0 14px;">In the meantime, you can explore what hospitals actually charge:</p>` +
-      emailButton("https://openhospitalcost.com/reports", "See the national price report") +
+      emailButton(`${SITE}/reports`, "See the national price report") +
       `<p style="margin:18px 0 0;color:#5B6670;font-size:13px;">Didn't sign up? You can ignore this email, or unsubscribe below and we won't contact you again.</p>`,
-    unsubscribe: {
-      url: "mailto:contact@openhospitalcost.com?subject=Unsubscribe",
-      label: "Unsubscribe",
-    },
+    unsubscribe: { url: unsubUrl, label: "Unsubscribe" },
   });
 
   try {
@@ -98,7 +100,17 @@ async function sendWelcome(email: string): Promise<void> {
         "Content-Type": "application/json",
         "Idempotency-Key": `welcome/${email}`,
       },
-      body: JSON.stringify({ from, to: [email], subject: "Welcome to OpenHospitalCost", html }),
+      body: JSON.stringify({
+        from,
+        to: [email],
+        subject: "Welcome to OpenHospitalCost",
+        html,
+        // RFC 8058 one-click unsubscribe — surfaces the native client affordance.
+        headers: {
+          "List-Unsubscribe": `<${oneClickUrl}>, <mailto:contact@openhospitalcost.com?subject=Unsubscribe>`,
+          "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+        },
+      }),
     });
     if (!res.ok) console.error("Welcome email failed:", res.status, await res.text().catch(() => ""));
   } catch (err) {
