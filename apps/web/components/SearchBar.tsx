@@ -34,7 +34,7 @@ export default function SearchBar() {
         </svg>
         <input
           type="text"
-          placeholder={'Type a hospital or procedure — e.g. "MRI brain" or "Cleveland Clinic"'}
+          placeholder={'Search a hospital or procedure'}
           value={q}
           autoComplete="off"
           onFocus={() => { setOpen(true); load(); }}
