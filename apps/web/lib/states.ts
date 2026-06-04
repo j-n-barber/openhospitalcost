@@ -1,3 +1,8 @@
+// Non-state USPS codes (D.C. + U.S. territories). Used to count the 50 states
+// separately from territories in coverage copy ("50 states + territories").
+export const TERRITORY_CODES = new Set(["dc", "pr", "gu", "vi", "as", "mp", "um", "fm", "mh", "pw"]);
+export const isTerritory = (code: string) => TERRITORY_CODES.has(code.toLowerCase());
+
 // USPS state code -> name. Shared by the map and state pages.
 export const STATE_NAMES: Record<string, string> = {
   al: "Alabama", ak: "Alaska", az: "Arizona", ar: "Arkansas", ca: "California", co: "Colorado",

@@ -3,6 +3,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import HospitalIndex, { type HospIndexCard } from "@/components/HospitalIndex";
+import { isTerritory } from "@/lib/states";
 
 export const revalidate = 3600;
 
@@ -25,7 +26,9 @@ async function getHospitals(): Promise<HospIndexCard[]> {
 
 export default async function HospitalsPage() {
   const hospitals = await getHospitals();
-  const stateCount = new Set(hospitals.map((h) => h.state.toLowerCase())).size;
+  const codes = new Set(hospitals.map((h) => h.state.toLowerCase()));
+  const stateCount = [...codes].filter((c) => !isTerritory(c)).length;
+  const hasTerritories = [...codes].some((c) => isTerritory(c));
 
   return (
     <>
@@ -35,7 +38,7 @@ export default async function HospitalsPage() {
           <div className="crumb"><a href="/">Home</a> / Hospitals</div>
           <h1>Browse hospitals</h1>
           <p className="sub">
-            {hospitals.length} hospital{hospitals.length !== 1 ? "s" : ""} across {stateCount} states &amp; territories with
+            {hospitals.length} hospital{hospitals.length !== 1 ? "s" : ""} across {stateCount} states{hasTerritories ? " + territories" : ""} with
             published, machine-readable prices. Pick one to see its negotiated, cash, and gross rates by procedure.
           </p>
         </section>

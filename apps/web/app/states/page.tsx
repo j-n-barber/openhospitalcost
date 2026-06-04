@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { STATE_NAMES } from "@/lib/states";
+import { STATE_NAMES, isTerritory } from "@/lib/states";
 
 export const revalidate = 3600;
 
@@ -28,6 +28,8 @@ const stateName = (code: string) => STATE_NAMES[code] ?? code.toUpperCase();
 
 export default async function StatesPage() {
   const states = (await getStates()).sort((a, b) => stateName(a.code).localeCompare(stateName(b.code)));
+  const stateCount = states.filter((s) => !isTerritory(s.code)).length;
+  const hasTerritories = states.some((s) => isTerritory(s.code));
 
   return (
     <>
@@ -37,7 +39,7 @@ export default async function StatesPage() {
           <div className="crumb"><a href="/">Home</a> / States</div>
           <h1>Browse by state</h1>
           <p className="sub">
-            {states.length} states &amp; territories with published hospital price data. Pick one to see its hospitals.
+            {stateCount} states{hasTerritories ? " + territories" : ""} with published hospital price data. Pick one to see its hospitals.
           </p>
         </section>
 

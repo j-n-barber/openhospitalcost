@@ -4,6 +4,7 @@ import SiteFooter from "@/components/SiteFooter";
 import SearchBar from "@/components/SearchBar";
 import CoverageMap from "@/components/CoverageMap";
 import { titleCase, titleCaseProcedure, usd } from "@/lib/format";
+import { isTerritory } from "@/lib/states";
 
 export const revalidate = 3600; // ISR: rebuild at most hourly
 
@@ -15,14 +16,18 @@ export default async function Home() {
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
     GROUP BY 1`) as { state: string; n: number }[];
   const counts = Object.fromEntries(stateRows.map((r) => [r.state, r.n]));
+  // Count the 50 states separately from D.C./territories so copy reads
+  // "50 states + territories" (not the confusing "52 states").
+  const stateCount = stateRows.filter((r) => !isTerritory(r.state)).length;
+  const hasTerritories = stateRows.some((r) => isTerritory(r.state));
 
   const totals = (await sql`
-    SELECT count(*)::int AS hospitals, count(DISTINCT h.state)::int AS states
+    SELECT count(*)::int AS hospitals
     FROM hospitals h
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
-    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { hospitals: number; states: number }[];
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { hospitals: number }[];
   const procRows = (await sql`SELECT count(*)::int AS n FROM procedures`) as { n: number }[];
-  const { hospitals, states } = totals[0];
+  const { hospitals } = totals[0];
   const procedures = procRows[0].n;
 
   const sample = (await sql`
@@ -84,7 +89,7 @@ export default async function Home() {
             </div>
             <div className="stat-row">
               <div className="stat"><div className="n">{hospitals}</div><div className="l">Hospitals</div></div>
-              <div className="stat"><div className="n">{states}</div><div className="l">States &amp; territories</div></div>
+              <div className="stat"><div className="n">{stateCount}</div><div className="l">States{hasTerritories ? " + territories" : ""}</div></div>
               <div className="stat"><div className="n">{procedures}</div><div className="l">Procedures</div></div>
             </div>
           </div>
