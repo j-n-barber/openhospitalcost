@@ -34,9 +34,9 @@ export default function MethodologyPage() {
           <h2>Parsing &amp; code matching</h2>
           <p>
             MRFs come in many shapes — CSV (both wide and tall layouts) and JSON, often compressed, sometimes
-            multiple gigabytes. We parse each file and match its line items to standard CPT procedure codes. In
-            practice hospitals label and place codes inconsistently (e.g. tagging CPT codes as &ldquo;HCPCS&rdquo;
-            or scattering them across columns), so matching looks at both the code value and its type across fields.
+            multiple gigabytes. We parse each file and match its line items to standard procedure codes. In
+            practice hospitals label and place codes inconsistently (e.g. mislabeling a code&apos;s type, or
+            scattering codes across columns), so we match on the code and other attributes across fields.
           </p>
 
           <h2>Quality scoring</h2>
@@ -49,9 +49,9 @@ export default function MethodologyPage() {
 
           <h2>Representative price</h2>
           <p>
-            A single CPT can appear many times in a file (different payers, plans, settings, and professional vs.
-            facility components). For each hospital and procedure we compute a representative <em>facility</em>
-            price — the median, preferring outpatient facility line items — so a &ldquo;$67 MRI&rdquo; that is really
+            A single code can appear many times in a file (different payers, plans, settings, and professional vs.
+            facility components). For each hospital and procedure we compute a representative <em>facility</em>{" "}price
+            — the median, preferring outpatient facility line items — so a &ldquo;$67 MRI&rdquo; that is really
             just one component doesn&apos;t misrepresent the true cost. For negotiated rates we show the median across
             payers with the full low–high range. National figures on index pages are the median of each
             hospital&apos;s median, with the spread shown between hospitals.
