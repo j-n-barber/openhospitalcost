@@ -37,6 +37,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/corrections`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE}/contact`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE}/privacy`, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${BASE}/terms`, changeFrequency: "yearly", priority: 0.2 },
     ...states.map((s) => ({ url: `${BASE}/state/${s.code}`, changeFrequency: "weekly" as const, priority: 0.7 })),
     ...procs.map((p) => ({ url: `${BASE}/procedure/${p.slug}`, changeFrequency: "weekly" as const, priority: 0.8 })),
     ...hosps.map((h) => ({ url: `${BASE}/hospital/${h.ccn}`, changeFrequency: "weekly" as const, priority: 0.6 })),
