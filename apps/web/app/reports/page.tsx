@@ -84,8 +84,9 @@ export default async function ReportsPage() {
           <div className="crumb"><a href="/">Home</a> / Reports</div>
           <h1>National Hospital Price Report</h1>
           <p className="sub">
-            What U.S. hospitals actually charge for shoppable care — drawn from {hospitals.toLocaleString()} hospitals&apos;
-            machine-readable files. Figures are medians with robust 10th–90th-percentile ranges across hospitals.
+            What U.S. hospitals actually charge for shoppable care — drawn from {hospitals.toLocaleString()}{" "}
+            hospitals&apos; machine-readable files. Figures are medians with robust 10th–90th-percentile ranges across
+            hospitals.
           </p>
         </section>
 
