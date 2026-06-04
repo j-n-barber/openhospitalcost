@@ -1,4 +1,5 @@
 import Logo from "./Logo";
+import MobileNav from "./MobileNav";
 
 export default function SiteHeader() {
   return (
@@ -14,6 +15,7 @@ export default function SiteHeader() {
           <a href="/how-it-works">How It Works</a>
           <a href="/methodology">Methodology</a>
         </nav>
+        <MobileNav />
       </div>
     </header>
   );

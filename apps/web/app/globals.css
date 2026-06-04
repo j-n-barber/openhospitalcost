@@ -76,6 +76,14 @@ header { border-bottom: 1px solid var(--border); background: rgba(250,249,246,.8
 nav.top { display: flex; gap: 30px; font-size: 14.5px; font-weight: 500; }
 nav.top a { color: var(--muted); }
 nav.top a:hover { color: var(--ink); }
+/* mobile nav menu (hamburger) — shown only on mobile (see media query) */
+.mobilenav { display: none; position: relative; }
+.mn-toggle { background: none; border: 0; color: var(--ink); cursor: pointer; padding: 6px; margin-right: -6px; display: grid; place-items: center; }
+.mn-backdrop { position: fixed; inset: 0; z-index: 25; }
+.mn-panel { position: fixed; top: 64px; right: 16px; min-width: 210px; background: var(--surface); border: 1.5px solid var(--ink); border-radius: 6px; box-shadow: 5px 6px 0 rgba(19,40,58,.1); z-index: 30; overflow: hidden; }
+.mn-panel a { display: block; padding: 13px 18px; color: var(--ink); font-size: 15px; font-weight: 500; border-bottom: 1px solid var(--border); }
+.mn-panel a:last-child { border-bottom: 0; }
+.mn-panel a:hover { background: #f4f2ec; color: var(--teal-ink); }
 
 /* hero */
 .hero { padding: 74px 0 28px; position: relative; }
@@ -244,7 +252,7 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 @media (max-width: 780px) {
   .wrap { padding: 0 16px; }                 /* more usable width on phones */
   .sample { grid-template-columns: 1fr; } .values { grid-template-columns: 1fr; }
-  nav.top { display: none; }                       /* nav lives in the footer on mobile */
+  nav.top { display: none; } .mobilenav { display: block; }  /* swap inline nav for the hamburger menu */
   .stat-row { flex-wrap: wrap; gap: 16px 22px; }   /* keep the trust stats visible on mobile */
   .prov { margin: 8px 0 44px; }                    /* reset the desktop negative pull on phones */
   .ptable thead th { position: static; }
@@ -256,6 +264,9 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
   .mapwrap { padding: 22px 16px; }
   .val { padding: 20px 18px; }
   .sample .l, .sample .r { padding: 22px 20px; }
+  /* footer: even 2-column grid instead of the awkward space-between wrap */
+  .fcols { display: grid; grid-template-columns: 1fr 1fr; gap: 26px 18px; }
+  footer { padding: 32px 0 44px; }
 }
 
 /* Phone: render the price tables as stacked cards (one card per row) — far more
