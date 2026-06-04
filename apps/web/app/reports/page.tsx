@@ -4,6 +4,7 @@ import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { titleCaseProcedure, usd } from "@/lib/format";
 import { STATE_NAMES } from "@/lib/states";
+import { getSwings, getPriciest, getSavings, getHospitalCount } from "@/lib/reports-data";
 import SubscribeForm from "@/components/SubscribeForm";
 
 export const revalidate = 3600;
@@ -14,50 +15,6 @@ export const metadata: Metadata = {
     "What U.S. hospitals actually charge: the biggest price swings, the most expensive shoppable procedures, and where cash beats the list price — straight from machine-readable files.",
   alternates: { canonical: "/reports" },
 };
-
-type Swing = { slug: string; name: string; n: number; p10: number; p50: number; p90: number };
-type Priciest = { slug: string; name: string; p50: number; n: number };
-type Saving = { slug: string; name: string; cash: number; gross: number };
-
-// Robust per-procedure stats across hospitals (10th–90th percentile, not min/max,
-// so placeholder outliers can't distort the story).
-async function getSwings(): Promise<Swing[]> {
-  return (await sql`
-    SELECT p.slug, p.name, count(*)::int AS n,
-      percentile_cont(0.1) WITHIN GROUP (ORDER BY s.amount)::float AS p10,
-      percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount)::float AS p50,
-      percentile_cont(0.9) WITHIN GROUP (ORDER BY s.amount)::float AS p90
-    FROM procedure_hospital_summary s JOIN procedures p ON p.id = s.procedure_id
-    WHERE s.charge_type = 'negotiated'
-    GROUP BY p.slug, p.name HAVING count(*) >= 40
-    ORDER BY (percentile_cont(0.9) WITHIN GROUP (ORDER BY s.amount))
-           / NULLIF(percentile_cont(0.1) WITHIN GROUP (ORDER BY s.amount), 0) DESC
-    LIMIT 10`) as Swing[];
-}
-
-async function getPriciest(): Promise<Priciest[]> {
-  return (await sql`
-    SELECT p.slug, p.name, count(*)::int AS n,
-      percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount)::float AS p50
-    FROM procedure_hospital_summary s JOIN procedures p ON p.id = s.procedure_id
-    WHERE s.charge_type = 'negotiated'
-    GROUP BY p.slug, p.name HAVING count(*) >= 40
-    ORDER BY p50 DESC LIMIT 8`) as Priciest[];
-}
-
-async function getSavings(): Promise<Saving[]> {
-  return (await sql`
-    SELECT p.slug, p.name,
-      percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'discounted_cash')::float AS cash,
-      percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'gross')::float AS gross
-    FROM procedure_hospital_summary s JOIN procedures p ON p.id = s.procedure_id
-    GROUP BY p.slug, p.name
-    HAVING count(*) FILTER (WHERE s.charge_type = 'discounted_cash') >= 40
-       AND count(*) FILTER (WHERE s.charge_type = 'gross') >= 40
-    ORDER BY (percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'gross'))
-           / NULLIF(percentile_cont(0.5) WITHIN GROUP (ORDER BY s.amount) FILTER (WHERE s.charge_type = 'discounted_cash'), 0) DESC
-    LIMIT 8`) as Saving[];
-}
 
 // States that have at least one procedure with enough eligible hospitals (>= 6,
 // matching the per-state report threshold) to render a real report — so every
@@ -76,14 +33,6 @@ async function getReportStates(): Promise<{ code: string; name: string }[]> {
   return rows
     .filter((r) => STATE_NAMES[r.code])
     .map((r) => ({ code: r.code, name: STATE_NAMES[r.code] }));
-}
-
-async function getHospitalCount(): Promise<number> {
-  const r = (await sql`
-    SELECT count(*)::int AS n FROM hospitals h
-    JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
-    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { n: number }[];
-  return r[0]?.n ?? 0;
 }
 
 export default async function ReportsPage() {
