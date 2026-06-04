@@ -27,9 +27,13 @@ to respect — they're why the workflow is parameterized:
   log makes runs idempotent, so successive runs chew through the backlog.
 - **~14 GB runner disk** → fine now: decompress dirs are cleaned per-hospital and
   giant files fail-fast (5-min DuckDB SIGKILL). No R2 by default (`--no-archive`).
-- **Tier-2 (Playwright) is off by default** in CI (browser install is heavy). To
-  enable, add a `npx playwright install --with-deps chromium` step and drop
-  `--no-tier2` from the args.
+- **Tier-2 (Playwright) is off by default** (browser install is heavy, and the
+  weekly refresh doesn't need it). Toggle it on per-run via the **`use_tier2`**
+  input — that conditionally runs `npx playwright install --with-deps chromium`
+  and drops `--no-tier2`, so Tier-2's browser-cookie fallback runs in CI. Pair
+  with `retry_failed: true` to re-attack already-logged 403/stub failures.
+  Caveat: Tier-2 from a datacenter IP may be less effective than from a
+  residential IP (some WAFs block cloud ranges regardless of a real browser).
 
 ## Recurring refresh
 `--refresh-stale N` (workflow input `refresh_stale`) re-ingests hospitals whose

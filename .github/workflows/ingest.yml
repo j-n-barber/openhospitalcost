@@ -21,6 +21,7 @@ on:
       retry_failed: { description: re-attempt prior permanent failures, type: boolean, default: false }
       refresh_stale: { description: also re-ingest parses older than N days (0=off/backfill), type: string, default: '0' }
       no_archive:   { description: skip R2 raw archival (faster), type: boolean, default: true }
+      use_tier2:    { description: enable Tier-2 Playwright fallback for blocked hosts (slower; installs Chromium), type: boolean, default: false }
 
 concurrency:
   group: ingest
@@ -49,6 +50,9 @@ jobs:
           unzip -o /tmp/duckdb.zip -d .bin
           chmod +x .bin/duckdb
           .bin/duckdb --version
+      - name: Install Playwright Chromium (Tier-2 only)
+        if: ${{ inputs.use_tier2 }}
+        run: npx playwright install --with-deps chromium
       - name: Apply migrations
         run: npm run migrate:up
       - name: Run ingest
@@ -60,12 +64,15 @@ jobs:
           RF: ${{ inputs.retry_failed }}
           RS: ${{ inputs.refresh_stale }}
           NA: ${{ inputs.no_archive }}
+          T2: ${{ inputs.use_tier2 }}
         run: |
           # Fallbacks: scheduled runs get no dispatch inputs, so default here.
-          # Weekly schedule => refresh-stale 30 (refresh month-old data, big-first).
+          # Weekly schedule => refresh-stale 30 (refresh month-old data, big-first),
+          # Tier-1 only (T2 unset -> --no-tier2).
           T="${T:-3}"; L="${L:-800}"; TO="${TO:-300}"; ORD="${ORD:-desc}"
-          RF="${RF:-false}"; NA="${NA:-true}"; RS="${RS:-30}"
-          ARGS="--tier $T --limit $L --timeout $TO --order $ORD --no-tier2"
+          RF="${RF:-false}"; NA="${NA:-true}"; RS="${RS:-30}"; T2="${T2:-false}"
+          ARGS="--tier $T --limit $L --timeout $TO --order $ORD"
+          [ "$T2" != "true" ] && ARGS="$ARGS --no-tier2"
           [ "$RF" = "true" ] && ARGS="$ARGS --retry-failed"
           [ "$NA" = "true" ] && ARGS="$ARGS --no-archive"
           [ "$RS" != "0" ] && [ -n "$RS" ] && ARGS="$ARGS --refresh-stale $RS"
