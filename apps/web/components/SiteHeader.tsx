@@ -12,6 +12,7 @@ export default function SiteHeader() {
         <nav className="top">
           <a href="/procedures">Procedures</a>
           <a href="/hospitals">Hospitals</a>
+          <a href="/reports">Reports</a>
           <a href="/how-it-works">How It Works</a>
           <a href="/methodology">Methodology</a>
         </nav>
