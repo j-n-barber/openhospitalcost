@@ -3,6 +3,7 @@ import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import { titleCaseProcedure, usd } from "@/lib/format";
+import SubscribeForm from "@/components/SubscribeForm";
 
 export const revalidate = 3600;
 
@@ -177,6 +178,7 @@ export default async function ReportsPage() {
           <p style={{ color: "var(--muted)", fontSize: 14 }}>
             Per-state reports and a monthly edition are on the way.
           </p>
+          <SubscribeForm source="reports" />
         </div>
       </main>
       <SiteFooter />

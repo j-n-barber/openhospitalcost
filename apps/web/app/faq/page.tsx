@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import SubscribeForm from "@/components/SubscribeForm";
 
 export const metadata: Metadata = {
   title: "Hospital Price FAQ & Guides — OpenHospitalCost",
@@ -121,6 +122,8 @@ export default function FaqPage() {
               </li>
             ))}
           </ul>
+
+          <SubscribeForm source="faq" />
 
           <p className="prov" style={{ margin: "28px 0 0" }}>
             Still have a question? <a href="/contact">Contact us</a> — or, if a price looks wrong,{" "}
