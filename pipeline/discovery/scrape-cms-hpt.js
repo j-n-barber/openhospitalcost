@@ -8,9 +8,20 @@
 // running this script.
 //
 // For each fetched root locator, we parse out one or more (location-name,
-// mrf-url, contact-email) blocks and update the matching hospital row(s)
-// by name within state. If the locator lists multiple hospitals (e.g.,
-// Memorial Hermann's file lists 14), we attempt to match each entry.
+// mrf-url, contact-email) blocks and update the matching hospital row(s).
+// If the locator lists multiple hospitals (e.g., Memorial Hermann's file
+// lists 14), we match each entry.
+//
+// MATCHING (see matchHospitalForEntry): the file URL's EIN is authoritative
+// (CMS names files `<EIN>_<facility>_standardcharges`). Priority is exact-slug
+// → EIN-exact → cross-slug → fuzzy, and EVERY path is EIN-gated: a name match
+// against a hospital whose known EIN differs from the file's is rejected, so a
+// look-alike name can no longer steal another hospital's file. (Earlier the
+// loose >0.4 trigram fallback caused exactly that — see DATA_INTEGRITY_DUPLICATES.md.)
+//
+// Flags:
+//   --dry-run    report proposed assignments (with evidence) without writing
+//   --self-test  run deterministic matcher checks against real rows, then exit
 //
 // Output columns populated on hospitals: mrf_root_url, mrf_file_url,
 // mrf_format, last_mrf_check_at.
@@ -46,6 +57,20 @@ function hostnameOf(url) {
   } catch {
     return null;
   }
+}
+
+const DRY_RUN = process.argv.includes('--dry-run');
+
+// Extract the publisher EIN from a CMS MRF URL. The CMS naming convention is
+// `<EIN>_<facility-slug>_standardcharges.<ext>`, so the leading 9 digits of the
+// filename (optionally `NN-NNNNNNN`) are the authoritative legal-entity id. This
+// is what lets us VETO a fuzzy name match against a different entity.
+function einOf(url) {
+  let base;
+  try { base = decodeURIComponent(new URL(url).pathname.split('/').pop() || ''); }
+  catch { base = String(url || ''); }
+  const m = base.match(/(\d{2})-?(\d{7})(?!\d)/);
+  return m ? m[1] + m[2] : null;
 }
 
 function parseCmsHpt(text) {
@@ -160,59 +185,97 @@ async function seedRootUrls(client) {
   console.log(`Seeded mrf_root_url on ${updated} hospital(s)`);
 }
 
+// Within-state trigram threshold raised from 0.4 (which let "phelps-county-..."
+// match "phelps-memorial-..."). Cross-state stays stricter.
+const SIM_STATE = 0.55;
+const SIM_CROSS = 0.62;
+
+// Decide which hospital a cms-hpt entry's file belongs to. The file URL's EIN is
+// AUTHORITATIVE (legal entity); we use it to (a) match directly and (b) VETO any
+// fuzzy name match against a hospital whose known EIN differs — the exact failure
+// that mis-assigned single-facility MRFs to similarly-named hospitals. Returns
+// { id, ccn, name, _via } or null. _via records the evidence for logging.
 async function matchHospitalForEntry(client, entry, sourceHospital) {
-  // Try to find the hospital row that best matches the cms-hpt entry's
-  // location-name. For hospital-level sources, prefer same-state matches
-  // first. For system-level sources (sourceHospital is null) or as a
-  // fallback when same-state finds nothing, match across all states.
   const targetName = entry['location-name'];
   if (!targetName) return null;
 
   const targetSlug = slugify(targetName);
+  const fileEin = einOf(entry['mrf-url']);
   const state = sourceHospital?.state ?? null;
   const sourceCcn = sourceHospital?.ccn ?? null;
 
+  // Hospitals that authoritatively OWN this file's EIN (may be a single facility
+  // or a whole system). Used both to match and to veto wrong fuzzy matches.
+  const einRows = fileEin
+    ? (await client.query(`SELECT id, ccn, name, slug, ein FROM hospitals WHERE ein = $1`, [fileEin])).rows
+    : [];
+  const einOwnsSomeone = einRows.length > 0;
+  const einOwnerIds = new Set(einRows.map((r) => r.id));
+
+  // 1) Exact slug within state — the locator names this exact facility. Still
+  //    EIN-gated: a generic name ("Saint Joseph Hospital") can exact-match the
+  //    wrong entity; if both EINs are known and disagree, reject.
   if (state) {
-    // 1) Exact slug match within state
     const exact = await client.query(
-      `SELECT id, ccn, name FROM hospitals
+      `SELECT id, ccn, name, ein FROM hospitals
        WHERE state = $1 AND slug = $2
-       ORDER BY (ccn = $3) DESC -- prefer the seed hospital itself
-       LIMIT 1`,
+       ORDER BY (ccn = $3) DESC LIMIT 1`,
       [state, targetSlug, sourceCcn]
     );
-    if (exact.rows.length) return exact.rows[0];
-
-    // 2) Trigram similarity within state (pg_trgm)
-    const fuzzy = await client.query(
-      `SELECT id, ccn, name, similarity(slug, $2) AS sim
-       FROM hospitals
-       WHERE state = $1 AND similarity(slug, $2) > 0.4
-       ORDER BY sim DESC
-       LIMIT 1`,
-      [state, targetSlug]
-    );
-    if (fuzzy.rows.length) return fuzzy.rows[0];
+    if (exact.rows.length) {
+      const c = exact.rows[0];
+      if (fileEin && c.ein && c.ein !== fileEin) {
+        console.log(`    ⊘ slug "${targetSlug}" in ${state} matches ${c.ccn} but EIN ${c.ein}≠${fileEin}; rejected`);
+      } else {
+        return { ...c, _via: 'slug_state' };
+      }
+    }
   }
 
-  // 3) Cross-state exact slug — useful for system-level files where the
-  //    seed (if any) lives in a different state than the listed facility.
-  const exactCross = await client.query(
-    `SELECT id, ccn, name FROM hospitals WHERE slug = $1 LIMIT 1`,
-    [targetSlug]
-  );
-  if (exactCross.rows.length) return exactCross.rows[0];
+  // 2) EIN-authoritative. One owner -> that hospital. A system EIN (many owners)
+  //    -> disambiguate by the entry's slug; if no facility slug-matches, do NOT
+  //    guess (fall through, but fuzzy is now EIN-vetoed below).
+  if (einRows.length === 1) return { ...einRows[0], _via: 'ein_unique' };
+  if (einRows.length > 1) {
+    const bySlug = einRows.find((r) => r.slug === targetSlug);
+    if (bySlug) return { ...bySlug, _via: 'ein_slug' };
+  }
 
-  // 4) Cross-state trigram, with a stricter threshold to avoid false matches
-  const fuzzyCross = await client.query(
-    `SELECT id, ccn, name, similarity(slug, $1) AS sim
-     FROM hospitals
-     WHERE similarity(slug, $1) > 0.6
-     ORDER BY sim DESC
-     LIMIT 1`,
+  // 3) Cross-state exact slug — but if EINs are both known and disagree, this is
+  //    a slug collision between two entities; reject rather than mis-assign.
+  const exactCross = await client.query(
+    `SELECT id, ccn, name, ein FROM hospitals WHERE slug = $1 LIMIT 1`,
     [targetSlug]
   );
-  if (fuzzyCross.rows.length) return fuzzyCross.rows[0];
+  if (exactCross.rows.length) {
+    const c = exactCross.rows[0];
+    if (fileEin && c.ein && c.ein !== fileEin) {
+      console.log(`    ⊘ slug "${targetSlug}" matches ${c.ccn} but EIN ${c.ein}≠${fileEin}; rejected`);
+    } else {
+      return { ...c, _via: 'slug_cross' };
+    }
+  }
+
+  // 4) Fuzzy — last resort, EIN-VETOED. A fuzzy match is accepted only when it
+  //    does not contradict the file's EIN: reject if the candidate's known EIN
+  //    differs, or if this EIN is owned by some hospital(s) and the candidate is
+  //    not one of them (assigning a known entity's file to a look-alike).
+  const fuzzy = (await client.query(
+    `SELECT id, ccn, name, ein, similarity(slug, $2) AS sim
+     FROM hospitals
+     WHERE ($1::text IS NULL OR state = $1) AND similarity(slug, $2) > $3
+     ORDER BY sim DESC LIMIT 1`,
+    [state, targetSlug, state ? SIM_STATE : SIM_CROSS]
+  )).rows[0];
+  if (fuzzy) {
+    const einConflict = fileEin && fuzzy.ein && fuzzy.ein !== fileEin;
+    const stealsKnownEntity = einOwnsSomeone && !einOwnerIds.has(fuzzy.id);
+    if (einConflict || stealsKnownEntity) {
+      console.log(`    ⊘ fuzzy "${targetSlug}"~${fuzzy.ccn} (sim ${Number(fuzzy.sim).toFixed(2)}) vetoed by EIN ${fileEin}`);
+      return null;
+    }
+    return { ...fuzzy, _via: 'fuzzy' };
+  }
 
   return null;
 }
@@ -254,6 +317,29 @@ async function processOneRoot(client, url, seedHospitals, throttle) {
       continue;
     }
     const fmt = inferFormat(entry['mrf-url']);
+
+    // Safety: never overwrite a hospital's already self-correct assignment with a
+    // weaker fuzzy match. If the hospital's current URL already names it (own slug
+    // in the URL) or carries its own EIN, a fuzzy entry must not clobber it.
+    if (match._via === 'fuzzy') {
+      const cur = (await client.query(
+        `SELECT slug, ein, mrf_file_url FROM hospitals WHERE id = $1`, [match.id]
+      )).rows[0];
+      const urlA = (cur?.mrf_file_url || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+      const slugA = (cur?.slug || '').replace(/[^a-z0-9]/g, '');
+      const selfCorrect = (slugA.length >= 10 && urlA.includes(slugA)) ||
+        (cur?.ein && einOf(cur.mrf_file_url) === cur.ein);
+      if (selfCorrect) {
+        console.log(`    ⊘ keep ${match.ccn} ${match.name} (already self-correct; fuzzy entry skipped)`);
+        continue;
+      }
+    }
+
+    if (DRY_RUN) {
+      console.log(`    ~ would set ${match.ccn} ${match.name} (${fmt}) [${match._via}]`);
+      matchedCount++;
+      continue;
+    }
     await client.query(
       `UPDATE hospitals
          SET mrf_root_url = $1,
@@ -265,10 +351,58 @@ async function processOneRoot(client, url, seedHospitals, throttle) {
       [url, entry['mrf-url'], fmt, match.id]
     );
     matchedCount++;
-    console.log(`    ✓ ${match.ccn} ${match.name} (${fmt})`);
+    console.log(`    ✓ ${match.ccn} ${match.name} (${fmt}) [${match._via}]`);
   }
 
   return { fetched: true, matched: matchedCount };
+}
+
+// Deterministic checks of the matcher decision logic against real DB rows.
+// Validates: (T0) a hospital's own file routes to itself; (T1) an owner's file
+// routes to the owner even when processed under a look-alike's state — not the
+// look-alike; (T2) a fuzzy-only match against a different EIN's entity is vetoed.
+async function runSelfTest(client) {
+  const bySlug = async (slug) =>
+    (await client.query(`SELECT id, ccn, name, slug, state, ein FROM hospitals WHERE slug = $1 LIMIT 1`, [slug])).rows[0];
+  const fileUrl = (h) => `https://selftest.example/${h.ein}-${h.slug}_standardcharges.csv`;
+  let pass = 0, fail = 0, skip = 0;
+  const check = (name, cond, detail) => {
+    if (cond === null) { skip++; console.log(`  SKIP ${name} (${detail})`); }
+    else if (cond) { pass++; console.log(`  PASS ${name}`); }
+    else { fail++; console.log(`  FAIL ${name} — ${detail}`); }
+  };
+
+  const owner = await bySlug('bridgeport-hospital');   // OK_self owner, ein known
+  const lookalike = await bySlug('hartford-hospital'); // same-state look-alike
+
+  if (!owner || !owner.ein) {
+    check('T0/T1', null, 'bridgeport-hospital missing or has no EIN');
+  } else {
+    // T0: owner's own file -> owner
+    const t0 = await matchHospitalForEntry(client,
+      { 'location-name': owner.name, 'mrf-url': fileUrl(owner) }, owner);
+    check('T0 self-routes', t0?.id === owner.id, `got ${t0?.ccn} via ${t0?._via}`);
+
+    if (lookalike) {
+      // T1: owner's file, processed under the look-alike's state -> still owner
+      const t1 = await matchHospitalForEntry(client,
+        { 'location-name': owner.name, 'mrf-url': fileUrl(owner) }, lookalike);
+      check('T1 owner-not-lookalike', t1?.id === owner.id && t1?.id !== lookalike.id,
+        `got ${t1?.ccn} via ${t1?._via} (expected ${owner.ccn})`);
+
+      // T2: a name that only FUZZY-matches the look-alike, but the file's EIN
+      // belongs to the owner -> must be vetoed (not assigned to the look-alike).
+      const t2 = await matchHospitalForEntry(client,
+        { 'location-name': `${lookalike.name} Annex`, 'mrf-url': fileUrl(owner) }, lookalike);
+      check('T2 fuzzy-veto', t2?.id !== lookalike.id,
+        `got ${t2?.ccn} via ${t2?._via} (must not be ${lookalike.ccn})`);
+    } else {
+      check('T1/T2', null, 'hartford-hospital not found');
+    }
+  }
+
+  console.log(`\nSelf-test: ${pass} passed, ${fail} failed, ${skip} skipped.`);
+  return fail === 0;
 }
 
 async function main() {
@@ -292,6 +426,16 @@ async function main() {
   client.on('error', (err) => {
     console.error(`[pool] connection error (recoverable): ${err.message}`);
   });
+
+  if (process.argv.includes('--self-test')) {
+    try {
+      const ok = await runSelfTest(client);
+      process.exitCode = ok ? 0 : 1;
+    } finally {
+      await client.end();
+    }
+    return;
+  }
 
   try {
     await seedRootUrls(client);
