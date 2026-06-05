@@ -356,15 +356,22 @@ async function main() {
       if (!byUrl.has(sys.url)) byUrl.set(sys.url, []);
     }
 
+    // --limit N: process only the first N root URLs (bounded validation runs).
+    const limFlag = process.argv.indexOf('--limit');
+    const limit = limFlag !== -1 ? parseInt(process.argv[limFlag + 1], 10) : null;
+    let work = [...byUrl.entries()];
+    if (limit) work = work.slice(0, limit);
+
     console.log(
-      `Processing ${byUrl.size} unique root URL(s) across ${rows.length} hospital row(s)`
+      `Processing ${work.length}${limit ? `/${byUrl.size}` : ''} unique root URL(s) across ${rows.length} hospital row(s)` +
+      `${DRY_RUN ? ' [DRY-RUN]' : ''}`
     );
     const throttle = new HostThrottle();
 
     let totalFetched = 0;
     let totalMatched = 0;
     let totalErrors = 0;
-    for (const [url, seeds] of byUrl) {
+    for (const [url, seeds] of work) {
       try {
         const r = await processOneRoot(client, url, seeds, throttle);
         if (r.fetched) totalFetched++;
