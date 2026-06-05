@@ -32,7 +32,8 @@
     "ingest:batch": "node pipeline/run-ingest-batch.js",
     "archive:lifecycle": "node pipeline/archive/apply-lifecycle.js",
     "snapshot:write": "node pipeline/snapshots/write-snapshot.js",
-    "snapshot:prune": "node pipeline/snapshots/prune-snapshots.js"
+    "snapshot:prune": "node pipeline/snapshots/prune-snapshots.js",
+    "analytics": "node scripts/vercel-analytics.js"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1058.0",
