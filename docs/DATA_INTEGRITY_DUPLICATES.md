@@ -97,6 +97,21 @@ every comparable case). Caveat: ~50% of negotiated prices fall to the blended
 "all" basis where no facility-outpatient line exists — exposed via the `basis`
 column, a precision (not correctness) limitation.
 
+## Root-cause fix validated at scale (2026-06-04)
+
+Full `scrape-cms-hpt.js --dry-run` over all 1,812 locators (1,439 reachable, no
+writes): **3,354 hospitals would be assigned** — 79% by strong evidence
+(slug_state 1,485, ein_unique 871, slug_cross 257, ein_slug 42), 699 fuzzy
+(overwhelmingly a hospital's own-domain single-facility locator, where fuzzy is
+safe). **83 mis-assignments were prevented by the EIN veto** — and they are
+exactly the historical failure patterns: HCA HealthONE (Sky Ridge, Rocky
+Mountain Children's) under EIN 841321373, a batch of Intermountain Health
+facilities under EIN 942854057, St Luke's Miners Campus, and the Kaiser
+collision (`santa-rosa-medical-center` rejected, EIN 680045270 ≠ Kaiser
+941105628). The no-overwrite guard correctly preserved already-self-correct
+assignments. Conclusion: the EIN-gated matcher prevents the duplicate-data bug
+automatically; a real discovery run is safe to (re)assign the null-URL backlog.
+
 ## Remaining exposure
 
 After the 28-purge, the content audit still flags ~228 hospitals in duplicate
