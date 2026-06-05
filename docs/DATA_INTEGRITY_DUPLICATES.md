@@ -63,6 +63,40 @@ Methodist TX←Fremont NE, …); 58 remain unattributed pending EIN verification
 4. **Do not resume broad ingest** until discovery matching is fixed — re-running
    would re-create the same mis-assignments for hospitals still holding wrong URLs.
 
+## EIN verification + the reliability ceiling
+
+`verify-attribution.js` populated `hospitals.ein` (was 0) for **1,490** OK_self
+hospitals from CMS filename EINs, then used that map to check opaque-URL hospitals
+by EIN. Result: 1,630 OK_self, 90 slug-MISASSIGNED, 77 EIN_MISASSIGNED, 2,518
+unverifiable.
+
+**Key finding — irreducible ambiguity.** Neither slug nor EIN can fully separate a
+legitimate multi-facility system from a mis-assignment, because a system EIN is
+shared by sibling facilities whose names don't reveal the system (e.g. EIN
+741152597 covers all Memorial Hermann hospitals; Cape Coral Hospital *is* Lee
+Health, EIN 992646504). The EIN_MISASSIGNED bucket therefore mixes real
+cross-entity errors (Albany←ECU, Hartford←Bridgeport, UH Cleveland←MetroHealth)
+with same-system false positives (Memorial Hermann ×5, Mount Carmel ×3, CHI,
+Methodist San Antonio). **It is review-only; do not auto-purge it.**
+
+Reliable resolution requires authoritative external data: a curated EIN→system
+map (so sibling facilities are recognized) and/or fixing discovery to match each
+hospital to its own file at the source. The 50 already purged were the
+cross-entity cases that survive this ambiguity (URL names a different *named*
+hospital in a different state/system).
+
+## Extraction methodology — verified (2026-06-04)
+
+Separate from attribution: the representative-price aggregation
+(`ingest-mrf.js refreshSummaryFromStage`) is sound — a facility-outpatient→
+facility→all preference tier, median/min/max within the best tier, $1–$1M junk
+filter. Deterministic. Sanity pass: 0 nulls/negatives/bad-types/min>max across
+393k rows. The forced `delim=','` change was empirically confirmed **non-regressive**
+(8 already-parsed CSVs re-tested: forced-comma columns identical to auto-sniff in
+every comparable case). Caveat: ~50% of negotiated prices fall to the blended
+"all" basis where no facility-outpatient line exists — exposed via the `basis`
+column, a precision (not correctness) limitation.
+
 ## Remaining exposure
 
 After the 28-purge, the content audit still flags ~228 hospitals in duplicate

@@ -77,7 +77,22 @@ async function main() {
     const rosterSlugs = all.map((r) => ({ id: r.id, name: r.name, a: alnum(r.slug), ident: isIdentifying(r.slug) }))
       .filter((r) => r.ident && r.a.length >= 14);
 
-    const buckets = { OK_self: [], MISASSIGNED: [], UNATTRIB: [] };
+    // EIN -> set of distinct owner identities, learned from OK_self hospitals
+    // (their URL contains their own slug, so the file's EIN is authoritatively
+    // theirs). A single-owner EIN identifies one legal entity; a multi-owner EIN
+    // is a system (e.g. Kaiser 941105628) and is NOT usable to flag a victim.
+    function ownerKey(h) { return [...tokens(h.name)].sort().join(' '); }
+    const einOwners = new Map(); // ein -> Map(ownerKey -> sample hospital)
+    for (const h of withUrl) {
+      const urlA = alnum(h.url), ownA = alnum(h.slug);
+      if (!(ownA.length >= 10 && urlA.includes(ownA))) continue; // OK_self only
+      const ein = fileEin(h.url);
+      if (!ein) continue;
+      if (!einOwners.has(ein)) einOwners.set(ein, new Map());
+      einOwners.get(ein).set(ownerKey(h), h.name);
+    }
+
+    const buckets = { OK_self: [], MISASSIGNED: [], EIN_MISASSIGNED: [], UNATTRIB: [] };
     const einUpdates = [];
     for (const h of withUrl) {
       const urlA = alnum(h.url);
@@ -101,15 +116,33 @@ async function main() {
       } else if (owner) {
         buckets.MISASSIGNED.push({ ...h, ownerName: owner.name });
       } else {
-        buckets.UNATTRIB.push(h);
+        // No slug evidence. Try the EIN: if the file's EIN maps to exactly ONE
+        // owner identity (a single legal entity, not a multi-facility system)
+        // and that owner is a different entity than this hospital, it's a
+        // reliable mis-assignment found via authoritative EIN.
+        const owners = ein ? einOwners.get(ein) : null;
+        const single = owners && owners.size === 1 ? [...owners.values()][0] : null;
+        const sameEntity = single && [...tokens(single)].every((t) => selfTokens.has(t));
+        if (single && !sameEntity) buckets.EIN_MISASSIGNED.push({ ...h, ownerName: single, ein });
+        else buckets.UNATTRIB.push(h);
       }
     }
 
     console.log(`Hospitals with a URL: ${withUrl.length}`);
-    console.log(`  OK_self     : ${buckets.OK_self.length}  (URL contains the hospital's own slug)`);
-    console.log(`  MISASSIGNED : ${buckets.MISASSIGNED.length}  (URL names a DIFFERENT hospital)`);
-    console.log(`  UNATTRIB    : ${buckets.UNATTRIB.length}  (opaque/vendor URL — no slug evidence)`);
+    console.log(`  OK_self         : ${buckets.OK_self.length}  (URL contains the hospital's own slug)`);
+    console.log(`  MISASSIGNED     : ${buckets.MISASSIGNED.length}  (URL names a DIFFERENT hospital, by slug)`);
+    console.log(`  EIN_MISASSIGNED : ${buckets.EIN_MISASSIGNED.length}  (opaque URL, file EIN belongs to ONE different entity)`);
+    console.log(`  UNATTRIB        : ${buckets.UNATTRIB.length}  (opaque URL — no slug or single-owner-EIN evidence)`);
     console.log(`  EIN derivable from OK_self URLs: ${einUpdates.length}\n`);
+
+    console.log('--- EIN_MISASSIGNED (REVIEW ONLY — opaque URL, file EIN maps to one OK_self owner) ---');
+    console.log('    CAUTION: a system EIN shared by sibling facilities (Memorial Hermann, Mount');
+    console.log('    Carmel, Lee Health) yields false positives here; do NOT auto-purge this bucket.');
+    for (const h of buckets.EIN_MISASSIGNED.slice(0, 40)) {
+      console.log(`  ${h.state}:${h.name} (${h.ccn})  ein=${h.ein} -> "${h.ownerName}"`);
+    }
+    if (buckets.EIN_MISASSIGNED.length > 40) console.log(`  ... +${buckets.EIN_MISASSIGNED.length - 40} more`);
+    console.log('');
 
     console.log('--- MISASSIGNED (full roster, positive slug evidence) ---');
     for (const h of buckets.MISASSIGNED.slice(0, 60)) {
