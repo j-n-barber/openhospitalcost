@@ -4,6 +4,7 @@ import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
 import { AdSense } from "@/components/AdSense";
 import BackToTop from "@/components/BackToTop";
+import Track from "@/components/Track";
 
 // Direction B brand type — locked in brand/palette.md.
 const serif = Source_Serif_4({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-serif", display: "swap" });
@@ -40,6 +41,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <BackToTop />
+        <Track />
         <Analytics />
         <AdSense />
       </body>

@@ -1,0 +1,30 @@
+name: Analytics rollup
+
+# Daily maintenance for first-party analytics: roll completed days into the
+# analytics_daily table (long-term trend) and prune raw analytics_events older
+# than the retention window, so storage stays bounded regardless of traffic.
+on:
+  schedule:
+    - cron: '0 5 * * *'   # daily 05:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: analytics-rollup
+  cancel-in-progress: false
+
+jobs:
+  rollup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '20'
+          cache: 'npm'
+      - name: Install dependencies
+        run: npm install
+      - name: Roll up + prune analytics
+        run: npm run analytics:rollup
