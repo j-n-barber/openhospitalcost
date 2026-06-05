@@ -39,7 +39,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import pg from 'pg';
 import { loadEnv } from '../../db/load-env.js';
-import { slugify } from './slugify.js';
+import { einOf, matchHospitalForEntry } from './match-hospital.js';
 
 const USER_AGENT =
   'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
@@ -60,18 +60,6 @@ function hostnameOf(url) {
 }
 
 const DRY_RUN = process.argv.includes('--dry-run');
-
-// Extract the publisher EIN from a CMS MRF URL. The CMS naming convention is
-// `<EIN>_<facility-slug>_standardcharges.<ext>`, so the leading 9 digits of the
-// filename (optionally `NN-NNNNNNN`) are the authoritative legal-entity id. This
-// is what lets us VETO a fuzzy name match against a different entity.
-function einOf(url) {
-  let base;
-  try { base = decodeURIComponent(new URL(url).pathname.split('/').pop() || ''); }
-  catch { base = String(url || ''); }
-  const m = base.match(/(\d{2})-?(\d{7})(?!\d)/);
-  return m ? m[1] + m[2] : null;
-}
 
 function parseCmsHpt(text) {
   // Format is paragraph-separated blocks of `key: value` lines.
@@ -183,101 +171,6 @@ async function seedRootUrls(client) {
     if (result.rowCount > 0) updated++;
   }
   console.log(`Seeded mrf_root_url on ${updated} hospital(s)`);
-}
-
-// Within-state trigram threshold raised from 0.4 (which let "phelps-county-..."
-// match "phelps-memorial-..."). Cross-state stays stricter.
-const SIM_STATE = 0.55;
-const SIM_CROSS = 0.62;
-
-// Decide which hospital a cms-hpt entry's file belongs to. The file URL's EIN is
-// AUTHORITATIVE (legal entity); we use it to (a) match directly and (b) VETO any
-// fuzzy name match against a hospital whose known EIN differs — the exact failure
-// that mis-assigned single-facility MRFs to similarly-named hospitals. Returns
-// { id, ccn, name, _via } or null. _via records the evidence for logging.
-async function matchHospitalForEntry(client, entry, sourceHospital) {
-  const targetName = entry['location-name'];
-  if (!targetName) return null;
-
-  const targetSlug = slugify(targetName);
-  const fileEin = einOf(entry['mrf-url']);
-  const state = sourceHospital?.state ?? null;
-  const sourceCcn = sourceHospital?.ccn ?? null;
-
-  // Hospitals that authoritatively OWN this file's EIN (may be a single facility
-  // or a whole system). Used both to match and to veto wrong fuzzy matches.
-  const einRows = fileEin
-    ? (await client.query(`SELECT id, ccn, name, slug, ein FROM hospitals WHERE ein = $1`, [fileEin])).rows
-    : [];
-  const einOwnsSomeone = einRows.length > 0;
-  const einOwnerIds = new Set(einRows.map((r) => r.id));
-
-  // 1) Exact slug within state — the locator names this exact facility. Still
-  //    EIN-gated: a generic name ("Saint Joseph Hospital") can exact-match the
-  //    wrong entity; if both EINs are known and disagree, reject.
-  if (state) {
-    const exact = await client.query(
-      `SELECT id, ccn, name, ein FROM hospitals
-       WHERE state = $1 AND slug = $2
-       ORDER BY (ccn = $3) DESC LIMIT 1`,
-      [state, targetSlug, sourceCcn]
-    );
-    if (exact.rows.length) {
-      const c = exact.rows[0];
-      if (fileEin && c.ein && c.ein !== fileEin) {
-        console.log(`    ⊘ slug "${targetSlug}" in ${state} matches ${c.ccn} but EIN ${c.ein}≠${fileEin}; rejected`);
-      } else {
-        return { ...c, _via: 'slug_state' };
-      }
-    }
-  }
-
-  // 2) EIN-authoritative. One owner -> that hospital. A system EIN (many owners)
-  //    -> disambiguate by the entry's slug; if no facility slug-matches, do NOT
-  //    guess (fall through, but fuzzy is now EIN-vetoed below).
-  if (einRows.length === 1) return { ...einRows[0], _via: 'ein_unique' };
-  if (einRows.length > 1) {
-    const bySlug = einRows.find((r) => r.slug === targetSlug);
-    if (bySlug) return { ...bySlug, _via: 'ein_slug' };
-  }
-
-  // 3) Cross-state exact slug — but if EINs are both known and disagree, this is
-  //    a slug collision between two entities; reject rather than mis-assign.
-  const exactCross = await client.query(
-    `SELECT id, ccn, name, ein FROM hospitals WHERE slug = $1 LIMIT 1`,
-    [targetSlug]
-  );
-  if (exactCross.rows.length) {
-    const c = exactCross.rows[0];
-    if (fileEin && c.ein && c.ein !== fileEin) {
-      console.log(`    ⊘ slug "${targetSlug}" matches ${c.ccn} but EIN ${c.ein}≠${fileEin}; rejected`);
-    } else {
-      return { ...c, _via: 'slug_cross' };
-    }
-  }
-
-  // 4) Fuzzy — last resort, EIN-VETOED. A fuzzy match is accepted only when it
-  //    does not contradict the file's EIN: reject if the candidate's known EIN
-  //    differs, or if this EIN is owned by some hospital(s) and the candidate is
-  //    not one of them (assigning a known entity's file to a look-alike).
-  const fuzzy = (await client.query(
-    `SELECT id, ccn, name, ein, similarity(slug, $2) AS sim
-     FROM hospitals
-     WHERE ($1::text IS NULL OR state = $1) AND similarity(slug, $2) > $3
-     ORDER BY sim DESC LIMIT 1`,
-    [state, targetSlug, state ? SIM_STATE : SIM_CROSS]
-  )).rows[0];
-  if (fuzzy) {
-    const einConflict = fileEin && fuzzy.ein && fuzzy.ein !== fileEin;
-    const stealsKnownEntity = einOwnsSomeone && !einOwnerIds.has(fuzzy.id);
-    if (einConflict || stealsKnownEntity) {
-      console.log(`    ⊘ fuzzy "${targetSlug}"~${fuzzy.ccn} (sim ${Number(fuzzy.sim).toFixed(2)}) vetoed by EIN ${fileEin}`);
-      return null;
-    }
-    return { ...fuzzy, _via: 'fuzzy' };
-  }
-
-  return null;
 }
 
 async function processOneRoot(client, url, seedHospitals, throttle) {

@@ -20,7 +20,7 @@ import { fileURLToPath } from 'node:url';
 import { dirname, resolve } from 'node:path';
 import pg from 'pg';
 import { loadEnv } from '../../db/load-env.js';
-import { slugify } from './slugify.js';
+import { einOf, matchHospitalForEntry } from './match-hospital.js';
 import { fetchViaBrowser, closeBrowser } from '../fetch/browser-fetch.js';
 
 const HOST_RATE_LIMIT_MS = 2_500;
@@ -61,28 +61,9 @@ function inferFormat(url) {
   return null;
 }
 
-async function matchHospitalForEntry(client, entry) {
-  const targetName = entry['location-name'];
-  if (!targetName) return null;
-  const targetSlug = slugify(targetName);
-
-  // Cross-state exact slug (no state seed available for browser-fetched URLs)
-  const exact = await client.query(
-    `SELECT id, ccn, name FROM hospitals WHERE slug = $1 LIMIT 1`,
-    [targetSlug]
-  );
-  if (exact.rows.length) return exact.rows[0];
-
-  const fuzzy = await client.query(
-    `SELECT id, ccn, name, similarity(slug, $1) AS sim
-     FROM hospitals
-     WHERE similarity(slug, $1) > 0.55
-     ORDER BY sim DESC
-     LIMIT 1`,
-    [targetSlug]
-  );
-  return fuzzy.rows[0] ?? null;
-}
+// Matching is the shared EIN-gated matcher (match-hospital.js). Browser-fetched
+// URLs have no state seed, so we pass sourceHospital=null (cross-state path),
+// which is still EIN-vetoed against assigning a file to a look-alike name.
 
 class HostThrottle {
   constructor() { this.lastByHost = new Map(); }
@@ -136,10 +117,25 @@ async function main() {
       console.log(`  parsed ${parsed.length} entry(ies)`);
 
       for (const cms of parsed) {
-        const match = await matchHospitalForEntry(client, cms);
+        const match = await matchHospitalForEntry(client, cms, null);
         if (!match) {
           console.log(`    ? no match for "${cms['location-name']}"`);
           continue;
+        }
+        // Never clobber a hospital's already self-correct assignment with a weak
+        // fuzzy match (same guard as scrape-cms-hpt.js).
+        if (match._via === 'fuzzy') {
+          const cur = (await client.query(
+            `SELECT slug, ein, mrf_file_url FROM hospitals WHERE id = $1`, [match.id]
+          )).rows[0];
+          const urlA = (cur?.mrf_file_url || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+          const slugA = (cur?.slug || '').replace(/[^a-z0-9]/g, '');
+          const selfCorrect = (slugA.length >= 10 && urlA.includes(slugA)) ||
+            (cur?.ein && einOf(cur.mrf_file_url) === cur.ein);
+          if (selfCorrect) {
+            console.log(`    ⊘ keep ${match.ccn} ${match.name} (already self-correct; fuzzy skipped)`);
+            continue;
+          }
         }
         const fmt = inferFormat(cms['mrf-url']);
         await client.query(
@@ -153,7 +149,7 @@ async function main() {
           [url, cms['mrf-url'], fmt, match.id]
         );
         totalMatched++;
-        console.log(`    ✓ ${match.ccn} ${match.name} (${fmt})`);
+        console.log(`    ✓ ${match.ccn} ${match.name} (${fmt}) [${match._via}]`);
       }
     }
 
