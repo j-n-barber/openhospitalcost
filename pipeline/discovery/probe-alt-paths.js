@@ -21,6 +21,9 @@
 
 import pg from 'pg';
 import { loadEnv } from '../../db/load-env.js';
+import { einOf } from './match-hospital.js';
+
+const alnum = (s) => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 
 const USER_AGENT =
   'OpenHospitalCost-Ingester/1.0 (+https://openhospitalcost.com/about/data; contact: contact@openhospitalcost.com)';
@@ -78,17 +81,36 @@ function originOf(url) {
   }
 }
 
-function extractMrfUrl(html, pageUrl) {
+// Pick THIS hospital's MRF link from a page that may list several facilities'
+// files. Identity-first (EIN, then slug) so a multi-facility transparency page
+// can't hand one hospital a sibling's file. If several candidates exist and none
+// matches this hospital's identity, refuse to guess (return null) — accuracy
+// over coverage.
+function extractMrfUrl(html, pageUrl, hospital) {
   const matches = html.match(URL_PATTERN) ?? [];
-  // Decode common HTML entities so &amp; etc don't break URLs
   const cleaned = matches.map((u) => u.replace(/&amp;/g, '&'));
-  // Filter to URLs containing CMS-style hints
   const ranked = cleaned.filter((u) => MRF_NAME_HINT.test(u));
   if (ranked.length === 0) return null;
-  // Prefer URLs hosted on the same origin as the page we're scraping
+
+  // 1) URL whose embedded EIN matches the hospital's EIN (authoritative).
+  if (hospital.ein) {
+    const einHit = ranked.find((u) => einOf(u) === hospital.ein);
+    if (einHit) return einHit.trim();
+  }
+  // 2) URL whose filename contains the hospital's full slug.
+  const slugA = alnum(hospital.slug);
+  if (slugA.length >= 10) {
+    const slugHit = ranked.find((u) => alnum(u).includes(slugA));
+    if (slugHit) return slugHit.trim();
+  }
+  // 3) A single candidate is unambiguous.
+  if (ranked.length === 1) return ranked[0].trim();
+  // 4) Multiple candidates, no identity match: only safe if exactly one is on
+  //    the page's own origin; otherwise ambiguous -> don't guess.
   const pageHost = hostnameOf(pageUrl);
   const sameOrigin = ranked.filter((u) => hostnameOf(u) === pageHost);
-  return (sameOrigin[0] ?? ranked[0]).trim();
+  if (sameOrigin.length === 1) return sameOrigin[0].trim();
+  return null;
 }
 
 async function fetchHtml(url) {
@@ -146,7 +168,7 @@ async function processOne(client, hospital, throttle) {
     const result = await fetchHtml(url);
     if (!result.ok) continue;
 
-    const mrfUrl = extractMrfUrl(result.text, result.finalUrl ?? url);
+    const mrfUrl = extractMrfUrl(result.text, result.finalUrl ?? url, hospital);
     if (!mrfUrl) continue;
 
     const fmt = inferFormat(mrfUrl);
@@ -185,7 +207,7 @@ async function main() {
   });
 
   const { rows } = await client.query(`
-    SELECT id, ccn, name, state, mrf_root_url
+    SELECT id, ccn, name, state, slug, ein, mrf_root_url
     FROM hospitals
     WHERE mrf_root_url IS NOT NULL
       AND mrf_file_url IS NULL
