@@ -9,23 +9,25 @@ node_modules/
 **/.next/
 apps/web/out/
 
-# Data pipeline (1.7GB of MRF samples, duckdb binary, snapshots) — not used by the web app
-pipeline/
-data/
-db/
-scripts/
-test/
-.bin/
+# Data pipeline (1.7GB of MRF samples, duckdb binary, snapshots) — not used by the
+# web app. LEADING SLASH = repo-root only: an unanchored `data/` also matched the
+# web app's `apps/web/app/data/` route and 404'd /data sitewide (footer-linked).
+/pipeline/
+/data/
+/db/
+/scripts/
+/test/
+/.bin/
 
 # Design / brand source assets (not needed at build)
-design/
-brand/
-Logo.ai
+/design/
+/brand/
+/Logo.ai
 
 # Local + tooling
-.git/
-.github/
-.claude/
-.agents/
+/.git/
+/.github/
+/.claude/
+/.agents/
 *.log
 .DS_Store
