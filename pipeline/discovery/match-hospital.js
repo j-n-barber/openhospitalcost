@@ -28,12 +28,40 @@ export function einOf(url) {
   return m ? m[1] + m[2] : null;
 }
 
+// Confirmed-wrong (hospital_id|url) pairs from the fingerprint audit. Loaded once
+// per process; a missing table (older envs) degrades to "nothing blocked".
+let _blocklist = null;
+function loadBlocklist(client) {
+  if (!_blocklist) {
+    _blocklist = client
+      .query(`SELECT hospital_id, url FROM mrf_assignment_blocklist`)
+      .then((r) => new Set(r.rows.map((x) => `${x.hospital_id}|${x.url}`)))
+      .catch(() => new Set());
+  }
+  return _blocklist;
+}
+
+// Public entry point. Runs the matcher, then vetoes any result that the
+// post-ingest fingerprint audit has already proven wrong for this exact URL
+// (closes the no-EIN portal-URL recurrence the EIN gate can't catch).
+export async function matchHospitalForEntry(client, entry, sourceHospital = null) {
+  const m = await matchHospitalInner(client, entry, sourceHospital);
+  if (m) {
+    const blocked = await loadBlocklist(client);
+    if (blocked.has(`${m.id}|${entry['mrf-url']}`)) {
+      console.log(`    ⊘ blocklisted: ${m.ccn} ${m.name} <- this URL is a confirmed mis-assignment; skipped`);
+      return null;
+    }
+  }
+  return m;
+}
+
 // Decide which hospital a cms-hpt entry's file belongs to. Priority: exact-slug
 // in state -> EIN-exact (system EIN disambiguated by slug) -> cross-slug ->
 // fuzzy, and EVERY path is EIN-gated. sourceHospital may be null (cross-state,
 // e.g. browser-fetched or system-level URLs). Returns { id, ccn, name, _via } or
 // null; _via records the matching evidence for logging.
-export async function matchHospitalForEntry(client, entry, sourceHospital = null) {
+async function matchHospitalInner(client, entry, sourceHospital = null) {
   const targetName = entry['location-name'];
   if (!targetName) return null;
 

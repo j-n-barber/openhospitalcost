@@ -199,10 +199,18 @@ async function main() {
     // --- Purge (atomic): for each wrong hospital, delete summary derived from
     // its (wrong) file by source_file_id, delete that mrf_files row, null URL. ---
     const client = await pool.connect();
-    let sDel = 0, fDel = 0, uNull = 0;
+    let sDel = 0, fDel = 0, uNull = 0, blocked = 0;
     try {
       await client.query('BEGIN');
       for (const m of removeList) {
+        // Record the confirmed-wrong (hospital, url) pair BEFORE nulling, so the
+        // discovery matcher never re-assigns it (stops the no-EIN recurrence).
+        if (m.url) {
+          blocked += (await client.query(
+            `INSERT INTO mrf_assignment_blocklist (hospital_id, url, reason)
+             VALUES ($1,$2,$3) ON CONFLICT (hospital_id, url) DO NOTHING`,
+            [m.id, m.url, `fingerprint audit: file belongs to ${m.owner?.name ?? '?'}`])).rowCount;
+        }
         const files = (await client.query(
           `SELECT id FROM mrf_files WHERE hospital_id=$1`, [m.id]
         )).rows.map((r) => r.id);
@@ -216,7 +224,7 @@ async function main() {
           [m.id])).rowCount;
       }
       await client.query('COMMIT');
-      console.log(`PURGED: ${sDel} summary rows, ${fDel} mrf_files, ${uNull} URLs nulled (re-queued).`);
+      console.log(`PURGED: ${sDel} summary rows, ${fDel} mrf_files, ${uNull} URLs nulled (re-queued), ${blocked} blocklisted.`);
     } catch (err) {
       await client.query('ROLLBACK');
       console.error('PURGE ROLLED BACK:', err.message);

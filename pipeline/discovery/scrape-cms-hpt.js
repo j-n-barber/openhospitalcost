@@ -271,6 +271,19 @@ async function runSelfTest(client) {
   if (!owner || !owner.ein) {
     check('T0/T1', null, 'bridgeport-hospital missing or has no EIN');
   } else {
+    // T3 (runs FIRST so the matcher's blocklist cache loads with this row):
+    // a (hospital, url) pair on the blocklist must be vetoed even though the
+    // name matches. Uses a throwaway URL so it doesn't affect T0–T2.
+    const blockUrl = 'https://selftest.example/__blocked__.csv';
+    await client.query(
+      `INSERT INTO mrf_assignment_blocklist (hospital_id, url, reason)
+       VALUES ($1,$2,'self-test') ON CONFLICT DO NOTHING`, [owner.id, blockUrl]);
+    const t3 = await matchHospitalForEntry(client,
+      { 'location-name': owner.name, 'mrf-url': blockUrl }, owner);
+    check('T3 blocklist-veto', t3 === null, `got ${t3?.ccn} (must be null — blocklisted)`);
+    await client.query(
+      `DELETE FROM mrf_assignment_blocklist WHERE hospital_id=$1 AND url=$2`, [owner.id, blockUrl]);
+
     // T0: owner's own file -> owner
     const t0 = await matchHospitalForEntry(client,
       { 'location-name': owner.name, 'mrf-url': fileUrl(owner) }, owner);
