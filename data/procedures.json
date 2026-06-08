@@ -12,7 +12,12 @@
       "category": "visit",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["doctor visit", "primary care visit", "office visit cost", "follow-up appointment"],
+      "aliases": [
+        "doctor visit",
+        "primary care visit",
+        "office visit cost",
+        "follow-up appointment"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -24,7 +29,12 @@
       "category": "visit",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["new patient visit", "first appointment cost", "new doctor visit", "establishing care"],
+      "aliases": [
+        "new patient visit",
+        "first appointment cost",
+        "new doctor visit",
+        "establishing care"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -36,7 +46,12 @@
       "category": "emergency",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["emergency room cost", "er visit cost", "emergency department visit", "er bill"],
+      "aliases": [
+        "emergency room cost",
+        "er visit cost",
+        "emergency department visit",
+        "er bill"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -48,7 +63,12 @@
       "category": "visit",
       "shoppable_service": true,
       "search_priority": 4,
-      "aliases": ["hospital admission cost", "admitted to hospital", "first day hospital", "admission charge"],
+      "aliases": [
+        "hospital admission cost",
+        "admitted to hospital",
+        "first day hospital",
+        "admission charge"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -60,7 +80,11 @@
       "category": "emergency",
       "shoppable_service": true,
       "search_priority": 5,
-      "aliases": ["icu cost", "critical care cost", "intensive care charge"],
+      "aliases": [
+        "icu cost",
+        "critical care cost",
+        "intensive care charge"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -72,7 +96,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["cbc blood test", "blood count cost", "cbc with differential", "full blood count"],
+      "aliases": [
+        "cbc blood test",
+        "blood count cost",
+        "cbc with differential",
+        "full blood count"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -84,7 +113,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["cmp blood test", "metabolic panel cost", "comprehensive metabolic", "cmp 14"],
+      "aliases": [
+        "cmp blood test",
+        "metabolic panel cost",
+        "comprehensive metabolic",
+        "cmp 14"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -96,7 +130,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["bmp blood test", "basic metabolic panel cost", "bmp 8", "kidney function test"],
+      "aliases": [
+        "bmp blood test",
+        "basic metabolic panel cost",
+        "bmp 8",
+        "kidney function test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -108,7 +147,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["cholesterol test", "lipid panel cost", "cholesterol blood test", "lipid profile"],
+      "aliases": [
+        "cholesterol test",
+        "lipid panel cost",
+        "cholesterol blood test",
+        "lipid profile"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -120,7 +164,13 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["a1c test", "diabetes test", "hba1c cost", "glycated hemoglobin", "a1c blood test"],
+      "aliases": [
+        "a1c test",
+        "diabetes test",
+        "hba1c cost",
+        "glycated hemoglobin",
+        "a1c blood test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -132,7 +182,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["thyroid test", "tsh blood test", "thyroid function cost", "thyroid screening"],
+      "aliases": [
+        "thyroid test",
+        "tsh blood test",
+        "thyroid function cost",
+        "thyroid screening"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -144,7 +199,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["urine test", "urinalysis cost", "urine analysis", "ua test"],
+      "aliases": [
+        "urine test",
+        "urinalysis cost",
+        "urine analysis",
+        "ua test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -156,7 +216,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["psa test", "prostate cancer screening", "psa blood test", "prostate test"],
+      "aliases": [
+        "psa test",
+        "prostate cancer screening",
+        "psa blood test",
+        "prostate test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -168,7 +233,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["hiv test cost", "hiv screening", "hiv blood test", "hiv antibody screening"],
+      "aliases": [
+        "hiv test cost",
+        "hiv screening",
+        "hiv blood test",
+        "hiv antibody screening"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -180,7 +250,12 @@
       "category": "lab",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["vitamin d test cost", "vitamin d blood test", "25-hydroxyvitamin d", "vit d test"],
+      "aliases": [
+        "vitamin d test cost",
+        "vitamin d blood test",
+        "25-hydroxyvitamin d",
+        "vit d test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -192,7 +267,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["brain mri cost", "mri brain", "head mri", "brain scan mri"],
+      "aliases": [
+        "brain mri cost",
+        "mri brain",
+        "head mri",
+        "brain scan mri"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -204,7 +284,11 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["brain mri with contrast", "contrast brain mri", "brain mri gadolinium"],
+      "aliases": [
+        "brain mri with contrast",
+        "contrast brain mri",
+        "brain mri gadolinium"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -216,7 +300,11 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["brain mri with and without", "complete brain mri", "full brain mri"],
+      "aliases": [
+        "brain mri with and without",
+        "complete brain mri",
+        "full brain mri"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -228,7 +316,13 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["lumbar mri cost", "lower back mri", "mri of lower back", "back mri", "spine mri lumbar"],
+      "aliases": [
+        "lumbar mri cost",
+        "lower back mri",
+        "mri of lower back",
+        "back mri",
+        "spine mri lumbar"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -240,7 +334,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["knee mri cost", "mri of knee", "knee mri scan", "knee magnetic resonance"],
+      "aliases": [
+        "knee mri cost",
+        "mri of knee",
+        "knee mri scan",
+        "knee magnetic resonance"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -252,7 +351,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["head ct cost", "ct scan of head", "cat scan head", "brain ct scan"],
+      "aliases": [
+        "head ct cost",
+        "ct scan of head",
+        "cat scan head",
+        "brain ct scan"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -264,7 +368,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["abdomen pelvis ct cost", "ct abdomen pelvis", "ct scan abdomen", "abdominal ct with contrast"],
+      "aliases": [
+        "abdomen pelvis ct cost",
+        "ct abdomen pelvis",
+        "ct scan abdomen",
+        "abdominal ct with contrast"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -276,7 +385,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["chest ct cost", "ct of chest", "lung ct scan", "thoracic ct"],
+      "aliases": [
+        "chest ct cost",
+        "ct of chest",
+        "lung ct scan",
+        "thoracic ct"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -288,7 +402,12 @@
       "category": "preventive",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["mammogram cost", "breast cancer screening", "mammography", "screening mammography"],
+      "aliases": [
+        "mammogram cost",
+        "breast cancer screening",
+        "mammography",
+        "screening mammography"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -300,7 +419,11 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["diagnostic mammogram cost", "mammogram with concern", "follow-up mammogram"],
+      "aliases": [
+        "diagnostic mammogram cost",
+        "mammogram with concern",
+        "follow-up mammogram"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -312,7 +435,12 @@
       "category": "preventive",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["dexa scan cost", "bone density test", "osteoporosis screening", "dxa scan"],
+      "aliases": [
+        "dexa scan cost",
+        "bone density test",
+        "osteoporosis screening",
+        "dxa scan"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -324,7 +452,12 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["chest xray cost", "chest x-ray", "lung x-ray", "chest radiograph"],
+      "aliases": [
+        "chest xray cost",
+        "chest x-ray",
+        "lung x-ray",
+        "chest radiograph"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -336,7 +469,11 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["abdominal ultrasound cost", "ultrasound of abdomen", "complete abdomen ultrasound"],
+      "aliases": [
+        "abdominal ultrasound cost",
+        "ultrasound of abdomen",
+        "complete abdomen ultrasound"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -348,7 +485,12 @@
       "category": "maternity",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["pregnancy ultrasound cost", "fetal ultrasound", "anatomy scan", "20 week ultrasound"],
+      "aliases": [
+        "pregnancy ultrasound cost",
+        "fetal ultrasound",
+        "anatomy scan",
+        "20 week ultrasound"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -360,7 +502,13 @@
       "category": "imaging",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["echocardiogram cost", "echo heart test", "heart ultrasound", "echo cardiogram", "transthoracic echo"],
+      "aliases": [
+        "echocardiogram cost",
+        "echo heart test",
+        "heart ultrasound",
+        "echo cardiogram",
+        "transthoracic echo"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -372,7 +520,13 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["ekg cost", "ecg test", "electrocardiogram", "12 lead ekg", "heart rhythm test"],
+      "aliases": [
+        "ekg cost",
+        "ecg test",
+        "electrocardiogram",
+        "12 lead ekg",
+        "heart rhythm test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -384,7 +538,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["holter monitor cost", "24 hour heart monitor", "ambulatory ekg", "heart monitor test"],
+      "aliases": [
+        "holter monitor cost",
+        "24 hour heart monitor",
+        "ambulatory ekg",
+        "heart monitor test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -396,7 +555,13 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["stress test cost", "cardiac stress test", "treadmill test", "exercise stress test", "heart stress test"],
+      "aliases": [
+        "stress test cost",
+        "cardiac stress test",
+        "treadmill test",
+        "exercise stress test",
+        "heart stress test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -408,7 +573,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["dialysis cost", "kidney dialysis", "hemodialysis session", "esrd treatment"],
+      "aliases": [
+        "dialysis cost",
+        "kidney dialysis",
+        "hemodialysis session",
+        "esrd treatment"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -420,7 +590,12 @@
       "category": "preventive",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["colonoscopy cost", "colon cancer screening", "colon scope", "diagnostic colonoscopy"],
+      "aliases": [
+        "colonoscopy cost",
+        "colon cancer screening",
+        "colon scope",
+        "diagnostic colonoscopy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -432,7 +607,11 @@
       "category": "preventive",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["colonoscopy biopsy cost", "colonoscopy with polyp", "screening colonoscopy biopsy"],
+      "aliases": [
+        "colonoscopy biopsy cost",
+        "colonoscopy with polyp",
+        "screening colonoscopy biopsy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -444,7 +623,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["upper endoscopy cost", "egd procedure", "stomach scope", "upper gi endoscopy"],
+      "aliases": [
+        "upper endoscopy cost",
+        "egd procedure",
+        "stomach scope",
+        "upper gi endoscopy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -456,7 +640,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["allergy test cost", "skin allergy test", "allergy panel cost", "scratch test"],
+      "aliases": [
+        "allergy test cost",
+        "skin allergy test",
+        "allergy panel cost",
+        "scratch test"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -468,7 +657,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["spirometry cost", "breathing test", "lung function test", "pft simple"],
+      "aliases": [
+        "spirometry cost",
+        "breathing test",
+        "lung function test",
+        "pft simple"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -480,7 +674,12 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["pulmonary function test cost", "pft cost", "lung function test", "complete pft"],
+      "aliases": [
+        "pulmonary function test cost",
+        "pft cost",
+        "lung function test",
+        "complete pft"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -492,7 +691,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["cataract surgery cost", "cataract removal", "lens replacement surgery", "iol surgery"],
+      "aliases": [
+        "cataract surgery cost",
+        "cataract removal",
+        "lens replacement surgery",
+        "iol surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -504,7 +708,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["tonsillectomy cost child", "tonsil removal kids", "tonsils and adenoids surgery", "t and a surgery"],
+      "aliases": [
+        "tonsillectomy cost child",
+        "tonsil removal kids",
+        "tonsils and adenoids surgery",
+        "t and a surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -516,7 +725,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["tonsillectomy cost adult", "tonsil removal", "adult tonsillectomy", "tonsils out"],
+      "aliases": [
+        "tonsillectomy cost adult",
+        "tonsil removal",
+        "adult tonsillectomy",
+        "tonsils out"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -528,7 +742,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["hernia surgery cost", "inguinal hernia surgery", "groin hernia repair", "hernia repair"],
+      "aliases": [
+        "hernia surgery cost",
+        "inguinal hernia surgery",
+        "groin hernia repair",
+        "hernia repair"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -540,7 +759,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["gallbladder surgery cost", "laparoscopic cholecystectomy", "lap chole", "gallbladder removal"],
+      "aliases": [
+        "gallbladder surgery cost",
+        "laparoscopic cholecystectomy",
+        "lap chole",
+        "gallbladder removal"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -552,7 +776,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["appendectomy cost", "appendix removal", "appendicitis surgery", "laparoscopic appendectomy"],
+      "aliases": [
+        "appendectomy cost",
+        "appendix removal",
+        "appendicitis surgery",
+        "laparoscopic appendectomy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -564,7 +793,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["hysterectomy cost", "abdominal hysterectomy cost", "uterus removal surgery", "open hysterectomy"],
+      "aliases": [
+        "hysterectomy cost",
+        "abdominal hysterectomy cost",
+        "uterus removal surgery",
+        "open hysterectomy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -576,7 +810,11 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["vaginal hysterectomy cost", "minimally invasive hysterectomy", "uterus removal"],
+      "aliases": [
+        "vaginal hysterectomy cost",
+        "minimally invasive hysterectomy",
+        "uterus removal"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -588,7 +826,13 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["knee replacement cost", "total knee replacement", "knee arthroplasty", "tkr surgery", "new knee"],
+      "aliases": [
+        "knee replacement cost",
+        "total knee replacement",
+        "knee arthroplasty",
+        "tkr surgery",
+        "new knee"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -600,7 +844,13 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["hip replacement cost", "total hip replacement", "hip arthroplasty", "thr surgery", "new hip"],
+      "aliases": [
+        "hip replacement cost",
+        "total hip replacement",
+        "hip arthroplasty",
+        "thr surgery",
+        "new hip"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -612,7 +862,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["carpal tunnel surgery cost", "carpal tunnel release", "wrist surgery", "median nerve release"],
+      "aliases": [
+        "carpal tunnel surgery cost",
+        "carpal tunnel release",
+        "wrist surgery",
+        "median nerve release"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -624,7 +879,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["spinal fusion cost", "lumbar fusion surgery", "back fusion surgery", "lumbar spine fusion"],
+      "aliases": [
+        "spinal fusion cost",
+        "lumbar fusion surgery",
+        "back fusion surgery",
+        "lumbar spine fusion"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -636,7 +896,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["cervical fusion cost", "neck fusion surgery", "acdf surgery", "anterior cervical fusion"],
+      "aliases": [
+        "cervical fusion cost",
+        "neck fusion surgery",
+        "acdf surgery",
+        "anterior cervical fusion"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -648,7 +913,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["bunion surgery cost", "bunionectomy cost", "bunion removal", "foot bunion surgery"],
+      "aliases": [
+        "bunion surgery cost",
+        "bunionectomy cost",
+        "bunion removal",
+        "foot bunion surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -660,7 +930,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["rotator cuff surgery cost", "shoulder surgery", "rotator cuff tear surgery", "shoulder arthroscopy"],
+      "aliases": [
+        "rotator cuff surgery cost",
+        "shoulder surgery",
+        "rotator cuff tear surgery",
+        "shoulder arthroscopy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -672,7 +947,13 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["epidural injection cost", "lumbar epidural cost", "back injection", "steroid spine injection", "esi injection"],
+      "aliases": [
+        "epidural injection cost",
+        "lumbar epidural cost",
+        "back injection",
+        "steroid spine injection",
+        "esi injection"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -684,7 +965,11 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["turp surgery cost", "prostate surgery enlarged", "transurethral resection prostate"],
+      "aliases": [
+        "turp surgery cost",
+        "prostate surgery enlarged",
+        "transurethral resection prostate"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -696,7 +981,11 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["vasectomy cost", "male sterilization cost", "vasectomy procedure"],
+      "aliases": [
+        "vasectomy cost",
+        "male sterilization cost",
+        "vasectomy procedure"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -708,7 +997,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["tubal ligation cost", "tubes tied cost", "female sterilization", "getting tubes tied"],
+      "aliases": [
+        "tubal ligation cost",
+        "tubes tied cost",
+        "female sterilization",
+        "getting tubes tied"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -720,7 +1014,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["lumpectomy cost", "partial mastectomy", "breast tumor removal", "breast conserving surgery"],
+      "aliases": [
+        "lumpectomy cost",
+        "partial mastectomy",
+        "breast tumor removal",
+        "breast conserving surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -732,7 +1031,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["mastectomy cost", "breast removal surgery", "total mastectomy", "breast cancer surgery"],
+      "aliases": [
+        "mastectomy cost",
+        "breast removal surgery",
+        "total mastectomy",
+        "breast cancer surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -744,7 +1048,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["septoplasty cost", "deviated septum surgery", "nose breathing surgery", "septum repair"],
+      "aliases": [
+        "septoplasty cost",
+        "deviated septum surgery",
+        "nose breathing surgery",
+        "septum repair"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -756,7 +1065,11 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["umbilical hernia surgery cost", "belly button hernia repair", "navel hernia surgery"],
+      "aliases": [
+        "umbilical hernia surgery cost",
+        "belly button hernia repair",
+        "navel hernia surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -768,7 +1081,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["ear tubes cost", "tympanostomy tubes", "myringotomy with tubes", "ear tubes surgery"],
+      "aliases": [
+        "ear tubes cost",
+        "tympanostomy tubes",
+        "myringotomy with tubes",
+        "ear tubes surgery"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -780,7 +1098,12 @@
       "category": "surgery",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["mole removal cost", "skin lesion removal cost", "cyst removal", "skin tag removal"],
+      "aliases": [
+        "mole removal cost",
+        "skin lesion removal cost",
+        "cyst removal",
+        "skin tag removal"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -792,7 +1115,13 @@
       "category": "maternity",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["vaginal delivery cost", "having a baby cost", "natural birth cost", "delivery cost", "labor and delivery cost"],
+      "aliases": [
+        "vaginal delivery cost",
+        "having a baby cost",
+        "natural birth cost",
+        "delivery cost",
+        "labor and delivery cost"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -804,7 +1133,13 @@
       "category": "maternity",
       "shoppable_service": true,
       "search_priority": 1,
-      "aliases": ["c section cost", "cesarean delivery cost", "csection cost", "c-section cost", "cesarean cost"],
+      "aliases": [
+        "c section cost",
+        "cesarean delivery cost",
+        "csection cost",
+        "c-section cost",
+        "cesarean cost"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -816,7 +1151,11 @@
       "category": "maternity",
       "shoppable_service": true,
       "search_priority": 2,
-      "aliases": ["vbac cost", "vaginal birth after cesarean", "vbac delivery cost"],
+      "aliases": [
+        "vbac cost",
+        "vaginal birth after cesarean",
+        "vbac delivery cost"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -828,7 +1167,11 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 3,
-      "aliases": ["colonoscopy anesthesia cost", "anesthesia for colonoscopy", "sedation for colonoscopy"],
+      "aliases": [
+        "colonoscopy anesthesia cost",
+        "anesthesia for colonoscopy",
+        "sedation for colonoscopy"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -840,7 +1183,11 @@
       "category": "procedural",
       "shoppable_service": true,
       "search_priority": 4,
-      "aliases": ["endoscopy anesthesia cost", "anesthesia for endoscopy", "egd sedation cost"],
+      "aliases": [
+        "endoscopy anesthesia cost",
+        "anesthesia for endoscopy",
+        "egd sedation cost"
+      ],
       "source": "cms_mandated"
     },
     {
@@ -852,7 +1199,12 @@
       "category": "imaging",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["pet scan cost", "pet ct cost", "pet/ct scan", "cancer pet scan"],
+      "aliases": [
+        "pet scan cost",
+        "pet ct cost",
+        "pet/ct scan",
+        "cancer pet scan"
+      ],
       "source": "draft_addition"
     },
     {
@@ -864,7 +1216,12 @@
       "category": "imaging",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["neck mri cost", "cervical mri", "mri neck", "cervical spine mri cost"],
+      "aliases": [
+        "neck mri cost",
+        "cervical mri",
+        "mri neck",
+        "cervical spine mri cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -876,7 +1233,12 @@
       "category": "imaging",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["thoracic mri cost", "mid back mri", "thoracic spine mri", "upper back mri"],
+      "aliases": [
+        "thoracic mri cost",
+        "mid back mri",
+        "thoracic spine mri",
+        "upper back mri"
+      ],
       "source": "draft_addition"
     },
     {
@@ -888,7 +1250,12 @@
       "category": "imaging",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["abdomen mri cost", "abdominal mri", "liver mri", "pancreas mri"],
+      "aliases": [
+        "abdomen mri cost",
+        "abdominal mri",
+        "liver mri",
+        "pancreas mri"
+      ],
       "source": "draft_addition"
     },
     {
@@ -900,7 +1267,12 @@
       "category": "preventive",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["calcium score test cost", "coronary calcium score", "heart calcium score", "ct calcium scoring"],
+      "aliases": [
+        "calcium score test cost",
+        "coronary calcium score",
+        "heart calcium score",
+        "ct calcium scoring"
+      ],
       "source": "draft_addition"
     },
     {
@@ -912,7 +1284,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["nuclear stress test cost", "myocardial perfusion scan", "cardiac perfusion test", "nuclear cardiology"],
+      "aliases": [
+        "nuclear stress test cost",
+        "myocardial perfusion scan",
+        "cardiac perfusion test",
+        "nuclear cardiology"
+      ],
       "source": "draft_addition"
     },
     {
@@ -924,7 +1301,13 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["sleep study cost", "polysomnography", "sleep apnea test", "overnight sleep study", "in-lab sleep study"],
+      "aliases": [
+        "sleep study cost",
+        "polysomnography",
+        "sleep apnea test",
+        "overnight sleep study",
+        "in-lab sleep study"
+      ],
       "source": "draft_addition"
     },
     {
@@ -936,7 +1319,12 @@
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["acl surgery cost", "acl reconstruction cost", "knee acl repair", "torn acl surgery"],
+      "aliases": [
+        "acl surgery cost",
+        "acl reconstruction cost",
+        "knee acl repair",
+        "torn acl surgery"
+      ],
       "source": "draft_addition"
     },
     {
@@ -948,7 +1336,13 @@
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["meniscus surgery cost", "torn meniscus surgery", "meniscectomy cost", "knee arthroscopy cost", "knee meniscus surgery"],
+      "aliases": [
+        "meniscus surgery cost",
+        "torn meniscus surgery",
+        "meniscectomy cost",
+        "knee arthroscopy cost",
+        "knee meniscus surgery"
+      ],
       "source": "draft_addition"
     },
     {
@@ -960,7 +1354,12 @@
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["sinus surgery cost", "fess sinus surgery", "endoscopic sinus surgery", "nasal polyp removal"],
+      "aliases": [
+        "sinus surgery cost",
+        "fess sinus surgery",
+        "endoscopic sinus surgery",
+        "nasal polyp removal"
+      ],
       "source": "draft_addition"
     },
     {
@@ -972,7 +1371,12 @@
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["pacemaker cost", "pacemaker surgery cost", "dual chamber pacemaker", "pacemaker implant"],
+      "aliases": [
+        "pacemaker cost",
+        "pacemaker surgery cost",
+        "dual chamber pacemaker",
+        "pacemaker implant"
+      ],
       "source": "draft_addition"
     },
     {
@@ -984,7 +1388,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["heart catheterization cost", "cardiac cath cost", "left heart cath", "coronary angiogram"],
+      "aliases": [
+        "heart catheterization cost",
+        "cardiac cath cost",
+        "left heart cath",
+        "coronary angiogram"
+      ],
       "source": "draft_addition"
     },
     {
@@ -996,7 +1405,13 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["heart stent cost", "angioplasty cost", "coronary stent", "pci procedure", "heart stent procedure"],
+      "aliases": [
+        "heart stent cost",
+        "angioplasty cost",
+        "coronary stent",
+        "pci procedure",
+        "heart stent procedure"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1008,7 +1423,12 @@
       "category": "surgery",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["circumcision cost", "newborn circumcision cost", "baby circumcision", "infant circumcision"],
+      "aliases": [
+        "circumcision cost",
+        "newborn circumcision cost",
+        "baby circumcision",
+        "infant circumcision"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1020,7 +1440,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["chemotherapy cost", "chemo infusion cost", "chemo treatment cost", "cancer treatment cost"],
+      "aliases": [
+        "chemotherapy cost",
+        "chemo infusion cost",
+        "chemo treatment cost",
+        "cancer treatment cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1032,7 +1457,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["radiation therapy cost", "imrt cost", "radiation treatment cost", "cancer radiation cost"],
+      "aliases": [
+        "radiation therapy cost",
+        "imrt cost",
+        "radiation treatment cost",
+        "cancer radiation cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1044,7 +1474,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["iud insertion cost", "iud cost", "intrauterine device", "birth control iud cost"],
+      "aliases": [
+        "iud insertion cost",
+        "iud cost",
+        "intrauterine device",
+        "birth control iud cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1056,7 +1491,11 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["iud removal cost", "remove iud cost", "iud taken out"],
+      "aliases": [
+        "iud removal cost",
+        "remove iud cost",
+        "iud taken out"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1068,7 +1507,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["skin biopsy cost", "mole biopsy", "skin lesion biopsy", "dermatology biopsy"],
+      "aliases": [
+        "skin biopsy cost",
+        "mole biopsy",
+        "skin lesion biopsy",
+        "dermatology biopsy"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1080,7 +1524,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["breast biopsy cost", "needle breast biopsy", "ultrasound breast biopsy", "breast lump biopsy"],
+      "aliases": [
+        "breast biopsy cost",
+        "needle breast biopsy",
+        "ultrasound breast biopsy",
+        "breast lump biopsy"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1092,7 +1541,11 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["prostate biopsy cost", "transrectal prostate biopsy", "prostate biopsy procedure"],
+      "aliases": [
+        "prostate biopsy cost",
+        "transrectal prostate biopsy",
+        "prostate biopsy procedure"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1104,7 +1557,11 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 4,
-      "aliases": ["bone marrow biopsy cost", "bone marrow test", "marrow biopsy"],
+      "aliases": [
+        "bone marrow biopsy cost",
+        "bone marrow test",
+        "marrow biopsy"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1116,7 +1573,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["spinal tap cost", "lumbar puncture cost", "lp procedure", "spinal fluid test"],
+      "aliases": [
+        "spinal tap cost",
+        "lumbar puncture cost",
+        "lp procedure",
+        "spinal fluid test"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1128,7 +1590,12 @@
       "category": "mental_health",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["psychiatric evaluation cost", "mental health evaluation", "initial therapy evaluation", "psych eval cost"],
+      "aliases": [
+        "psychiatric evaluation cost",
+        "mental health evaluation",
+        "initial therapy evaluation",
+        "psych eval cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1140,7 +1607,11 @@
       "category": "mental_health",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["psychiatrist visit cost", "initial psychiatrist visit", "medication evaluation"],
+      "aliases": [
+        "psychiatrist visit cost",
+        "initial psychiatrist visit",
+        "medication evaluation"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1152,7 +1623,13 @@
       "category": "mental_health",
       "shoppable_service": false,
       "search_priority": 1,
-      "aliases": ["therapy session cost", "individual therapy cost", "counseling session cost", "psychotherapy cost", "therapist cost"],
+      "aliases": [
+        "therapy session cost",
+        "individual therapy cost",
+        "counseling session cost",
+        "psychotherapy cost",
+        "therapist cost"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1164,7 +1641,11 @@
       "category": "mental_health",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["group therapy cost", "group counseling cost", "group therapy session"],
+      "aliases": [
+        "group therapy cost",
+        "group counseling cost",
+        "group therapy session"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1176,7 +1657,12 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 2,
-      "aliases": ["home sleep test cost", "home sleep study", "sleep apnea home test", "at-home sleep test"],
+      "aliases": [
+        "home sleep test cost",
+        "home sleep study",
+        "sleep apnea home test",
+        "at-home sleep test"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1188,7 +1674,11 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 4,
-      "aliases": ["spinal cord stimulator cost", "scs trial cost", "pain stimulator trial"],
+      "aliases": [
+        "spinal cord stimulator cost",
+        "scs trial cost",
+        "pain stimulator trial"
+      ],
       "source": "draft_addition"
     },
     {
@@ -1200,8 +1690,930 @@
       "category": "procedural",
       "shoppable_service": false,
       "search_priority": 3,
-      "aliases": ["afib ablation cost", "atrial fibrillation ablation", "cardiac ablation cost", "heart ablation"],
+      "aliases": [
+        "afib ablation cost",
+        "atrial fibrillation ablation",
+        "cardiac ablation cost",
+        "heart ablation"
+      ],
       "source": "draft_addition"
+    },
+    {
+      "code": "765",
+      "code_type": "MS-DRG",
+      "name": "Cesarean section (with complications)",
+      "slug": "cesarean-section",
+      "description": "A C-section delivery where the mother or baby had additional complications or conditions during the stay. One of the most common reasons for a hospital admission.",
+      "category": "maternity",
+      "shoppable_service": true,
+      "search_priority": 5,
+      "aliases": [
+        "c-section",
+        "csection",
+        "cesarean delivery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "766",
+      "code_type": "MS-DRG",
+      "name": "Cesarean section (without complications)",
+      "slug": "cesarean-section-uncomplicated",
+      "description": "A standard C-section delivery without major additional complications.",
+      "category": "maternity",
+      "shoppable_service": true,
+      "search_priority": 5,
+      "aliases": [
+        "c-section",
+        "cesarean delivery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "774",
+      "code_type": "MS-DRG",
+      "name": "Vaginal delivery (with complications)",
+      "slug": "vaginal-delivery-complicated",
+      "description": "A vaginal childbirth admission where complicating diagnoses were present.",
+      "category": "maternity",
+      "shoppable_service": true,
+      "search_priority": 5,
+      "aliases": [
+        "childbirth",
+        "giving birth",
+        "labor and delivery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "775",
+      "code_type": "MS-DRG",
+      "name": "Vaginal delivery (without complications)",
+      "slug": "vaginal-delivery-inpatient",
+      "description": "A routine vaginal childbirth hospital stay without complicating diagnoses — the most common delivery type. Reflects the full inpatient stay, not just the delivery service.",
+      "category": "maternity",
+      "shoppable_service": true,
+      "search_priority": 5,
+      "aliases": [
+        "childbirth",
+        "giving birth",
+        "natural birth",
+        "labor and delivery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "470",
+      "code_type": "MS-DRG",
+      "name": "Hip or knee replacement (without major complications)",
+      "slug": "hip-or-knee-replacement",
+      "description": "Major joint replacement of the hip or knee without major complications — among the most common and most shopped inpatient surgeries.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 5,
+      "aliases": [
+        "joint replacement",
+        "knee replacement",
+        "hip replacement",
+        "total knee",
+        "total hip"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "469",
+      "code_type": "MS-DRG",
+      "name": "Hip or knee replacement (with major complications)",
+      "slug": "hip-or-knee-replacement-complex",
+      "description": "Major hip or knee joint replacement where major complications or conditions were present.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "joint replacement",
+        "knee replacement",
+        "hip replacement"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "480",
+      "code_type": "MS-DRG",
+      "name": "Hip and femur procedures (with major complications)",
+      "slug": "hip-femur-procedures-mcc",
+      "description": "Surgical repair of the hip or thigh bone (other than joint replacement), such as fixing a fracture, with major complications.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "hip fracture repair",
+        "broken hip surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "481",
+      "code_type": "MS-DRG",
+      "name": "Hip and femur procedures (with complications)",
+      "slug": "hip-femur-procedures-cc",
+      "description": "Surgical repair of the hip or thigh bone (other than joint replacement) with complications.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "hip fracture repair",
+        "broken hip surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "482",
+      "code_type": "MS-DRG",
+      "name": "Hip and femur procedures (without complications)",
+      "slug": "hip-femur-procedures",
+      "description": "Surgical repair of the hip or thigh bone (other than joint replacement) without major complications.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "hip fracture repair",
+        "broken hip surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "460",
+      "code_type": "MS-DRG",
+      "name": "Spinal fusion, except cervical (without major complications)",
+      "slug": "spinal-fusion",
+      "description": "Surgery to permanently join two or more vertebrae in the back, excluding the neck, without major complications.",
+      "category": "orthopedic",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "back surgery",
+        "lumbar fusion",
+        "spine surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "247",
+      "code_type": "MS-DRG",
+      "name": "Coronary stent (drug-eluting, without major complications)",
+      "slug": "coronary-stent-inpatient",
+      "description": "A hospital stay to open a blocked heart artery and place a medication-coated stent, without major complications. Reflects the full inpatient admission.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "heart stent",
+        "angioplasty",
+        "cardiac stent",
+        "pci"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "280",
+      "code_type": "MS-DRG",
+      "name": "Heart attack, discharged alive (with major complications)",
+      "slug": "heart-attack-mcc",
+      "description": "Hospital care for an acute heart attack (myocardial infarction) with major complications, where the patient survived to discharge.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "heart attack",
+        "myocardial infarction",
+        "mi"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "281",
+      "code_type": "MS-DRG",
+      "name": "Heart attack, discharged alive (with complications)",
+      "slug": "heart-attack-cc",
+      "description": "Hospital care for an acute heart attack with complications, discharged alive.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "heart attack",
+        "myocardial infarction"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "282",
+      "code_type": "MS-DRG",
+      "name": "Heart attack, discharged alive (without complications)",
+      "slug": "heart-attack",
+      "description": "Hospital care for an acute heart attack without major complications, discharged alive.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "heart attack",
+        "myocardial infarction"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "291",
+      "code_type": "MS-DRG",
+      "name": "Heart failure and shock (with major complications)",
+      "slug": "heart-failure-mcc",
+      "description": "Hospital admission for heart failure with major complications — one of the most frequent inpatient diagnoses.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "heart failure",
+        "congestive heart failure",
+        "chf"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "292",
+      "code_type": "MS-DRG",
+      "name": "Heart failure and shock (with complications)",
+      "slug": "heart-failure-cc",
+      "description": "Hospital admission for heart failure with complications.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "heart failure",
+        "congestive heart failure",
+        "chf"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "293",
+      "code_type": "MS-DRG",
+      "name": "Heart failure and shock (without complications)",
+      "slug": "heart-failure",
+      "description": "Hospital admission for heart failure without major complications.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "heart failure",
+        "congestive heart failure",
+        "chf"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "308",
+      "code_type": "MS-DRG",
+      "name": "Cardiac arrhythmia (with major complications)",
+      "slug": "cardiac-arrhythmia-mcc",
+      "description": "Hospital care for an irregular heartbeat or conduction disorder with major complications.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "irregular heartbeat",
+        "atrial fibrillation",
+        "afib"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "309",
+      "code_type": "MS-DRG",
+      "name": "Cardiac arrhythmia (with complications)",
+      "slug": "cardiac-arrhythmia-cc",
+      "description": "Hospital care for an irregular heartbeat or conduction disorder with complications.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "irregular heartbeat",
+        "atrial fibrillation",
+        "afib"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "310",
+      "code_type": "MS-DRG",
+      "name": "Cardiac arrhythmia (without complications)",
+      "slug": "cardiac-arrhythmia",
+      "description": "Hospital care for an irregular heartbeat or conduction disorder without major complications.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "irregular heartbeat",
+        "atrial fibrillation",
+        "afib"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "064",
+      "code_type": "MS-DRG",
+      "name": "Stroke (with major complications)",
+      "slug": "stroke-mcc",
+      "description": "Hospital care for an intracranial hemorrhage or cerebral infarction (stroke) with major complications.",
+      "category": "neurological",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "stroke",
+        "brain bleed",
+        "cerebral infarction"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "065",
+      "code_type": "MS-DRG",
+      "name": "Stroke (with complications)",
+      "slug": "stroke-cc",
+      "description": "Hospital care for a stroke (intracranial hemorrhage or cerebral infarction) with complications.",
+      "category": "neurological",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "stroke",
+        "cerebral infarction"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "066",
+      "code_type": "MS-DRG",
+      "name": "Stroke (without complications)",
+      "slug": "stroke",
+      "description": "Hospital care for a stroke (intracranial hemorrhage or cerebral infarction) without major complications.",
+      "category": "neurological",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "stroke",
+        "cerebral infarction"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "189",
+      "code_type": "MS-DRG",
+      "name": "Pulmonary edema and respiratory failure",
+      "slug": "respiratory-failure",
+      "description": "Hospital care for fluid in the lungs or failure of the lungs to oxygenate the blood adequately.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "respiratory failure",
+        "fluid in lungs"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "190",
+      "code_type": "MS-DRG",
+      "name": "COPD (with major complications)",
+      "slug": "copd-mcc",
+      "description": "Hospital admission for chronic obstructive pulmonary disease (COPD) with major complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "copd",
+        "emphysema",
+        "chronic bronchitis"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "191",
+      "code_type": "MS-DRG",
+      "name": "COPD (with complications)",
+      "slug": "copd-cc",
+      "description": "Hospital admission for COPD with complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "copd",
+        "emphysema"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "192",
+      "code_type": "MS-DRG",
+      "name": "COPD (without complications)",
+      "slug": "copd",
+      "description": "Hospital admission for COPD without major complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "copd",
+        "emphysema"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "193",
+      "code_type": "MS-DRG",
+      "name": "Pneumonia and pleurisy (with major complications)",
+      "slug": "pneumonia-mcc",
+      "description": "Hospital care for simple pneumonia or pleurisy with major complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "pneumonia",
+        "lung infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "194",
+      "code_type": "MS-DRG",
+      "name": "Pneumonia and pleurisy (with complications)",
+      "slug": "pneumonia-cc",
+      "description": "Hospital care for simple pneumonia or pleurisy with complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "pneumonia",
+        "lung infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "195",
+      "code_type": "MS-DRG",
+      "name": "Pneumonia and pleurisy (without complications)",
+      "slug": "pneumonia",
+      "description": "Hospital care for simple pneumonia or pleurisy without major complications.",
+      "category": "respiratory",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "pneumonia",
+        "lung infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "871",
+      "code_type": "MS-DRG",
+      "name": "Sepsis (with major complications)",
+      "slug": "sepsis-mcc",
+      "description": "Hospital care for septicemia or severe sepsis (a life-threatening response to infection) with major complications, without prolonged ventilation.",
+      "category": "infectious",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "sepsis",
+        "blood infection",
+        "septicemia"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "872",
+      "code_type": "MS-DRG",
+      "name": "Sepsis (without major complications)",
+      "slug": "sepsis",
+      "description": "Hospital care for septicemia or severe sepsis without major complications or prolonged ventilation.",
+      "category": "infectious",
+      "shoppable_service": true,
+      "search_priority": 4,
+      "aliases": [
+        "sepsis",
+        "blood infection",
+        "septicemia"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "329",
+      "code_type": "MS-DRG",
+      "name": "Major bowel procedure (with major complications)",
+      "slug": "major-bowel-procedure-mcc",
+      "description": "Major surgery on the small or large intestine with major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "bowel surgery",
+        "colon surgery",
+        "intestinal surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "330",
+      "code_type": "MS-DRG",
+      "name": "Major bowel procedure (with complications)",
+      "slug": "major-bowel-procedure-cc",
+      "description": "Major surgery on the small or large intestine with complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "bowel surgery",
+        "colon surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "331",
+      "code_type": "MS-DRG",
+      "name": "Major bowel procedure (without complications)",
+      "slug": "major-bowel-procedure",
+      "description": "Major surgery on the small or large intestine without major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "bowel surgery",
+        "colon surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "377",
+      "code_type": "MS-DRG",
+      "name": "GI hemorrhage (with major complications)",
+      "slug": "gi-bleed-mcc",
+      "description": "Hospital care for gastrointestinal bleeding with major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "gi bleed",
+        "gastrointestinal bleeding",
+        "internal bleeding"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "378",
+      "code_type": "MS-DRG",
+      "name": "GI hemorrhage (with complications)",
+      "slug": "gi-bleed-cc",
+      "description": "Hospital care for gastrointestinal bleeding with complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "gi bleed",
+        "gastrointestinal bleeding"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "379",
+      "code_type": "MS-DRG",
+      "name": "GI hemorrhage (without complications)",
+      "slug": "gi-bleed",
+      "description": "Hospital care for gastrointestinal bleeding without major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "gi bleed",
+        "gastrointestinal bleeding"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "391",
+      "code_type": "MS-DRG",
+      "name": "Digestive disorders, e.g. gastroenteritis (with major complications)",
+      "slug": "digestive-disorders-mcc",
+      "description": "Hospital care for esophagitis, gastroenteritis, or other digestive disorders with major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "gastroenteritis",
+        "stomach flu",
+        "esophagitis"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "392",
+      "code_type": "MS-DRG",
+      "name": "Digestive disorders, e.g. gastroenteritis (without major complications)",
+      "slug": "digestive-disorders",
+      "description": "Hospital care for esophagitis, gastroenteritis, or other digestive disorders without major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "gastroenteritis",
+        "stomach flu",
+        "esophagitis"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "417",
+      "code_type": "MS-DRG",
+      "name": "Laparoscopic gallbladder removal (with major complications)",
+      "slug": "gallbladder-removal-mcc",
+      "description": "Minimally invasive (keyhole) surgery to remove the gallbladder, with major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "gallbladder removal",
+        "cholecystectomy",
+        "gallbladder surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "418",
+      "code_type": "MS-DRG",
+      "name": "Laparoscopic gallbladder removal (with complications)",
+      "slug": "gallbladder-removal-cc",
+      "description": "Minimally invasive surgery to remove the gallbladder, with complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "gallbladder removal",
+        "cholecystectomy"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "419",
+      "code_type": "MS-DRG",
+      "name": "Laparoscopic gallbladder removal (without complications)",
+      "slug": "gallbladder-removal",
+      "description": "Minimally invasive (keyhole) surgery to remove the gallbladder without major complications.",
+      "category": "digestive",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "gallbladder removal",
+        "cholecystectomy",
+        "gallbladder surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "682",
+      "code_type": "MS-DRG",
+      "name": "Kidney failure (with major complications)",
+      "slug": "kidney-failure-mcc",
+      "description": "Hospital care for renal (kidney) failure with major complications.",
+      "category": "kidney",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "kidney failure",
+        "renal failure"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "683",
+      "code_type": "MS-DRG",
+      "name": "Kidney failure (with complications)",
+      "slug": "kidney-failure-cc",
+      "description": "Hospital care for renal failure with complications.",
+      "category": "kidney",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "kidney failure",
+        "renal failure"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "684",
+      "code_type": "MS-DRG",
+      "name": "Kidney failure (without complications)",
+      "slug": "kidney-failure",
+      "description": "Hospital care for renal failure without major complications.",
+      "category": "kidney",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "kidney failure",
+        "renal failure"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "689",
+      "code_type": "MS-DRG",
+      "name": "Kidney or urinary tract infection (with major complications)",
+      "slug": "uti-mcc",
+      "description": "Hospital care for a kidney or urinary tract infection with major complications.",
+      "category": "kidney",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "uti",
+        "urinary tract infection",
+        "kidney infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "690",
+      "code_type": "MS-DRG",
+      "name": "Kidney or urinary tract infection (without major complications)",
+      "slug": "uti",
+      "description": "Hospital care for a kidney or urinary tract infection without major complications.",
+      "category": "kidney",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "uti",
+        "urinary tract infection",
+        "kidney infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "637",
+      "code_type": "MS-DRG",
+      "name": "Diabetes (with major complications)",
+      "slug": "diabetes-mcc",
+      "description": "Hospital admission for diabetes with major complications.",
+      "category": "endocrine",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "diabetes",
+        "diabetic ketoacidosis",
+        "dka"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "638",
+      "code_type": "MS-DRG",
+      "name": "Diabetes (with complications)",
+      "slug": "diabetes-cc",
+      "description": "Hospital admission for diabetes with complications.",
+      "category": "endocrine",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "diabetes"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "639",
+      "code_type": "MS-DRG",
+      "name": "Diabetes (without complications)",
+      "slug": "diabetes",
+      "description": "Hospital admission for diabetes without major complications.",
+      "category": "endocrine",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "diabetes"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "602",
+      "code_type": "MS-DRG",
+      "name": "Cellulitis (with major complications)",
+      "slug": "cellulitis-mcc",
+      "description": "Hospital care for cellulitis (a bacterial skin infection) with major complications.",
+      "category": "infectious",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "cellulitis",
+        "skin infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "603",
+      "code_type": "MS-DRG",
+      "name": "Cellulitis (without major complications)",
+      "slug": "cellulitis",
+      "description": "Hospital care for cellulitis (a bacterial skin infection) without major complications.",
+      "category": "infectious",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "cellulitis",
+        "skin infection"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "312",
+      "code_type": "MS-DRG",
+      "name": "Syncope and collapse",
+      "slug": "syncope",
+      "description": "Hospital evaluation for fainting (syncope) or collapse.",
+      "category": "general",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "fainting",
+        "passing out",
+        "syncope"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "313",
+      "code_type": "MS-DRG",
+      "name": "Chest pain",
+      "slug": "chest-pain",
+      "description": "Hospital evaluation of chest pain when a more specific cause is not established.",
+      "category": "cardiac",
+      "shoppable_service": true,
+      "search_priority": 3,
+      "aliases": [
+        "chest pain"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "743",
+      "code_type": "MS-DRG",
+      "name": "Uterine and adnexa surgery, non-cancer (without complications)",
+      "slug": "uterine-surgery",
+      "description": "Surgery on the uterus or ovaries/tubes for non-cancerous conditions, without major complications — e.g. hysterectomy for benign disease.",
+      "category": "womens-health",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "hysterectomy",
+        "uterine surgery",
+        "fibroid surgery"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "885",
+      "code_type": "MS-DRG",
+      "name": "Psychiatric admission (psychoses)",
+      "slug": "psychiatric-admission",
+      "description": "Inpatient psychiatric care for psychoses such as schizophrenia or severe mood disorders.",
+      "category": "behavioral",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "psychiatric hospitalization",
+        "mental health admission",
+        "inpatient psychiatry"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "945",
+      "code_type": "MS-DRG",
+      "name": "Inpatient rehabilitation (with complications)",
+      "slug": "rehabilitation-cc",
+      "description": "Inpatient rehabilitation (e.g. after a stroke, surgery, or injury) with complications.",
+      "category": "rehab",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "rehab",
+        "inpatient rehab",
+        "physical rehabilitation"
+      ],
+      "source": "ms_drg_v42"
+    },
+    {
+      "code": "946",
+      "code_type": "MS-DRG",
+      "name": "Inpatient rehabilitation (without complications)",
+      "slug": "rehabilitation",
+      "description": "Inpatient rehabilitation without major complications.",
+      "category": "rehab",
+      "shoppable_service": true,
+      "search_priority": 2,
+      "aliases": [
+        "rehab",
+        "inpatient rehab"
+      ],
+      "source": "ms_drg_v42"
     }
   ]
 }
