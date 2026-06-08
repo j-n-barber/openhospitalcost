@@ -69,8 +69,34 @@ export default async function Home() {
     ...shuffle(chipHosps.map((h) => ({ label: titleCase(h.name), href: `/hospital/${h.ccn}` }))).slice(0, 1),
   ]);
 
+  // Site-level structured data (the one page that lacked it). Organization +
+  // WebSite help search engines model the site as an entity. No SearchAction —
+  // there's no URL-based search results page to point it at.
+  const siteLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://openhospitalcost.com/#org",
+        name: "OpenHospitalCost",
+        url: "https://openhospitalcost.com",
+        logo: "https://openhospitalcost.com/icon.svg",
+        description:
+          "Real hospital prices — gross, cash, and negotiated — pulled from federally-mandated machine-readable files and cited to the source.",
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://openhospitalcost.com/#website",
+        url: "https://openhospitalcost.com",
+        name: "OpenHospitalCost",
+        publisher: { "@id": "https://openhospitalcost.com/#org" },
+      },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(siteLd).replace(/</g, "\\u003c") }} />
       <SiteHeader />
 
       <main className="wrap">
