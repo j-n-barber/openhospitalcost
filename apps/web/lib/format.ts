@@ -9,6 +9,12 @@ export const usd = (n: number, dec = 0) =>
 export const usdShort = (n: number) =>
   n >= 1000 ? `$${(n / 1000).toFixed(n >= 10000 ? 0 : 1)}k` : n < 1 ? "<$1" : `$${Math.round(n)}`;
 
+// Care setting from the procedure's code system — MS-DRG codes are inpatient
+// hospital stays; CPT/HCPCS are outpatient services. We surface the setting
+// (Inpatient / Outpatient) to users, never the raw code.
+export const settingOf = (codeType: string | null | undefined): "Inpatient" | "Outpatient" =>
+  codeType === "MS-DRG" ? "Inpatient" : "Outpatient";
+
 // Title-case a procedure name for display WITHOUT mangling medical terms.
 // Procedure names are stored sentence-case with correct acronyms (CBC, A1c, MRI,
 // PET/CT, X-ray, TURP, GI). We preserve any token that's an acronym (≥2 caps,

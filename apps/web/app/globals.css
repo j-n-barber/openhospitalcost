@@ -38,6 +38,12 @@ a { color: var(--teal-ink); text-decoration: none; }
    Rail drops below the content on narrow screens. */
 .moneygrid { display: grid; grid-template-columns: minmax(0,1fr) 300px; gap: 40px; align-items: start; }
 .mg-rail-inner { position: sticky; top: 24px; display: flex; flex-direction: column; gap: 20px; }
+/* Inpatient/Outpatient setting badge (procedure pages + price lists). */
+.setting-tag { display: inline-block; vertical-align: middle; font-family: var(--sans); font-size: 11px; font-weight: 600; letter-spacing: .03em; text-transform: uppercase; padding: 2px 8px; border-radius: 999px; line-height: 1.4; white-space: nowrap; }
+h1 .setting-tag { font-size: 12px; margin-left: 10px; position: relative; top: -2px; }
+.setting-tag.inpatient { color: #fff; background: var(--teal); border: 1px solid var(--teal); }
+.setting-tag.outpatient { color: var(--muted); background: var(--paper); border: 1px solid var(--border); }
+
 .relbox { border: 1px solid var(--border); border-radius: 6px; background: var(--surface); padding: 15px 18px; }
 .relbox h3 { font-family: var(--serif); font-size: 16px; font-weight: 700; color: var(--ink); margin: 0 0 8px; letter-spacing: -.01em; }
 .relbox a { display: block; font-size: 14px; color: var(--teal-ink); text-decoration: none; padding: 7px 0; border-top: 1px solid var(--border); line-height: 1.3; }

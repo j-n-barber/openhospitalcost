@@ -18,7 +18,7 @@ type Hosp = {
   proc_count: number | null;
 };
 type Row = {
-  slug: string; name: string; category: string | null;
+  slug: string; name: string; category: string | null; code_type: string | null;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
 };
@@ -37,7 +37,7 @@ async function getHospital(ccn: string): Promise<Hosp | null> {
 
 async function getProcedures(hospitalId: string): Promise<Row[]> {
   const rows = (await sql`
-    SELECT p.slug, p.name, p.category,
+    SELECT p.slug, p.name, p.category, p.code_type,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.amount END)::float      AS negotiated,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.min_amount END)::float  AS neg_lo,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.max_amount END)::float  AS neg_hi,
@@ -47,7 +47,7 @@ async function getProcedures(hospitalId: string): Promise<Row[]> {
     FROM procedure_hospital_summary s
     JOIN procedures p ON p.id = s.procedure_id
     WHERE s.hospital_id = ${hospitalId}
-    GROUP BY p.slug, p.name, p.category
+    GROUP BY p.slug, p.name, p.category, p.code_type
     ORDER BY max(p.search_priority) DESC NULLS LAST, p.name`) as Row[];
   return rows.map((r) => ({ ...r, name: titleCaseProcedure(r.name) }));
 }

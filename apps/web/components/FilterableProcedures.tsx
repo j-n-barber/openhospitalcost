@@ -1,6 +1,6 @@
 "use client";
 import { useMemo, useState } from "react";
-import { usd } from "@/lib/format";
+import { usd, settingOf } from "@/lib/format";
 import NegotiatedCell from "@/components/NegotiatedCell";
 import InfoTip from "@/components/InfoTip";
 
@@ -11,7 +11,7 @@ const TIP = {
 };
 
 export type ProcRow = {
-  slug: string; name: string; category: string | null;
+  slug: string; name: string; category: string | null; code_type: string | null;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
 };
@@ -91,7 +91,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
         <tbody>
           {view.map((r) => (
             <tr key={r.slug}>
-              <td><a href={`/procedure/${r.slug}`}>{r.name}</a></td>
+              <td><a href={`/procedure/${r.slug}`}>{r.name}</a>{settingOf(r.code_type) === "Inpatient" ? <>{" "}<span className="setting-tag inpatient">Inpatient</span></> : null}</td>
               <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
               <td className="num" data-label="Cash">{money(r.cash)}</td>
               <td className="num" data-label="Gross">{money(r.gross)}</td>

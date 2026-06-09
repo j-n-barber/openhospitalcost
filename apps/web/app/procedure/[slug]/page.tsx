@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { titleCase, titleCaseProcedure } from "@/lib/format";
+import { titleCase, titleCaseProcedure, settingOf } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
 import { MoneyRail } from "@/components/MoneyRail";
 
@@ -12,7 +12,7 @@ export const revalidate = 3600;
 const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Params = { params: Promise<{ slug: string }> };
-type Proc = { name: string; code: string; description: string | null; category: string | null };
+type Proc = { name: string; code: string; code_type: string | null; description: string | null; category: string | null };
 type Row = {
   ccn: string; name: string; city: string; state: string;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
@@ -20,7 +20,7 @@ type Row = {
 };
 
 async function getProcedure(slug: string): Promise<Proc | null> {
-  const r = (await sql`SELECT name, code, description, category FROM procedures WHERE slug = ${slug}`) as Proc[];
+  const r = (await sql`SELECT name, code, code_type, description, category FROM procedures WHERE slug = ${slug}`) as Proc[];
   if (!r[0]) return null;
   return { ...r[0], name: titleCaseProcedure(r[0].name) };
 }
@@ -110,10 +110,13 @@ export default async function ProcedurePage({ params }: Params) {
       <main className="wrap">
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / <a href="/procedures">Procedures</a> / {proc.name}</div>
-          <h1>{proc.name}</h1>
+          <h1>{proc.name} <span className={`setting-tag ${settingOf(proc.code_type) === "Inpatient" ? "inpatient" : "outpatient"}`}>{settingOf(proc.code_type)}</span></h1>
           {proc.description ? <p className="sub">{proc.description}</p> : null}
           <p className="sub">
-            Facility prices across {rows.length} hospital{rows.length > 1 ? "s" : ""} with published data — sorted cheapest-first by default. Filter or re-sort below; the same procedure can swing widely between hospitals.
+            {settingOf(proc.code_type) === "Inpatient"
+              ? `Inpatient stay prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — the bundled cost of the whole admission, sorted cheapest-first.`
+              : `Facility prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — sorted cheapest-first by default.`}{" "}
+            Filter or re-sort below; the same procedure can swing widely between hospitals.
           </p>
         </section>
 
