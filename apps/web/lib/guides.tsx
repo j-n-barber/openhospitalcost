@@ -864,6 +864,257 @@ export const GUIDES: Guide[] = [
       { href: "/procedures", label: "Browse all procedures" },
     ],
   },
+
+  {
+    slug: "ultrasound-cost",
+    title: "How much does an ultrasound cost?",
+    metaTitle: "How Much Does an Ultrasound Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real ultrasound prices from hospitals' own files — what an abdominal or pregnancy ultrasound costs with and without insurance, and how to find the price near you.",
+    sub: "What an abdominal or pregnancy ultrasound costs with and without insurance, and how to find the price near you.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does an ultrasound cost?</h2>
+        <p>
+          It depends on the type of ultrasound and where you have it. For a{" "}
+          <strong>complete abdominal ultrasound</strong>, the cash self-pay price has a median around{" "}
+          <strong>$675</strong>, ranging from about <strong>$235</strong> to <strong>$1,900</strong> across hospitals.
+          A <strong>pregnancy ultrasound</strong> is a bit less — a cash median around <strong>$550</strong>. If
+          you&apos;re insured, the negotiated rates are much lower on average (around <strong>$245</strong> for an
+          abdominal scan, <strong>$235</strong> for a pregnancy scan).{" "}
+          <a href="/procedure/abdominal-ultrasound">See current ultrasound prices →</a>
+        </p>
+
+        <h2>Why the price varies so much</h2>
+        <p>
+          Hospitals set their own charges and negotiate separately with each insurer, so the same scan carries many
+          different prices, and two hospitals a few miles apart can differ by several times. A higher price
+          doesn&apos;t mean a better image.
+        </p>
+
+        <h2>How to find — and lower — your price</h2>
+        <ul>
+          <li><strong>Know the exact scan.</strong> An abdominal, pelvic, pregnancy, or thyroid ultrasound are different procedures with different prices. Search the specific one in <a href="/procedures">the procedures list</a>.</li>
+          <li><strong>Consider a freestanding imaging center.</strong> They&apos;re often cheaper than a hospital for a routine ultrasound.</li>
+          <li><strong>If it&apos;s prenatal,</strong> routine pregnancy ultrasounds are usually covered under maternity benefits, though you may still owe your deductible or coinsurance — check with your plan.</li>
+          <li><strong>Confirm before you book.</strong> Ask the billing office for the price in writing for that procedure code.</li>
+        </ul>
+
+        <h2>Where these numbers come from</h2>
+        <p>
+          Straight from each hospital&apos;s federally-mandated price file (required since 2021 under 45 §180) —
+          published figures for comparison, not a quote. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does an ultrasound cost without insurance?",
+        a: "The cash self-pay price has a median around $675 for a complete abdominal ultrasound and around $550 for a pregnancy ultrasound, varying widely by hospital. Freestanding imaging centers are often cheaper.",
+      },
+      {
+        q: "Is a pregnancy ultrasound covered by insurance?",
+        a: "Routine prenatal ultrasounds are usually covered under maternity benefits on ACA plans, but you may still owe your deductible or coinsurance. Check your specific plan.",
+      },
+      {
+        q: "Why does an ultrasound cost more at one hospital than another?",
+        a: "Hospitals set prices independently and negotiate separately with each insurer, so the same scan can cost several times more at one hospital than another. A higher price doesn't mean a better image.",
+      },
+    ],
+    related: [
+      { href: "/procedure/abdominal-ultrasound", label: "Abdominal ultrasound prices" },
+      { href: "/procedure/pregnancy-ultrasound", label: "Pregnancy ultrasound prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+
+  {
+    slug: "echocardiogram-cost",
+    title: "How much does an echocardiogram cost?",
+    metaTitle: "How Much Does an Echocardiogram Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real echocardiogram (heart ultrasound) prices from hospitals' own files — what an echo costs with and without insurance, and how to find the price near you.",
+    sub: "What an echocardiogram (heart ultrasound) costs with and without insurance, and how to find the price near you.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does an echocardiogram cost?</h2>
+        <p>
+          An echocardiogram (or &quot;echo&quot;) is an ultrasound of the heart. Across hospitals with published data,
+          a complete echo has a cash self-pay price with a median around <strong>$1,660</strong>, ranging from about{" "}
+          <strong>$600</strong> to over <strong>$4,000</strong>. If you&apos;re insured, the negotiated rate is lower on
+          average — a median around <strong>$895</strong>.{" "}
+          <a href="/procedure/echocardiogram">See current echocardiogram prices →</a>
+        </p>
+
+        <h2>Why the price varies so much</h2>
+        <p>
+          Hospitals set their own charges and negotiate separately with each insurer, so the same test carries many
+          different prices — and hospitals a few miles apart can differ by several times. A higher price doesn&apos;t
+          mean a better test.
+        </p>
+
+        <h2>How to find — and lower — your price</h2>
+        <ul>
+          <li><strong>Compare hospitals and cardiology clinics near you</strong> — an outpatient clinic is often cheaper than a hospital.</li>
+          <li><strong>Ask whether it&apos;s billed with the facility fee</strong> separately, which can raise the total.</li>
+          <li><strong>Confirm before you book.</strong> Ask the billing office for the price in writing for that procedure code.</li>
+        </ul>
+
+        <h2>Where these numbers come from</h2>
+        <p>
+          Straight from each hospital&apos;s federally-mandated price file (required since 2021 under 45 §180) —
+          published figures for comparison, not a quote. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does an echocardiogram cost without insurance?",
+        a: "The cash self-pay price has a median around $1,660, ranging from roughly $600 to over $4,000 depending on the hospital. An outpatient cardiology clinic is often cheaper than a hospital.",
+      },
+      {
+        q: "Is an echocardiogram the same as an EKG?",
+        a: "No. An echocardiogram is an ultrasound that images the heart's structure and motion; an EKG (electrocardiogram) records the heart's electrical activity and is much cheaper. They're often ordered together.",
+      },
+      {
+        q: "Why does an echocardiogram cost more at one hospital than another?",
+        a: "Hospitals set prices independently and negotiate separately with each insurer, so the same test can cost several times more at one hospital than another.",
+      },
+    ],
+    related: [
+      { href: "/procedure/echocardiogram", label: "Echocardiogram prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+
+  {
+    slug: "chest-x-ray-cost",
+    title: "How much does a chest X-ray cost?",
+    metaTitle: "How Much Does a Chest X-ray Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real chest X-ray prices from hospitals' own files — what an X-ray costs with and without insurance, and how to find the price near you.",
+    sub: "What a chest X-ray costs with and without insurance, and how to find the price near you.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does a chest X-ray cost?</h2>
+        <p>
+          A chest X-ray is one of the cheaper imaging tests, but the price still varies a lot by hospital. For a
+          standard two-view chest X-ray, the cash self-pay price has a median around <strong>$250</strong>, ranging
+          from under <strong>$100</strong> to nearly <strong>$700</strong>. If you&apos;re insured, the negotiated rate
+          is lower on average — a median around <strong>$130</strong>.{" "}
+          <a href="/procedure/chest-x-ray">See current chest X-ray prices →</a>
+        </p>
+
+        <h2>Why the price varies so much</h2>
+        <p>
+          Hospitals set their own charges and negotiate separately with each insurer, so even a simple X-ray carries
+          many different prices, and hospitals a few miles apart can differ by several times. A higher price
+          doesn&apos;t mean a better image.
+        </p>
+
+        <h2>How to find — and lower — your price</h2>
+        <ul>
+          <li><strong>Consider an urgent-care or freestanding imaging center</strong> — often cheaper than a hospital ER or outpatient department for a simple X-ray.</li>
+          <li><strong>Watch for a separate radiologist fee</strong> on top of the facility charge.</li>
+          <li><strong>Confirm before you go.</strong> Ask for the price in writing for that procedure code.</li>
+        </ul>
+
+        <h2>Where these numbers come from</h2>
+        <p>
+          Straight from each hospital&apos;s federally-mandated price file (required since 2021 under 45 §180) —
+          published figures for comparison, not a quote. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does a chest X-ray cost without insurance?",
+        a: "The cash self-pay price has a median around $250, ranging from under $100 to nearly $700 depending on the hospital. Urgent-care and freestanding imaging centers are often cheaper.",
+      },
+      {
+        q: "Why is a chest X-ray so much more expensive at the ER?",
+        a: "An X-ray done in an emergency room carries the ER facility fee on top of the imaging charge, so the total is far higher than the same X-ray at an outpatient or urgent-care center.",
+      },
+      {
+        q: "Is there a separate fee to read the X-ray?",
+        a: "Often, yes. A radiologist's professional fee to interpret the image can be billed separately from the facility charge, so ask whether the quoted price includes the read.",
+      },
+    ],
+    related: [
+      { href: "/procedure/chest-x-ray", label: "Chest X-ray prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+
+  {
+    slug: "sleep-study-cost",
+    title: "How much does a sleep study cost?",
+    metaTitle: "How Much Does a Sleep Study Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real sleep study prices from hospitals' own files — why an in-lab study costs ~5× a home test, what each costs, and how to find the price near you.",
+    sub: "Why an in-lab study costs several times more than a home test, what each costs, and how to find the price near you.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does a sleep study cost?</h2>
+        <p>
+          The biggest factor is whether it&apos;s done in a sleep lab or at home — the difference is large.
+        </p>
+        <ul>
+          <li><strong>In-lab sleep study (polysomnography)</strong> — you spend the night at a sleep center. The cash self-pay price has a median around <strong>$2,900</strong>, ranging from about <strong>$1,000</strong> to over <strong>$6,000</strong>. Insured negotiated rate: a median around <strong>$1,540</strong>.</li>
+          <li><strong>Home sleep study</strong> — a take-home device for one night. Far cheaper: a cash median around <strong>$510</strong>, with an insured negotiated median around <strong>$295</strong>.</li>
+        </ul>
+        <p>
+          <a href="/procedure/sleep-study">See current sleep-study prices →</a>
+        </p>
+
+        <h2>Ask whether a home test is an option</h2>
+        <p>
+          For many people with suspected obstructive sleep apnea, a home sleep test is a recommended, much cheaper
+          first step. It isn&apos;t right for everyone, but it&apos;s worth asking your doctor before booking an in-lab
+          study that can cost several times more.
+        </p>
+
+        <h2>Why the price varies so much</h2>
+        <p>
+          Hospitals and sleep centers set their own charges and negotiate separately with each insurer, so the same
+          study carries many different prices, and facilities a few miles apart can differ by several times.
+        </p>
+
+        <h2>Where these numbers come from</h2>
+        <p>
+          Straight from each hospital&apos;s federally-mandated price file (required since 2021 under 45 §180) —
+          published figures for comparison, not a quote. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does a sleep study cost without insurance?",
+        a: "An in-lab sleep study (polysomnography) has a cash median around $2,900, ranging from about $1,000 to over $6,000. A home sleep test is far cheaper, with a cash median around $510.",
+      },
+      {
+        q: "Is a home sleep study cheaper than an in-lab study?",
+        a: "Yes, substantially — often several times cheaper. For suspected sleep apnea a home test is frequently a recommended first step, so it's worth asking your doctor whether it's an option for you.",
+      },
+      {
+        q: "Why does an in-lab sleep study cost so much?",
+        a: "It involves an overnight stay at a sleep center with monitoring equipment and staff, which is far more resource-intensive than a take-home device. Hospitals also negotiate their own rates, so prices vary widely.",
+      },
+    ],
+    related: [
+      { href: "/procedure/sleep-study", label: "In-lab sleep study prices" },
+      { href: "/procedure/home-sleep-study", label: "Home sleep study prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
 ];
 
 export function getGuide(slug: string): Guide | undefined {
@@ -890,6 +1141,10 @@ export function guidesForProcedure(slug: string, name: string, category: string 
   else if (/mammogram|mammograph/.test(s)) topic = link("mammogram-cost");
   else if (/emergency|er[ -]visit/.test(s)) topic = link("er-visit-cost");
   else if (/deliver|cesarean|c-section|childbirth|vaginal birth|vbac/.test(s)) topic = link("childbirth-cost");
+  else if (/echocard/.test(s)) topic = link("echocardiogram-cost");
+  else if (/ultrasound|sonogram/.test(s)) topic = link("ultrasound-cost");
+  else if (/x-ray|\bxray\b|radiograph/.test(s)) topic = link("chest-x-ray-cost");
+  else if (/sleep study|polysomnog/.test(s)) topic = link("sleep-study-cost");
   else if (category === "surgery" || /replacement|hernia|gallbladder|cataract|hysterect|appendect|tonsillect/.test(s))
     topic = link("why-prices-vary");
   return [topic, link("cash-vs-negotiated-price")].filter((x): x is GuideLink => x !== null).slice(0, 2);
