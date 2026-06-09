@@ -90,22 +90,47 @@ export default async function ProcedurePage({ params }: Params) {
   const related = await getRelated(slug, proc.category);
   const showRail = related.length > 0 || ADSENSE_ON;
 
+  // Aggregate the negotiated prices into a single AggregateOffer (low/high is what
+  // Google actually surfaces) while keeping a sample of individual hospital offers.
+  const priced = rows.filter((r) => r.negotiated != null) as (Row & { negotiated: number })[];
+  const lo = priced.length ? Math.min(...priced.map((r) => r.negotiated)) : null;
+  const hi = priced.length ? Math.max(...priced.map((r) => r.negotiated)) : null;
   const ld = {
     "@context": "https://schema.org",
     "@type": "MedicalProcedure",
     name: proc.name,
     ...(proc.description ? { description: proc.description } : {}),
-    offers: rows.filter((r) => r.negotiated != null).slice(0, 20).map((r) => ({
-      "@type": "Offer",
-      price: r.negotiated,
-      priceCurrency: "USD",
-      seller: { "@type": "Hospital", name: titleCase(r.name) },
-    })),
+    ...(lo != null && hi != null
+      ? {
+          offers: {
+            "@type": "AggregateOffer",
+            priceCurrency: "USD",
+            lowPrice: lo,
+            highPrice: hi,
+            offerCount: priced.length,
+            offers: priced.slice(0, 20).map((r) => ({
+              "@type": "Offer",
+              price: r.negotiated,
+              priceCurrency: "USD",
+              seller: { "@type": "Hospital", name: titleCase(r.name) },
+            })),
+          },
+        }
+      : {}),
+  };
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://openhospitalcost.com/" },
+      { "@type": "ListItem", position: 2, name: "Procedures", item: "https://openhospitalcost.com/procedures" },
+      { "@type": "ListItem", position: 3, name: proc.name, item: `https://openhospitalcost.com/procedure/${slug}` },
+    ],
   };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb]).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">

@@ -12,12 +12,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { code: string }[];
 
   const procs = (await sql`
-    SELECT DISTINCT p.slug
+    SELECT p.slug, max(f.parsed_at)::date::text AS lastmod
     FROM procedures p
     JOIN procedure_hospital_summary s ON s.procedure_id = p.id
     JOIN hospitals h ON h.id = s.hospital_id
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
-    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { slug: string }[];
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+    GROUP BY p.slug`) as { slug: string; lastmod: string }[];
 
   // States with a real per-state report (>= 6 eligible hospitals on some
   // procedure), matching the page's render threshold so we never list a 404.
@@ -32,11 +33,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ) t WHERE n >= 6
     GROUP BY code`) as { code: string }[];
 
+  // Match the hospital page's noindex rule: pages with <5 priced procedures are
+  // noindex,follow, so they must NOT appear in the sitemap (else GSC flags
+  // "Submitted URL marked noindex"). Carry parsed_at as lastmod for freshness.
   const hosps = (await sql`
-    SELECT h.ccn
+    SELECT h.ccn, f.parsed_at::date::text AS lastmod
     FROM hospitals h
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
-    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { ccn: string }[];
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+      AND (SELECT count(DISTINCT s.procedure_id) FROM procedure_hospital_summary s WHERE s.hospital_id = h.id) >= 5`) as { ccn: string; lastmod: string }[];
 
   return [
     { url: BASE, changeFrequency: "daily", priority: 1 },
@@ -55,7 +60,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/terms`, changeFrequency: "yearly", priority: 0.2 },
     ...states.map((s) => ({ url: `${BASE}/state/${s.code}`, changeFrequency: "weekly" as const, priority: 0.7 })),
     ...reportStates.map((s) => ({ url: `${BASE}/reports/state/${s.code}`, changeFrequency: "weekly" as const, priority: 0.7 })),
-    ...procs.map((p) => ({ url: `${BASE}/procedure/${p.slug}`, changeFrequency: "weekly" as const, priority: 0.8 })),
-    ...hosps.map((h) => ({ url: `${BASE}/hospital/${h.ccn}`, changeFrequency: "weekly" as const, priority: 0.6 })),
+    ...procs.map((p) => ({ url: `${BASE}/procedure/${p.slug}`, lastModified: p.lastmod, changeFrequency: "weekly" as const, priority: 0.8 })),
+    ...hosps.map((h) => ({ url: `${BASE}/hospital/${h.ccn}`, lastModified: h.lastmod, changeFrequency: "weekly" as const, priority: 0.6 })),
   ];
 }

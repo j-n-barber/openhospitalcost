@@ -108,10 +108,19 @@ export default async function HospitalPage({ params }: Params) {
       addressCountry: "US",
     },
   };
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://openhospitalcost.com/" },
+      { "@type": "ListItem", position: 2, name: stateName, item: `https://openhospitalcost.com/state/${h.state.toLowerCase()}` },
+      { "@type": "ListItem", position: 3, name: titleCase(h.name), item: `https://openhospitalcost.com/hospital/${ccn}` },
+    ],
+  };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(ld).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb]).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">

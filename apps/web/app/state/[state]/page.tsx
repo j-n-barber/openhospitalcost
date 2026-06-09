@@ -69,8 +69,18 @@ export default async function StatePage({ params }: Params) {
   const related = await getPopularProcedures();
   const showRail = related.length > 0 || ADSENSE_ON;
 
+  const breadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://openhospitalcost.com/" },
+      { "@type": "ListItem", position: 2, name, item: `https://openhospitalcost.com/state/${code}` },
+    ],
+  };
+
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumb).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">
