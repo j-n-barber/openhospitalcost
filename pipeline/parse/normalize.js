@@ -44,10 +44,21 @@ function cptMeltSql(cols) {
     .filter((c) => /^code\|\d+$/.test(normPipe(c)))
     .map((c) => ({ n: normPipe(c).split('|')[1], code: c, type: cols.find((t) => normPipe(t) === `code|${normPipe(c).split('|')[1]}|type`) }))
     .filter((s) => s.type);
+  // Emit a candidate code per slot. CPT/HCPCS match the outpatient dictionary.
+  // MS-DRG (inpatient) is matched ONLY when the type column explicitly says
+  // MS-DRG (letters-only form starts MSDRG) — never generic 'DRG' or 'APR-DRG',
+  // which reuse the same numbers with different meanings. DRG values are
+  // canonicalized to 3-digit zero-padded form (strip leading zeros, then lpad 3)
+  // so '8'/'064'/'0470' all hit the dictionary's 3-digit codes ('008','064','470').
+  const drgCanon = (col) => `lpad(regexp_replace(trim(${col}), '^0+', ''), 3, '0')`;
   const parts = slots.map(
     (s) =>
       `SELECT rid, ${sqlIdent(s.code)} AS cpt FROM data ` +
-      `WHERE upper(trim(${sqlIdent(s.type)})) IN ('CPT','HCPCS') AND ${sqlIdent(s.code)} IS NOT NULL`
+      `WHERE upper(trim(${sqlIdent(s.type)})) IN ('CPT','HCPCS') AND ${sqlIdent(s.code)} IS NOT NULL` +
+      `\n      UNION ALL\n      ` +
+      `SELECT rid, ${drgCanon(sqlIdent(s.code))} AS cpt FROM data ` +
+      `WHERE regexp_replace(upper(trim(${sqlIdent(s.type)})), '[^A-Z]', '') LIKE 'MSDRG%' ` +
+      `AND ${sqlIdent(s.code)} IS NOT NULL AND trim(${sqlIdent(s.code)}) ~ '^[0-9]+$'`
   );
   return parts.join('\n      UNION ALL\n      ');
 }
@@ -81,18 +92,29 @@ function buildCsvSql(path, cols, cptList, { wide, skip }) {
     const negCols = cols.filter((c) => /^standard_charge\|.+\|.+\|negotiated_dollar$/.test(normPipe(c)));
     const unions = negCols.map((c) => {
       const [, payer, plan] = normPipe(c).split('|');
+      // Sibling estimated_amount column for the same payer|plan (algorithm rates).
+      const estCol = cols.find((e) => normPipe(e) === `standard_charge|${payer}|${plan}|estimated_amount`);
+      const negVal = estCol
+        ? `coalesce(TRY_CAST(${sqlIdent(c)} AS DOUBLE), TRY_CAST(${sqlIdent(estCol)} AS DOUBLE))`
+        : `TRY_CAST(${sqlIdent(c)} AS DOUBLE)`;
       return `SELECT DISTINCT cpt, 'negotiated', ${sqlStr(payer.trim())}, ${sqlStr(plan.trim())},
-              TRY_CAST(${sqlIdent(c)} AS DOUBLE), ${tail('NULL')}
-         FROM rows WHERE TRY_CAST(${sqlIdent(c)} AS DOUBLE) IS NOT NULL`;
+              ${negVal}, ${tail('NULL')}
+         FROM rows WHERE ${negVal} IS NOT NULL`;
     });
     negotiated = unions.length ? '\n  UNION ALL\n  ' + unions.join('\n  UNION ALL\n  ') : '';
   } else {
     const negDollar = colRef(cols, 'standard_charge|negotiated_dollar');
+    const estAmt = colRef(cols, 'estimated_amount');
+    // Algorithm/percentage-priced services (most DRGs, some CPTs) leave
+    // negotiated_dollar null but populate estimated_amount per CMS 45 CFR 180 —
+    // fall back to it so inpatient/algorithm prices aren't lost. Firm dollar
+    // wins (coalesce order); methodology is carried from the file.
+    const negVal = `coalesce(TRY_CAST(${negDollar} AS DOUBLE), TRY_CAST(${estAmt} AS DOUBLE))`;
     negotiated = `
   UNION ALL
   SELECT DISTINCT cpt, 'negotiated', ${colRef(cols, 'payer_name')}, ${colRef(cols, 'plan_name')},
-         TRY_CAST(${negDollar} AS DOUBLE), ${tail(meth)}
-    FROM rows WHERE TRY_CAST(${negDollar} AS DOUBLE) IS NOT NULL`;
+         ${negVal}, ${tail(meth)}
+    FROM rows WHERE ${negVal} IS NOT NULL`;
   }
 
   return `
@@ -126,6 +148,12 @@ function buildJsonSql(path, cptList) {
     SELECT i.iid, i.item, json_extract_string(code, '$.code') AS cpt
     FROM items i, unnest(from_json(i.item->'$.code_information', '["json"]')) AS t(code)
     WHERE upper(trim(json_extract_string(code, '$.type'))) IN ('CPT','HCPCS')
+    UNION ALL
+    -- MS-DRG (inpatient), canonicalized to 3-digit; only explicit MS-DRG type.
+    SELECT i.iid, i.item, lpad(regexp_replace(trim(json_extract_string(code, '$.code')), '^0+', ''), 3, '0') AS cpt
+    FROM items i, unnest(from_json(i.item->'$.code_information', '["json"]')) AS t(code)
+    WHERE regexp_replace(upper(trim(json_extract_string(code, '$.type'))), '[^A-Z]', '') LIKE 'MSDRG%'
+      AND trim(json_extract_string(code, '$.code')) ~ '^[0-9]+$'
   ),
   matched AS (SELECT iid, any_value(item) AS item, min(cpt) AS cpt FROM melted WHERE cpt IN (${list}) GROUP BY iid),
   charges AS (SELECT m.cpt, unnest(from_json(m.item->'$.standard_charges', '["json"]')) AS ch FROM matched m)
@@ -139,10 +167,12 @@ function buildJsonSql(path, cptList) {
   UNION ALL
   SELECT DISTINCT cpt, 'negotiated',
          json_extract_string(p, '$.payer_name'), json_extract_string(p, '$.plan_name'),
-         TRY_CAST(json_extract_string(p, '$.standard_charge_dollar') AS DOUBLE),
+         coalesce(TRY_CAST(json_extract_string(p, '$.standard_charge_dollar') AS DOUBLE),
+                  TRY_CAST(json_extract_string(p, '$.estimated_amount') AS DOUBLE)),
          ${chTail("json_extract_string(p, '$.methodology')")}
     FROM charges, unnest(coalesce(from_json(json_extract(ch, '$.payers_information'), '["json"]'), []::JSON[])) AS t(p)
-    WHERE TRY_CAST(json_extract_string(p, '$.standard_charge_dollar') AS DOUBLE) IS NOT NULL`;
+    WHERE coalesce(TRY_CAST(json_extract_string(p, '$.standard_charge_dollar') AS DOUBLE),
+                   TRY_CAST(json_extract_string(p, '$.estimated_amount') AS DOUBLE)) IS NOT NULL`;
 }
 
 export function extractJsonPriceRows({ path, cptList }) {

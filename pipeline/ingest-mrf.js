@@ -40,8 +40,13 @@ async function sha256(path) {
   return hash.digest('hex');
 }
 
+// code -> procedure id, for the standardized codes we extract. CPT (5-digit,
+// outpatient) and MS-DRG (1-3 digit, inpatient) never numerically collide, so a
+// single map is safe — and the normalizer only emits a DRG value when the line's
+// code TYPE is MS-DRG, so APR-DRG (which reuses the same numbers) can't mis-map.
 export async function fetchCptMap(client) {
-  const procs = (await client.query("SELECT id, code FROM procedures WHERE code_type = 'CPT'")).rows;
+  const procs = (await client.query(
+    "SELECT id, code FROM procedures WHERE code_type IN ('CPT','MS-DRG')")).rows;
   return new Map(procs.map((p) => [p.code, p.id]));
 }
 
