@@ -108,11 +108,12 @@ In-your-control ranking lift. The pages exist; make sure they speak searcher lan
 - [ ] Audit procedure titles/H1s against real search phrasing. People search "MRI
   cost", "how much does an MRI cost", "[hospital] prices" — not clinical names.
   Ensure the searcher phrasing appears in `<title>`, H1, and intro copy.
-- [ ] Add a short, unique **"How much does {procedure} cost?"** intro paragraph to
-  each procedure page (templated from the data: range, median, # hospitals). Boosts
-  relevance and reduces thin-content risk.
-- [ ] Add **FAQPage JSON-LD** to procedure pages ("Why do prices vary?", "What's the
-  difference between cash and negotiated?") — can earn FAQ rich results.
+- [x] Add a short, unique **"How much does {procedure} cost?"** intro to each procedure
+  page (median + range + # hospitals, from live data). **Done 2026-06-09** — visible
+  lead sentence on all 159 procedure pages, falls back to original copy when no
+  negotiated data. Reduces thin-content risk + answers the query in-content.
+- [x] Add **FAQPage JSON-LD** to procedure pages. **Done 2026-06-09** — data-driven
+  "How much does X cost?" + "why do prices vary" Q&As.
 - [ ] Ensure every money page has a one-line **data-freshness / source citation**
   visible (already present on hospital pages — extend to procedure pages).
 
