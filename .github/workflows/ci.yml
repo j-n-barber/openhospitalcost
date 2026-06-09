@@ -48,14 +48,18 @@ jobs:
           DATABASE_URL: postgres://postgres:ci@localhost:5432/openhospitalcost_ci
         run: |
           npm run seed:procedures
+          # Expected count derived from the dictionary file so this canary never
+          # goes stale when the dictionary grows (e.g. adding MS-DRG procedures).
+          EXPECTED=$(node -e "console.log(require('./data/procedures.json').procedures.length)")
           COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM procedures" | tr -d '[:space:]')
-          echo "procedure count: $COUNT"
-          test "$COUNT" = "100"
+          echo "procedure count: $COUNT (expected $EXPECTED)"
+          test "$COUNT" = "$EXPECTED"
 
       - name: Re-run seed and confirm idempotent
         env:
           DATABASE_URL: postgres://postgres:ci@localhost:5432/openhospitalcost_ci
         run: |
           npm run seed:procedures
+          EXPECTED=$(node -e "console.log(require('./data/procedures.json').procedures.length)")
           COUNT=$(psql "$DATABASE_URL" -t -c "SELECT COUNT(*) FROM procedures" | tr -d '[:space:]')
-          test "$COUNT" = "100"
+          test "$COUNT" = "$EXPECTED"
