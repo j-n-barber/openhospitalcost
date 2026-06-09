@@ -173,6 +173,18 @@ You can't grow what you don't watch.
 - [ ] Verify `/og.png` and per-page OG images render well in social/Slack/iMessage
   previews (drives click-through on shared links).
 
+### WS11 — Hospital contact / website enrichment · [Impact M (user) / L-M (SEO)] [Effort ~2 days]
+Add a validated website + phone + "next steps" block to each hospital page. Helps users act on
+a price (call billing, ask for cash price, request financial assistance) and adds an
+authoritative-source citation that supports E-E-A-T on these YMYL pages. SEO is a modest bonus,
+not a ranking lever. **Don't derive the site from the MRF URL** (≈half are vendor/blob hosts).
+Full method + schema + UI in [`HOSPITAL_CONTACT_ENRICHMENT.md`](HOSPITAL_CONTACT_ENRICHMENT.md).
+- [ ] Tier 1: CMS Hospital General Information (`xubh-q36u`, CCN join) → phone + canonical-name cross-check (free)
+- [ ] Tier 2: website via Wikidata SPARQL (free pass) then Google Places (~$100–200 one-time)
+- [ ] Tier 3: name-similarity validation gate (store only when confident; accuracy over coverage)
+- [ ] Migration: `hospitals` += `phone`, `website`, `website_source`, `contact_verified_at`
+- [ ] UI: "Next steps" block on the hospital page (followed link, `rel="noopener"`) → links `/guides/hospital-bill`
+
 ---
 
 ## Do this week (the highest-return sequence)
