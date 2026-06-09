@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import { titleCase, titleCaseProcedure, settingOf } from "@/lib/format";
+import { titleCase, titleCaseProcedure, settingOf, usd } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
 import { MoneyRail } from "@/components/MoneyRail";
 
@@ -95,6 +95,19 @@ export default async function ProcedurePage({ params }: Params) {
   const priced = rows.filter((r) => r.negotiated != null) as (Row & { negotiated: number })[];
   const lo = priced.length ? Math.min(...priced.map((r) => r.negotiated)) : null;
   const hi = priced.length ? Math.max(...priced.map((r) => r.negotiated)) : null;
+  // Median negotiated price across hospitals — the "typical" figure for the
+  // visible cost answer + FAQ (the table is sorted cheapest-first, which isn't
+  // representative on its own).
+  const negSorted = priced.map((r) => r.negotiated).sort((a, b) => a - b);
+  const median = negSorted.length
+    ? Math.round(
+        negSorted.length % 2
+          ? negSorted[(negSorted.length - 1) / 2]
+          : (negSorted[negSorted.length / 2 - 1] + negSorted[negSorted.length / 2]) / 2,
+      )
+    : null;
+  const hasPriceAnswer = median != null && lo != null && hi != null;
+  const setting = settingOf(proc.code_type);
   const ld = {
     "@context": "https://schema.org",
     "@type": "MedicalProcedure",
@@ -128,9 +141,34 @@ export default async function ProcedurePage({ params }: Params) {
     ],
   };
 
+  const faqLd = hasPriceAnswer
+    ? {
+        "@context": "https://schema.org",
+        "@type": "FAQPage",
+        mainEntity: [
+          {
+            "@type": "Question",
+            name: `How much does ${proc.name} cost?`,
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: `Across ${priced.length} hospitals with a published negotiated price, the median for ${proc.name} is ${usd(median!)}, ranging from ${usd(lo!)} to ${usd(hi!)}. Prices vary widely between hospitals, so comparing before non-emergency care can save a lot.`,
+            },
+          },
+          {
+            "@type": "Question",
+            name: "Why does the same procedure cost so much more at one hospital than another?",
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same service can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
+            },
+          },
+        ],
+      }
+    : null;
+
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb]).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb, ...(faqLd ? [faqLd] : [])]).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">
@@ -138,10 +176,20 @@ export default async function ProcedurePage({ params }: Params) {
           <h1>{proc.name} <span className={`setting-tag ${settingOf(proc.code_type) === "Inpatient" ? "inpatient" : "outpatient"}`}>{settingOf(proc.code_type)}</span></h1>
           {proc.description ? <p className="sub">{proc.description}</p> : null}
           <p className="sub">
-            {settingOf(proc.code_type) === "Inpatient"
-              ? `Inpatient stay prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — the bundled cost of the whole admission, sorted cheapest-first.`
-              : `Facility prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — sorted cheapest-first by default.`}{" "}
-            Filter or re-sort below; the same procedure can swing widely between hospitals.
+            {hasPriceAnswer ? (
+              <>
+                Across {priced.length} hospital{priced.length > 1 ? "s" : ""} with a published negotiated price, the
+                median for {proc.name} is <strong>{usd(median!)}</strong>, ranging from {usd(lo!)} to {usd(hi!)}.
+                Sorted cheapest-first; the same procedure can swing widely between hospitals — filter or re-sort below.
+              </>
+            ) : (
+              <>
+                {setting === "Inpatient"
+                  ? `Inpatient stay prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — the bundled cost of the whole admission, sorted cheapest-first.`
+                  : `Facility prices across ${rows.length} hospital${rows.length > 1 ? "s" : ""} with published data — sorted cheapest-first by default.`}{" "}
+                Filter or re-sort below; the same procedure can swing widely between hospitals.
+              </>
+            )}
           </p>
         </section>
 
