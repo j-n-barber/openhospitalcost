@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
 import SubscribeForm from "@/components/SubscribeForm";
+import { GUIDES as GUIDE_PAGES } from "@/lib/guides";
 
 export const metadata: Metadata = {
   title: "Hospital Price FAQ & Guides — OpenHospitalCost",
@@ -59,28 +60,7 @@ const FAQS: QA[] = [
   },
 ];
 
-const GUIDES = [
-  {
-    href: "/how-it-works",
-    title: "How to compare hospital prices",
-    blurb: "Search a procedure, read the three kinds of price, and trace every number back to its source.",
-  },
-  {
-    href: "/reports",
-    title: "National Hospital Price Report",
-    blurb: "The biggest price swings, the priciest shoppable procedures, and where cash beats the list price.",
-  },
-  {
-    href: "/methodology",
-    title: "How we derive each price",
-    blurb: "What a 'representative facility price' means and how we keep comparisons fair across hospitals.",
-  },
-  {
-    href: "/states",
-    title: "Browse prices by state",
-    blurb: "See hospital pricing across all 50 states plus territories, then drill into a single facility.",
-  },
-];
+const GUIDES = GUIDE_PAGES.map((g) => ({ href: `/guides/${g.slug}`, title: g.title, blurb: g.sub }));
 
 export default function FaqPage() {
   const jsonLd = {
