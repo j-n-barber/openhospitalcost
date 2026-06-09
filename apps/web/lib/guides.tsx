@@ -869,3 +869,33 @@ export const GUIDES: Guide[] = [
 export function getGuide(slug: string): Guide | undefined {
   return GUIDES.find((g) => g.slug === slug);
 }
+
+export type GuideLink = { href: string; label: string };
+
+function link(slug: string): GuideLink | null {
+  const g = getGuide(slug);
+  return g ? { href: `/guides/${g.slug}`, label: g.title } : null;
+}
+
+// Pick the most relevant guide(s) to cross-link from a procedure's money page, so
+// editorial authority flows to/from the money pages (closes the internal-link loop).
+// Returns a topic-specific guide when one matches, plus the universally-relevant
+// "cash vs negotiated" explainer. Max 2.
+export function guidesForProcedure(slug: string, name: string, category: string | null): GuideLink[] {
+  const s = `${slug} ${name}`.toLowerCase();
+  let topic: GuideLink | null = null;
+  if (/\bmri\b|magnetic resonance/.test(s)) topic = link("mri-cost");
+  else if (/\bct[ -]|computed tomog/.test(s)) topic = link("ct-scan-cost");
+  else if (/colonoscop/.test(s)) topic = link("colonoscopy-cost");
+  else if (/mammogram|mammograph/.test(s)) topic = link("mammogram-cost");
+  else if (/emergency|er[ -]visit/.test(s)) topic = link("er-visit-cost");
+  else if (/deliver|cesarean|c-section|childbirth|vaginal birth|vbac/.test(s)) topic = link("childbirth-cost");
+  else if (category === "surgery" || /replacement|hernia|gallbladder|cataract|hysterect|appendect|tonsillect/.test(s))
+    topic = link("why-prices-vary");
+  return [topic, link("cash-vs-negotiated-price")].filter((x): x is GuideLink => x !== null).slice(0, 2);
+}
+
+// Guides to cross-link from a hospital's money page.
+export function guidesForHospital(): GuideLink[] {
+  return [link("hospital-bill"), link("cash-vs-negotiated-price")].filter((x): x is GuideLink => x !== null);
+}

@@ -7,6 +7,7 @@ import { STATE_NAMES } from "@/lib/states";
 import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableProcedures from "@/components/FilterableProcedures";
 import { MoneyRail } from "@/components/MoneyRail";
+import { guidesForHospital } from "@/lib/guides";
 
 export const revalidate = 3600;
 const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
@@ -117,10 +118,42 @@ export default async function HospitalPage({ params }: Params) {
       { "@type": "ListItem", position: 3, name: titleCase(h.name), item: `https://openhospitalcost.com/hospital/${ccn}` },
     ],
   };
+  const hospitalName = titleCase(h.name);
+  const faq = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `Are these the prices I'll be billed at ${hospitalName}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `No. These are the standard charges ${hospitalName} published in its machine-readable file, shown for comparison — not a quote. Your actual bill depends on your exact care and your insurance, so always confirm directly with the hospital and your insurer.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `How do I get the cash price at ${hospitalName}?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Ask the hospital's billing office for the self-pay or cash price in writing for the specific procedure code. The cash price is sometimes lower than the negotiated insurance rate, so it can be worth comparing both.`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: "Why do these prices vary so much between hospitals?",
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same procedure can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
+        },
+      },
+    ],
+  };
+  const guideLinks = guidesForHospital();
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb]).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb, faq]).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">
@@ -139,6 +172,17 @@ export default async function HospitalPage({ params }: Params) {
             {h.quality_score != null ? ` · data quality ${h.quality_score}/100` : ""}
             {h.url ? <> · <a href={h.url} target="_blank" rel="noopener noreferrer">source file ↗</a></> : null}
           </p>
+          {guideLinks.length ? (
+            <p className="prov" style={{ marginTop: 10 }}>
+              Guides:{" "}
+              {guideLinks.map((g, i) => (
+                <span key={g.href}>
+                  {i > 0 ? " · " : null}
+                  <a href={g.href}>{g.label}</a>
+                </span>
+              ))}
+            </p>
+          ) : null}
         </section>
 
         {showRail ? (

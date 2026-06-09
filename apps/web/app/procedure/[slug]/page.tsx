@@ -6,6 +6,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { titleCase, titleCaseProcedure, settingOf, usd } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
 import { MoneyRail } from "@/components/MoneyRail";
+import { guidesForProcedure } from "@/lib/guides";
 
 export const revalidate = 3600;
 // Show the right rail when there's rail content (related links) or once ads are on.
@@ -108,6 +109,7 @@ export default async function ProcedurePage({ params }: Params) {
     : null;
   const hasPriceAnswer = median != null && lo != null && hi != null;
   const setting = settingOf(proc.code_type);
+  const guideLinks = guidesForProcedure(slug, proc.name, proc.category);
   const ld = {
     "@context": "https://schema.org",
     "@type": "MedicalProcedure",
@@ -191,6 +193,17 @@ export default async function ProcedurePage({ params }: Params) {
               </>
             )}
           </p>
+          {guideLinks.length ? (
+            <p className="prov" style={{ marginTop: 10 }}>
+              Guides:{" "}
+              {guideLinks.map((g, i) => (
+                <span key={g.href}>
+                  {i > 0 ? " · " : null}
+                  <a href={g.href}>{g.label}</a>
+                </span>
+              ))}
+            </p>
+          ) : null}
         </section>
 
         {showRail ? (
