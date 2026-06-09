@@ -30,6 +30,7 @@ function cmpNum(a: number | null, b: number | null, dir: number) {
 export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("all");
+  const [setting, setSetting] = useState<"all" | "Inpatient" | "Outpatient">("all");
   const [key, setKey] = useState<SortKey>("name");
   const [dir, setDir] = useState<1 | -1>(1);
 
@@ -37,11 +38,18 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
     () => [...new Set(rows.map((r) => r.category).filter((c): c is string => !!c))].sort(),
     [rows]
   );
+  // Only offer the Inpatient/Outpatient toggle when the page actually has both.
+  const hasBothSettings = useMemo(
+    () => rows.some((r) => settingOf(r.code_type) === "Inpatient") && rows.some((r) => settingOf(r.code_type) === "Outpatient"),
+    [rows]
+  );
 
   const view = useMemo(() => {
     const s = q.trim().toLowerCase();
     const out = rows.filter(
-      (r) => (cat === "all" || r.category === cat) && (!s || r.name.toLowerCase().includes(s))
+      (r) => (cat === "all" || r.category === cat)
+        && (setting === "all" || settingOf(r.code_type) === setting)
+        && (!s || r.name.toLowerCase().includes(s))
     );
     out.sort((a, b) => {
       if (key === "name") {
@@ -51,7 +59,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
       return cmpNum(a[key], b[key], dir);
     });
     return out;
-  }, [q, cat, key, dir, rows]);
+  }, [q, cat, setting, key, dir, rows]);
 
   const sortBy = (k: SortKey) => {
     if (k === key) setDir((d) => (d === 1 ? -1 : 1));
@@ -69,13 +77,27 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
         <span className="count">{view.length} of {rows.length}</span>
       </div>
 
-      {cats.length > 1 && (
+      {(hasBothSettings || cats.length > 1) && (
         <div className="sortrow" style={{ margin: "0 0 16px" }}>
-          <span className="lbl">Category</span>
-          <button className={`sb${cat === "all" ? " active" : ""}`} onClick={() => setCat("all")}>All</button>
-          {cats.map((c) => (
-            <button key={c} className={`sb${cat === c ? " active" : ""}`} onClick={() => setCat(c)}>{catLabel(c)}</button>
-          ))}
+          {hasBothSettings && (
+            <>
+              <span className="lbl">Setting</span>
+              {(["all", "Inpatient", "Outpatient"] as const).map((sv) => (
+                <button key={sv} className={`sb${setting === sv ? " active" : ""}`} onClick={() => setSetting(sv)}>
+                  {sv === "all" ? "All" : sv}
+                </button>
+              ))}
+            </>
+          )}
+          {cats.length > 1 && (
+            <>
+              <label className="lbl" htmlFor="cat-select" style={hasBothSettings ? { marginLeft: 14 } : undefined}>Category</label>
+              <select id="cat-select" className="catselect" value={cat} onChange={(e) => setCat(e.target.value)}>
+                <option value="all">All categories</option>
+                {cats.map((c) => <option key={c} value={c}>{catLabel(c)}</option>)}
+              </select>
+            </>
+          )}
         </div>
       )}
 

@@ -204,6 +204,15 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .sb { font-size: 13px; border: 1px solid var(--border); background: var(--surface); border-radius: 100px; padding: 5px 12px; cursor: pointer; color: #34495a; transition: .12s; }
 .sb:hover { border-color: var(--teal); }
 .sb.active { border-color: var(--teal); color: var(--teal-ink); background: #eef5f5; font-weight: 500; }
+/* Category dropdown — scales past where pills get cluttered (big hospitals). */
+.catselect {
+  font-size: 13px; color: #34495a; font-family: var(--sans);
+  border: 1px solid var(--border); background: var(--surface); border-radius: 100px;
+  padding: 5px 30px 5px 13px; cursor: pointer; transition: .12s; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%235B6670' stroke-width='2.5'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 11px center;
+}
+.catselect:hover, .catselect:focus { border-color: var(--teal); outline: none; }
 
 /* sortable table headers (sticky under the 62px site header) */
 .ptable th.sortable { cursor: pointer; user-select: none; }

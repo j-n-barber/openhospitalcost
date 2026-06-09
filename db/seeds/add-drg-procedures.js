@@ -89,7 +89,7 @@ const drgs = [
   D('312', 'Syncope and collapse', 'syncope', 'general', 2, 'Hospital evaluation for fainting (syncope) or collapse.', ['fainting', 'passing out', 'syncope']),
   D('313', 'Chest pain', 'chest-pain', 'cardiac', 3, 'Hospital evaluation of chest pain when a more specific cause is not established.', ['chest pain']),
   D('743', 'Uterine and adnexa surgery, non-cancer (without complications)', 'uterine-surgery', 'womens-health', 2, 'Surgery on the uterus or ovaries/tubes for non-cancerous conditions, without major complications — e.g. hysterectomy for benign disease.', ['hysterectomy', 'uterine surgery', 'fibroid surgery']),
-  D('885', 'Psychiatric admission (psychoses)', 'psychiatric-admission', 'behavioral', 2, 'Inpatient psychiatric care for psychoses such as schizophrenia or severe mood disorders.', ['psychiatric hospitalization', 'mental health admission', 'inpatient psychiatry']),
+  D('885', 'Psychiatric admission (psychoses)', 'psychiatric-admission', 'mental_health', 2, 'Inpatient psychiatric care for psychoses such as schizophrenia or severe mood disorders.', ['psychiatric hospitalization', 'mental health admission', 'inpatient psychiatry']),
   D('945', 'Inpatient rehabilitation (with complications)', 'rehabilitation-cc', 'rehab', 2, 'Inpatient rehabilitation (e.g. after a stroke, surgery, or injury) with complications.', ['rehab', 'inpatient rehab', 'physical rehabilitation']),
   D('946', 'Inpatient rehabilitation (without complications)', 'rehabilitation', 'rehab', 2, 'Inpatient rehabilitation without major complications.', ['rehab', 'inpatient rehab']),
 ];

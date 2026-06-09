@@ -2574,7 +2574,7 @@
       "name": "Psychiatric admission (psychoses)",
       "slug": "psychiatric-admission",
       "description": "Inpatient psychiatric care for psychoses such as schizophrenia or severe mood disorders.",
-      "category": "behavioral",
+      "category": "mental_health",
       "shoppable_service": true,
       "search_priority": 2,
       "aliases": [
