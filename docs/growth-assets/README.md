@@ -10,6 +10,10 @@ journalism).
 | `02-local-news-pitch.md` | Reporter pitch email + the tested ranking SQL | WS1/WS5 — earned backlinks |
 | `03-guide-mri-cost.md` | Editorial guide: "How much does an MRI cost without insurance" | WS4 — informational traffic + AdSense |
 | `04-guide-cash-vs-negotiated.md` | Editorial guide: cash vs. negotiated vs. chargemaster | WS4 — informational traffic + AdSense |
+| `05-guide-why-surgery-costs-vary.md` | Editorial guide: why the same surgery costs 10× more | WS4 |
+| `06-guide-read-and-fight-hospital-bill.md` | Editorial guide: read & fight a hospital bill | WS4 |
+| `07-guide-price-transparency-law.md` | Editorial guide: what the law (45 CFR §180) requires | WS4 |
+| `08-guide-colonoscopy-cost.md` | Editorial guide: colonoscopy cost + **template** for other procedure guides | WS4 |
 
 ## Accuracy & provenance
 
@@ -23,7 +27,10 @@ and against the site's own vetted FAQ/methodology copy. Numbers used in the draf
 | Knee MRI (CPT 73721) negotiated | n=1,987 · p10 $249 · **median $690** · p90 $2,630 · range $60–$11,190 · ~**10× decile spread** | DB |
 | Knee MRI cash (uninsured) | n=1,998 · p10 $567 · **median $1,872** · p90 $5,105 | DB |
 | Knee MRI in Texas (negotiated) | 183 hospitals · $161–$8,689 · 54× min/max | DB |
-| The law | Since 2021, 45 CFR §180 requires a machine-readable file of standard charges (gross, cash, negotiated) | site `/faq` |
+| Gallbladder removal (lap., negotiated) | n=1,607 · p10 $925 · median $6,120 · p90 $12,197 · **13× spread** | DB |
+| Knee replacement (negotiated) | n=1,517 · p10 $1,946 · **median $13,060** · p90 $21,564 · 11× spread | DB |
+| Colonoscopy (negotiated / cash) | neg median $1,173 · cash median $1,572 (cash n=1,216) | DB |
+| The law | Effective Jan 1 2021, 45 CFR §180; comprehensive MRF (CSV/JSON, CMS template since Jul 1 2024) of 4 charge types + 300 shoppable services or estimator; §180.50 attestation enforcement delayed to Apr 1 2026 | CMS fact sheets (linked in `07`) |
 
 **Two honesty rules baked into the copy:**
 1. **Never claim "cash is cheaper."** It's cheaper only ~1 in 3 times; for an MRI it

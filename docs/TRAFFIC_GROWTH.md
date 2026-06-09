@@ -108,13 +108,16 @@ Ranks for higher-volume informational queries, passes authority to money pages, 
 satisfies AdSense reviewers (substantive non-programmatic content). Triple win.
 Follow `docs/EDITORIAL_STYLE.md`.
 
-- [ ] Write 5–10 genuine guides, each internally linking to relevant money pages:
-  - [ ] "How much does an MRI cost without insurance — and how to find your price"
-  - [ ] "Cash price vs. negotiated price vs. chargemaster: what you actually pay"
-  - [ ] "How to read (and fight) a hospital bill"
-  - [ ] "Why the same surgery costs 10× more at one hospital than another"
-  - [ ] "What hospital price transparency law actually requires (and how to use it)"
-  - [ ] "[High-volume procedure] cost guide" for the top 3–5 procedures
+- Write 5–10 genuine guides, each internally linking to relevant money pages.
+  **6 drafts written & fact-checked in `growth-assets/` (03–08); next step is building
+  them as `/guides/*` pages:**
+  - [x] "How much does an MRI cost without insurance — and how to find your price" — draft `03`
+  - [x] "Cash price vs. negotiated price vs. chargemaster: what you actually pay" — draft `04`
+  - [x] "How to read (and fight) a hospital bill" — draft `06`
+  - [x] "Why the same surgery costs 10× more at one hospital than another" — draft `05`
+  - [x] "What hospital price transparency law actually requires (and how to use it)" — draft `07`
+  - [x] "[High-volume procedure] cost guide" — draft `08` (colonoscopy + template for more)
+  - [ ] Build the drafts as real `/guides/*` pages with `Article` + `FAQPage` schema
 - [ ] Each guide: target one head term, answer the query fully, link 3–5 money pages,
   add `Article` + `FAQPage` schema.
 - [ ] Build these as a `/guides` hub so they form a topical cluster (topical
