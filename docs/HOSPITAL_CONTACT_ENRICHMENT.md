@@ -1,6 +1,9 @@
 # Hospital contact / website enrichment
 
-**Status:** planned (scoped 2026-06-09). Not yet built.
+**Status:** planned (scoped 2026-06-09). Not yet built. **⏸ REVENUE-GATED** — carries a
+one-time ~$100–200 Google Places cost, so deferred until AdSense is approved and the site
+shows it can earn (per the spending policy in `TRAFFIC_GROWTH.md`). Tier 1 (CMS phone + name,
+free) could go earlier if we want a no-cost first slice.
 **Goal:** add a validated **website**, **phone**, and a consumer "next steps" block to each
 hospital page — so users can act on a price (call billing, ask for the cash price, request
 financial assistance), and so each money page cites the hospital's own official site.

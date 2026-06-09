@@ -45,10 +45,23 @@ catalog, then let the long-tail compound while an editorial layer builds authori
 
 ---
 
+## Spending policy — earn first, then invest
+
+**Gate every feature with a recurring or non-trivial one-time cost on proven earning
+ability.** Until AdSense is approved and the site shows it can generate revenue, the work
+is restricted to **free / time-only** levers (almost everything below: backlinks, GSC ops,
+on-page, editorial, freshness on the free GH Actions tier). Anything that adds cost — paid
+APIs, new hosted workers, paid tools — is **revenue-gated**: scoped and ready, but not built
+until there's a demonstrated ability to earn against the spend. Items carrying cost are
+tagged **⏸ REVENUE-GATED** below.
+
+- **⏸ WS11** (hospital contact enrichment) — Google Places ~$100–200 one-time. Post-AdSense.
+- Free re-ingest/refresh (WS8) stays on the GH Actions free tier — not gated.
+
 ## Workstreams, ranked by ROI
 
 Tags: **[Impact]** H/M/L · **[Effort]** H/M/L · **[Control]** = how much it depends
-on you vs. third parties.
+on you vs. third parties · **⏸ REVENUE-GATED** = has a cost; defer until earning is proven.
 
 ### WS1 — Backlinks & the first crawl · [Impact H] [Effort M] — THE GATE
 Nothing else matters until this moves. You don't need 50 links; you need the first
@@ -173,7 +186,7 @@ You can't grow what you don't watch.
 - [ ] Verify `/og.png` and per-page OG images render well in social/Slack/iMessage
   previews (drives click-through on shared links).
 
-### WS11 — Hospital contact / website enrichment · [Impact M (user) / L-M (SEO)] [Effort ~2 days]
+### WS11 — Hospital contact / website enrichment · [Impact M (user) / L-M (SEO)] [Effort ~2 days] · ⏸ REVENUE-GATED
 Add a validated website + phone + "next steps" block to each hospital page. Helps users act on
 a price (call billing, ask for cash price, request financial assistance) and adds an
 authoritative-source citation that supports E-E-A-T on these YMYL pages. SEO is a modest bonus,
