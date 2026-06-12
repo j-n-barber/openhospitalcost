@@ -25,7 +25,9 @@ apps/web/out/
 /Logo.ai
 
 # Local + tooling
-/.git/
+# (/.git/ must NOT be listed: vercel.json's ignoreCommand runs `git diff` in the
+# build container, and the .vercelignore removal step runs before it. The CLI
+# never uploads .git anyway, so excluding it only breaks the git-based skip.)
 /.github/
 /.claude/
 /.agents/
