@@ -8,6 +8,25 @@ import { isTerritory } from "@/lib/states";
 
 export const revalidate = 3600; // ISR: rebuild at most hourly
 
+// Fisher–Yates seeded by the UTC day (mulberry32), not Math.random: re-renders
+// within the same day emit identical HTML, so Vercel's ISR write-dedup can skip
+// the cache write (random output made every hourly revalidation a billable ISR
+// write). Chips still rotate, just daily instead of hourly.
+function shuffleDaily<T>(a: T[]): T[] {
+  let seed = Math.floor(Date.now() / 86_400_000) | 0;
+  const rand = () => {
+    seed = (seed + 0x6d2b79f5) | 0;
+    let t = Math.imul(seed ^ (seed >>> 15), 1 | seed);
+    t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(rand() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
 export default async function Home() {
   const stateRows = (await sql`
     SELECT lower(h.state) AS state, count(*)::int AS n
@@ -40,8 +59,8 @@ export default async function Home() {
 
   // Search "Try:" chips — built from real data (top-coverage procedures + a few
   // short-named big hospitals) and linked straight to their pages, so they can
-  // never silently break. Shuffled + sliced here, so the set rotates each hourly
-  // ISR regeneration. (Computed server-side -> stable prop -> no hydration churn.)
+  // never silently break. Shuffled + sliced here, so the set rotates daily.
+  // (Computed server-side -> stable prop -> no hydration churn.)
   const chipProcs = (await sql`
     SELECT p.slug, p.name, count(DISTINCT s.hospital_id)::int AS n
     FROM procedures p
@@ -56,17 +75,10 @@ export default async function Home() {
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean AND length(h.name) <= 24
     ORDER BY h.beds DESC NULLS LAST LIMIT 5`) as { ccn: string; name: string }[];
-  const shuffle = <T,>(a: T[]): T[] => {
-    for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-    }
-    return a;
-  };
   // 4 procedures (the primary use case) + 1 hospital, each rotated from its pool.
-  const chips = shuffle([
-    ...shuffle(chipProcs.map((p) => ({ label: titleCaseProcedure(p.name), href: `/procedure/${p.slug}` }))).slice(0, 4),
-    ...shuffle(chipHosps.map((h) => ({ label: titleCase(h.name), href: `/hospital/${h.ccn}` }))).slice(0, 1),
+  const chips = shuffleDaily([
+    ...shuffleDaily(chipProcs.map((p) => ({ label: titleCaseProcedure(p.name), href: `/procedure/${p.slug}` }))).slice(0, 4),
+    ...shuffleDaily(chipHosps.map((h) => ({ label: titleCase(h.name), href: `/hospital/${h.ccn}` }))).slice(0, 1),
   ]);
 
   // Site-level structured data (the one page that lacked it). Organization +
