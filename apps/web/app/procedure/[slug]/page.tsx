@@ -6,6 +6,7 @@ import SiteFooter from "@/components/SiteFooter";
 import { titleCase, titleCaseProcedure, settingOf, usd } from "@/lib/format";
 import FilterableHospitalPrices from "@/components/FilterableHospitalPrices";
 import { MoneyRail } from "@/components/MoneyRail";
+import { ProcedureEducation, type Faq } from "@/components/PriceEducation";
 import { guidesForProcedure } from "@/lib/guides";
 
 export const revalidate = 3600;
@@ -109,7 +110,44 @@ export default async function ProcedurePage({ params }: Params) {
     : null;
   const hasPriceAnswer = median != null && lo != null && hi != null;
   const setting = settingOf(proc.code_type);
+  // Cheapest / priciest named hospitals + cash availability — feeds the editorial
+  // block so each procedure page reads with its own real numbers.
+  const cheapest = priced.length
+    ? priced.reduce((a, b) => (b.negotiated < a.negotiated ? b : a))
+    : null;
+  const priciest = priced.length
+    ? priced.reduce((a, b) => (b.negotiated > a.negotiated ? b : a))
+    : null;
+  const cashCount = rows.filter((r) => r.cash != null).length;
   const guideLinks = guidesForProcedure(slug, proc.name, proc.category);
+
+  // FAQ built once: rendered visibly in the editorial block AND emitted as
+  // FAQPage structured data below.
+  const faqItems: Faq[] = hasPriceAnswer
+    ? [
+        {
+          q: `How much does ${proc.name} cost?`,
+          a: `Across ${priced.length} hospitals with a published negotiated price, the median for ${proc.name} is ${usd(median!)}, ranging from ${usd(lo!)} to ${usd(hi!)}. Prices vary widely between hospitals, so comparing before non-emergency care can save a lot.`,
+        },
+        {
+          q: "Why does the same procedure cost so much more at one hospital than another?",
+          a: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same service can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
+        },
+        {
+          q: "Is the cash price lower than going through insurance?",
+          a: "Sometimes. The cash (self-pay) price is what you pay directly without insurance, and in roughly one in three procedures it's lower than the insured negotiated rate. It's not a rule, so the only way to know is to compare both for your specific procedure and hospital.",
+        },
+      ]
+    : [
+        {
+          q: `How do I find the price of ${proc.name}?`,
+          a: `The table on this page lists ${proc.name} prices at hospitals that publish usable data, sorted cheapest-first. Find the hospitals near you, then confirm the figure with the billing office before scheduling.`,
+        },
+        {
+          q: "Why does the same procedure cost so much more at one hospital than another?",
+          a: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same service can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
+        },
+      ];
   const ld = {
     "@context": "https://schema.org",
     "@type": "MedicalProcedure",
@@ -143,34 +181,19 @@ export default async function ProcedurePage({ params }: Params) {
     ],
   };
 
-  const faqLd = hasPriceAnswer
-    ? {
-        "@context": "https://schema.org",
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `How much does ${proc.name} cost?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: `Across ${priced.length} hospitals with a published negotiated price, the median for ${proc.name} is ${usd(median!)}, ranging from ${usd(lo!)} to ${usd(hi!)}. Prices vary widely between hospitals, so comparing before non-emergency care can save a lot.`,
-            },
-          },
-          {
-            "@type": "Question",
-            name: "Why does the same procedure cost so much more at one hospital than another?",
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same service can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
-            },
-          },
-        ],
-      }
-    : null;
+  const faqLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  };
 
   return (
     <>
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb, ...(faqLd ? [faqLd] : [])]).replace(/</g, "\\u003c") }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify([ld, breadcrumb, faqLd]).replace(/</g, "\\u003c") }} />
       <SiteHeader />
       <main className="wrap">
         <section className="pagehead">
@@ -220,6 +243,19 @@ export default async function ProcedurePage({ params }: Params) {
             <p className="prov">Median facility price per hospital, sourced from each hospital&apos;s machine-readable file. Negotiated shows the median across payers with the full range.</p>
           </>
         )}
+
+        <ProcedureEducation
+          name={proc.name}
+          setting={setting}
+          count={priced.length}
+          median={median}
+          lo={lo}
+          hi={hi}
+          cashCount={cashCount}
+          cheapest={cheapest ? { name: titleCase(cheapest.name), ccn: cheapest.ccn, price: cheapest.negotiated } : null}
+          priciest={priciest ? { name: titleCase(priciest.name), ccn: priciest.ccn, price: priciest.negotiated } : null}
+          faq={faqItems}
+        />
       </main>
       <SiteFooter />
     </>

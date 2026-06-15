@@ -7,6 +7,7 @@ import { STATE_NAMES } from "@/lib/states";
 import { titleCase, titleCaseProcedure } from "@/lib/format";
 import FilterableProcedures from "@/components/FilterableProcedures";
 import { MoneyRail } from "@/components/MoneyRail";
+import { HospitalEducation, type Faq } from "@/components/PriceEducation";
 import { guidesForHospital } from "@/lib/guides";
 
 export const revalidate = 3600;
@@ -78,9 +79,12 @@ export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { ccn } = await params;
   const h = await getHospital(ccn);
   if (!h) return { title: "Hospital — OpenHospitalCost" };
-  // Keep ultra-thin pages (<5 procedures) out of the index so crawlers and ad
-  // review focus on substantive pages; still follow their links.
-  const thin = (h.proc_count ?? 0) < 5;
+  // Keep the index focused on substantive pages so crawlers and ad review don't
+  // wade through thousands of near-identical small-hospital tables: noindex pages
+  // with too few procedures (<5) OR smaller hospitals (<100 beds). Still
+  // noindex,follow so the data stays reachable and link equity flows. Must match
+  // the sitemap's hospital filter.
+  const thin = (h.proc_count ?? 0) < 5 || (h.beds ?? 0) < 100;
   return {
     title: `${titleCase(h.name)} — prices | OpenHospitalCost`,
     description: `Real negotiated, cash, and gross prices at ${titleCase(h.name)}, ${titleCase(h.city)}, ${h.state.toUpperCase()}, sourced from its machine-readable file.`,
@@ -119,36 +123,38 @@ export default async function HospitalPage({ params }: Params) {
     ],
   };
   const hospitalName = titleCase(h.name);
+  // FAQ built once: rendered visibly in the editorial block AND emitted as
+  // FAQPage structured data.
+  const faqItems: Faq[] = [
+    {
+      q: `Are these the prices I'll be billed at ${hospitalName}?`,
+      a: `No. These are the standard charges ${hospitalName} published in its machine-readable file, shown for comparison — not a quote. Your actual bill depends on your exact care and your insurance, so always confirm directly with the hospital and your insurer.`,
+    },
+    {
+      q: `How do I get the cash price at ${hospitalName}?`,
+      a: `Ask the hospital's billing office for the self-pay or cash price in writing for the specific procedure code. The cash price is sometimes lower than the negotiated insurance rate, so it can be worth comparing both.`,
+    },
+    {
+      q: "Why do these prices vary so much between hospitals?",
+      a: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same procedure can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
+    },
+  ];
   const faq = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: `Are these the prices I'll be billed at ${hospitalName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `No. These are the standard charges ${hospitalName} published in its machine-readable file, shown for comparison — not a quote. Your actual bill depends on your exact care and your insurance, so always confirm directly with the hospital and your insurer.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `How do I get the cash price at ${hospitalName}?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Ask the hospital's billing office for the self-pay or cash price in writing for the specific procedure code. The cash price is sometimes lower than the negotiated insurance rate, so it can be worth comparing both.`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: "Why do these prices vary so much between hospitals?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Hospital prices are set by negotiation, not a national price list. Each hospital negotiates separately with each insurer, so the same procedure can have many different prices, and prices between hospitals a few miles apart routinely differ by several times.",
-        },
-      },
-    ],
+    mainEntity: faqItems.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
   };
+  const cashCount = rows.filter((r) => r.cash != null).length;
+  // as_of comes back as a Date from the driver; format to a clean YYYY-MM-DD using
+  // local parts (the value is a local-midnight date) so it renders as text.
+  const asOfDate = h.as_of ? new Date(h.as_of) : null;
+  const asOf = asOfDate
+    ? `${asOfDate.getFullYear()}-${String(asOfDate.getMonth() + 1).padStart(2, "0")}-${String(asOfDate.getDate()).padStart(2, "0")}`
+    : null;
   const guideLinks = guidesForHospital();
 
   return (
@@ -199,6 +205,20 @@ export default async function HospitalPage({ params }: Params) {
             <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
           </>
         )}
+
+        <HospitalEducation
+          name={titleCase(h.name)}
+          city={titleCase(h.city)}
+          stateName={stateName}
+          stateCode={h.state.toLowerCase()}
+          beds={h.beds}
+          procCount={rows.length}
+          cashCount={cashCount}
+          asOf={asOf}
+          qualityScore={h.quality_score}
+          sourceUrl={h.url}
+          faq={faqItems}
+        />
       </main>
       <SiteFooter />
     </>

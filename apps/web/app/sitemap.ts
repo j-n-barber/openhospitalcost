@@ -34,14 +34,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ) t WHERE n >= 6
     GROUP BY code`) as { code: string }[];
 
-  // Match the hospital page's noindex rule: pages with <5 priced procedures are
-  // noindex,follow, so they must NOT appear in the sitemap (else GSC flags
-  // "Submitted URL marked noindex"). Carry parsed_at as lastmod for freshness.
+  // Match the hospital page's noindex rule exactly (else GSC flags "Submitted URL
+  // marked noindex"): index only hospitals with >=5 priced procedures AND >=100
+  // beds. Smaller hospitals stay noindex,follow and out of the sitemap. Carry
+  // parsed_at as lastmod for freshness.
   const hosps = (await sql`
     SELECT h.ccn, f.parsed_at::date::text AS lastmod
     FROM hospitals h
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
     WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean
+      AND h.beds >= 100
       AND (SELECT count(DISTINCT s.procedure_id) FROM procedure_hospital_summary s WHERE s.hospital_id = h.id) >= 5`) as { ccn: string; lastmod: string }[];
 
   return [
