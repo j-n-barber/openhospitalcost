@@ -1115,6 +1115,730 @@ export const GUIDES: Guide[] = [
       { href: "/procedures", label: "Browse all procedures" },
     ],
   },
+  {
+    slug: "blood-test-cost",
+    title: "How much does a blood test cost without insurance?",
+    metaTitle: "How Much Does a Blood Test Cost Without Insurance? (Real Prices)",
+    metaDescription:
+      "Real cash and negotiated prices for common blood tests from hospitals' own files — what a CBC, metabolic panel, or thyroid test actually costs, and the cheapest way to get one.",
+    sub: "What a CBC, metabolic panel, thyroid test, or cholesterol panel actually costs out of pocket — and the cheapest way to get one.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does a blood test cost without insurance?</h2>
+        <p>
+          For routine blood work paid out of pocket, the hospital <strong>cash (self-pay) price</strong>{" "}is what
+          matters. As of mid-2026, common tests at hospitals run roughly:
+        </p>
+        <ul>
+          <li><strong>Complete blood count (CBC)</strong>{" "}— cash price around <strong>$62</strong>{" "}(most fall between $16 and $156). <a href="/procedure/complete-blood-count">See CBC prices →</a></li>
+          <li><strong>Basic metabolic panel</strong>{" "}— around <strong>$93</strong>{" "}($21–$390). <a href="/procedure/basic-metabolic-panel">See prices →</a></li>
+          <li><strong>Comprehensive metabolic panel</strong>{" "}— around <strong>$122</strong>{" "}($26–$540). <a href="/procedure/comprehensive-metabolic-panel">See prices →</a></li>
+          <li><strong>Lipid (cholesterol) panel</strong>{" "}— around <strong>$87</strong>{" "}($23–$320). <a href="/procedure/lipid-panel">See prices →</a></li>
+          <li><strong>Hemoglobin A1c (diabetes)</strong>{" "}— around <strong>$62</strong>{" "}($18–$190). <a href="/procedure/hemoglobin-a1c">See prices →</a></li>
+          <li><strong>TSH (thyroid)</strong>{" "}— around <strong>$89</strong>{" "}($28–$294). <a href="/procedure/tsh-thyroid-test">See prices →</a></li>
+          <li><strong>Vitamin D</strong>{" "}— around <strong>$121</strong>{" "}($33–$314). <a href="/procedure/vitamin-d-test">See prices →</a></li>
+          <li><strong>PSA (prostate)</strong>{" "}— around <strong>$92</strong>{" "}($25–$246). <a href="/procedure/psa-test">See prices →</a></li>
+          <li><strong>Urinalysis</strong>{" "}— around <strong>$43</strong>{" "}($9–$195). <a href="/procedure/urinalysis">See prices →</a></li>
+        </ul>
+        <p>
+          Those are figures for a single test. A typical doctor&apos;s visit often orders several at once, so an
+          out-of-pocket lab bill of <strong>$150–$400</strong>{" "}is common — and that&apos;s before the separate fee
+          some hospitals charge just for drawing your blood.
+        </p>
+
+        <h2>Why the hospital cash price is so much higher than the insured rate</h2>
+        <p>
+          Here&apos;s the surprising part. For blood tests, the cash price is usually <strong>several times higher</strong>{" "}
+          than the rate an insurer actually pays. A CBC has a median negotiated (insured) rate around <strong>$14</strong>, but a
+          median cash price around <strong>$62</strong>. A comprehensive metabolic panel is about <strong>$21</strong>{" "}
+          negotiated versus <strong>$122</strong>{" "}cash.
+        </p>
+        <p>
+          This is the opposite of big imaging like MRIs, where the cash price is sometimes the better deal. For labs,
+          the insured rate is almost always far lower — so if you have insurance, use it. If you don&apos;t, the hospital
+          is rarely the cheapest place to go.
+        </p>
+
+        <h2>The cheapest way to get a blood test</h2>
+        <ul>
+          <li><strong>Use an independent lab.</strong>{" "}Quest and Labcorp patient-pay prices, retail clinics, and pharmacy lab counters are often a fraction of a hospital&apos;s cash price for the exact same test.</li>
+          <li><strong>Try a direct-to-consumer lab.</strong>{" "}Many tests can be ordered online without a doctor&apos;s visit and run $10–$50 — useful for routine monitoring like cholesterol or A1c.</li>
+          <li><strong>Ask for the cash price up front, in writing.</strong>{" "}If a hospital quotes far more than the published figure, point to its own price file.</li>
+          <li><strong>Have the draw done at the doctor&apos;s office.</strong>{" "}A hospital outpatient lab can carry a facility fee that an independent clinic doesn&apos;t.</li>
+        </ul>
+
+        <h2>The three prices you&apos;ll see</h2>
+        <ul>
+          <li><strong>Cash / self-pay price</strong>{" "}— what you pay directly without insurance. Your number if you&apos;re uninsured.</li>
+          <li><strong>Negotiated price</strong>{" "}— the rate your insurance plan pays. For labs this is usually the lowest of the three.</li>
+          <li><strong>Gross / chargemaster price</strong>{" "}— the list price before any discount (a CBC&apos;s is around $111). Almost nobody pays it.</li>
+        </ul>
+        <p>
+          More on how these differ: <a href="/guides/cash-vs-negotiated-price">cash vs. negotiated vs. chargemaster →</a>
+        </p>
+
+        <h2>How to find your price</h2>
+        <ul>
+          <li><strong>Look up the exact test.</strong>{" "}&quot;Blood test&quot; isn&apos;t one price — search the specific panel in <a href="/procedures">the procedures list</a>.</li>
+          <li><strong>Compare a few hospitals and an independent lab</strong>{" "}before you book, if it isn&apos;t urgent.</li>
+          <li><strong>Confirm the current number,</strong>{" "}since published files are dated and can lag.</li>
+        </ul>
+
+        <h2>A note on accuracy</h2>
+        <p>
+          These figures come straight from each hospital&apos;s federally-mandated price file (required since 2021 under
+          45 CFR §180) — not estimates. They&apos;re for comparison; your actual bill depends on exactly which tests are
+          ordered and where they&apos;re run. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "Is a blood test cheaper without insurance?",
+        a: "Usually not at a hospital. For most blood tests the cash (self-pay) price is several times higher than the insured negotiated rate — a CBC is roughly $62 cash versus about $14 negotiated. If you have insurance, use it. If you don't, an independent or direct-to-consumer lab is often far cheaper than a hospital.",
+      },
+      {
+        q: "How much does a CBC (complete blood count) cost?",
+        a: "At hospitals the cash price has a median around $62, with most falling between $16 and $156. The insured negotiated rate is much lower — a median near $14. Independent labs often charge less than the hospital cash price.",
+      },
+      {
+        q: "Why is the same blood test so much more at one lab than another?",
+        a: "Each hospital and lab sets its own prices and negotiates separately with insurers, so there's no national price. The cash price for one routine test can range from under $20 to well over $150 depending on where you go.",
+      },
+      {
+        q: "Can I get a blood test without a doctor's order?",
+        a: "Often, yes. Direct-to-consumer lab services let you order many common tests online without a visit, then get your blood drawn at a partner location. For routine monitoring this can be the cheapest option.",
+      },
+    ],
+    related: [
+      { href: "/procedure/complete-blood-count", label: "CBC prices" },
+      { href: "/procedure/comprehensive-metabolic-panel", label: "Metabolic panel prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+  {
+    slug: "financial-assistance",
+    title: "Hospital financial assistance: how to lower or erase your bill",
+    metaTitle: "Hospital Financial Assistance: How to Lower or Erase Your Bill",
+    metaDescription:
+      "Nonprofit hospitals are required to offer financial assistance. Who qualifies, how to apply, the 240-day deadline, and how to use published prices to pay less.",
+    sub: "Nonprofit hospitals are legally required to help — here's who qualifies, how to apply, and the deadline most people miss.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>What hospital financial assistance is</h2>
+        <p>
+          Most U.S. hospitals are nonprofits, and to keep their tax-exempt status federal law (Section 501(r) of the
+          tax code) requires them to have a written <strong>Financial Assistance Policy</strong>{" "}— often called
+          charity care. It can reduce a bill, cap it, or wipe it out entirely depending on your income. It is not a
+          favor; it&apos;s a condition of how the hospital is funded.
+        </p>
+        <p>
+          The catch is that hospitals rarely advertise it, and many people pay bills they could have had reduced or
+          erased. If you&apos;re facing a hospital bill you can&apos;t comfortably afford, this should be your first move.
+        </p>
+
+        <h2>Who qualifies</h2>
+        <p>
+          Each hospital sets its own income thresholds, but as a rough guide many offer:
+        </p>
+        <ul>
+          <li><strong>Free care</strong>{" "}for households up to around 200% of the federal poverty level.</li>
+          <li><strong>Discounted care</strong>{" "}on a sliding scale above that — often up to 400% of the poverty level, and sometimes higher.</li>
+        </ul>
+        <p>
+          Even if your income is above the cutoff, ask anyway. Many policies grant case-by-case relief when a bill is
+          large relative to income, and the law forbids charging financial-assistance-eligible patients more than the
+          amount it <em>generally bills</em>{" "}insured patients (the &quot;AGB&quot; rule) — so you should never be charged the
+          inflated chargemaster price.
+        </p>
+
+        <h2>How to apply</h2>
+        <ul>
+          <li><strong>Ask for the Financial Assistance Policy and application</strong>{" "}from the billing office. By law they must give you a plain-language summary.</li>
+          <li><strong>Gather proof of income</strong>{" "}— recent pay stubs, a tax return, or a benefits letter. That&apos;s usually all that&apos;s needed.</li>
+          <li><strong>Submit before the deadline.</strong>{" "}You generally have at least <strong>240 days</strong>{" "}from the first post-discharge bill to apply — even if the bill has already gone to collections.</li>
+          <li><strong>Keep copies</strong>{" "}of everything and get any approval in writing.</li>
+        </ul>
+
+        <h2>Before you apply: check the price first</h2>
+        <p>
+          Financial assistance works best alongside knowing the real price. Look up what the hospital actually charges
+          for your care, ask for the <strong>cash (self-pay) price</strong>, and request an <strong>itemized bill</strong>{" "}
+          so you can catch charges for things that didn&apos;t happen. A bill that&apos;s wrong is easier to fight than one
+          you simply can&apos;t afford. <a href="/guides/hospital-bill">How to read and fight a hospital bill →</a>
+        </p>
+
+        <h2>If you&apos;re uninsured</h2>
+        <p>
+          Uninsured patients are often quoted the gross chargemaster price first — the highest number, which almost
+          nobody actually pays. Don&apos;t accept it. Ask for the self-pay discount, apply for financial assistance, and
+          compare against the hospital&apos;s published prices. <a href="/guides/cash-vs-negotiated-price">Cash vs. negotiated price →</a>
+        </p>
+
+        <h2>Other ways to bring a bill down</h2>
+        <ul>
+          <li><strong>Interest-free payment plans</strong>{" "}— most hospitals offer them; ask before putting a bill on a credit card.</li>
+          <li><strong>Negotiate the balance</strong>{" "}— offer a lump sum for a discount, or ask them to match the lower cash or Medicare rate.</li>
+          <li><strong>Dispute errors</strong>{" "}— duplicate charges and billing mistakes are common on itemized bills.</li>
+          <li><strong>Medical bill advocates</strong>{" "}— for very large bills, a patient advocate can negotiate on your behalf.</li>
+        </ul>
+      </>
+    ),
+    faq: [
+      {
+        q: "Do I have to be low-income to get hospital financial assistance?",
+        a: "Lower income gets the biggest discounts (often free care up to about 200% of the poverty level), but many hospitals offer sliding-scale help well above that, and case-by-case relief when a bill is large relative to your income. Always ask, even if you think you earn too much.",
+      },
+      {
+        q: "Can I apply after I've already received the bill?",
+        a: "Yes. You generally have at least 240 days from the first post-discharge bill to apply for financial assistance — often even after the bill has gone to collections. It's worth applying late rather than not at all.",
+      },
+      {
+        q: "What if my hospital is for-profit?",
+        a: "For-profit hospitals aren't required to have a financial assistance policy, but many still offer self-pay discounts, payment plans, and case-by-case help. Ask the billing office what's available, and negotiate the balance.",
+      },
+      {
+        q: "Will applying for financial assistance hurt my credit?",
+        a: "No. Applying is a request to the hospital, not a credit application. In fact, getting a bill reduced or onto a payment plan can keep it out of collections, which protects your credit.",
+      },
+    ],
+    related: [
+      { href: "/guides/hospital-bill", label: "How to read and fight a hospital bill" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/guides/no-surprises-act", label: "The No Surprises Act explained" },
+      { href: "/procedures", label: "Browse procedure prices" },
+    ],
+  },
+  {
+    slug: "no-surprises-act",
+    title: "The No Surprises Act: your protection against surprise medical bills",
+    metaTitle: "The No Surprises Act: Your Protection Against Surprise Bills",
+    metaDescription:
+      "What the No Surprises Act covers, what it doesn't (ground ambulances), your right to a Good Faith Estimate, and what to do if you get a surprise medical bill anyway.",
+    sub: "Since 2022 you're protected from most surprise out-of-network bills — what's covered, the one big gap, and what to do if you get one anyway.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>What the No Surprises Act does</h2>
+        <p>
+          Since January 1, 2022, the federal <strong>No Surprises Act</strong>{" "}has banned the most common surprise
+          medical bills. Before it, you could go to an in-network hospital and still get hit with huge out-of-network
+          charges from a doctor you never chose — an anesthesiologist or radiologist who happened to be out of network.
+          That practice, called <strong>balance billing</strong>, is now illegal in most situations.
+        </p>
+
+        <h2>What&apos;s protected</h2>
+        <ul>
+          <li><strong>Emergency care</strong>{" "}— you can&apos;t be balance-billed for emergency services, even at an out-of-network hospital. You pay only your normal in-network cost-sharing.</li>
+          <li><strong>Out-of-network providers at an in-network facility</strong>{" "}— the anesthesiologist, radiologist, pathologist, or assistant surgeon you didn&apos;t pick can&apos;t bill you their out-of-network rate.</li>
+          <li><strong>Air ambulance</strong>{" "}— covered by the ban on balance billing.</li>
+        </ul>
+
+        <h2>The big gap: ground ambulances</h2>
+        <p>
+          The most important exception to know: <strong>ground ambulance rides are not covered</strong>{" "}by the No
+          Surprises Act. They remain one of the most common sources of surprise bills, so an ambulance trip can still
+          leave you with a large out-of-network charge. (You can also waive your protections by signing a consent form
+          to see an out-of-network provider for non-emergency care — read anything you&apos;re asked to sign.)
+        </p>
+
+        <h2>Your right to a Good Faith Estimate</h2>
+        <p>
+          If you&apos;re <strong>uninsured or paying cash</strong>, the Act gives you another tool: for scheduled care you
+          can request a <strong>Good Faith Estimate</strong>{" "}of the cost in advance, and the provider must give you one
+          in writing. If your final bill is at least <strong>$400 more</strong>{" "}than the estimate, you can dispute it
+          through the federal patient-provider dispute resolution process.
+        </p>
+        <p>
+          This pairs well with the hospital&apos;s published prices — you can check the estimate against what the hospital
+          charges others before you agree. <a href="/guides/price-transparency-law">How hospital price transparency works →</a>
+        </p>
+
+        <h2>What to do if you get a surprise bill anyway</h2>
+        <ul>
+          <li><strong>Don&apos;t pay it right away.</strong>{" "}Surprise bills that violate the Act are not valid — paying can make them harder to undo.</li>
+          <li><strong>Compare it to your insurer&apos;s explanation of benefits</strong>{" "}to see what should have been covered.</li>
+          <li><strong>Call the federal No Surprises Help Desk</strong>{" "}at <strong>1-800-985-3059</strong>{" "}to report a violation, or file a complaint at cms.gov.</li>
+          <li><strong>Ask the provider to reprocess the claim</strong>{" "}as in-network cost-sharing, as the law requires.</li>
+        </ul>
+
+        <h2>Does it apply to me?</h2>
+        <p>
+          The No Surprises Act mainly protects people with private or employer health plans, and the uninsured or
+          self-pay. If you have Medicare or Medicaid, you already had strong protections against balance billing, so the
+          Act&apos;s rules are mostly aimed at other coverage. Either way, you should never quietly pay a surprise
+          out-of-network bill without checking. <a href="/guides/hospital-bill">How to fight a hospital bill →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "Does the No Surprises Act cover ambulance rides?",
+        a: "Air ambulances are covered, but ground ambulances are not — they're the single biggest gap in the law and remain a common source of surprise bills. A ground ambulance trip can still leave you with a large out-of-network charge.",
+      },
+      {
+        q: "What is a Good Faith Estimate?",
+        a: "If you're uninsured or paying cash, you can ask for a written estimate of the cost of scheduled care before it happens. If the final bill comes in at least $400 above the estimate, you can dispute it through the federal patient-provider dispute resolution process.",
+      },
+      {
+        q: "What do I do if I get a surprise out-of-network bill anyway?",
+        a: "Don't pay it immediately. Compare it to your insurer's explanation of benefits, ask the provider to reprocess it as in-network cost-sharing, and report the violation to the federal No Surprises Help Desk at 1-800-985-3059.",
+      },
+      {
+        q: "Does the No Surprises Act apply if I have Medicare or Medicaid?",
+        a: "Medicare and Medicaid already protect enrollees from balance billing, so the Act's new rules are aimed mainly at private and employer plans and at uninsured or self-pay patients. The protections overlap, so either way you shouldn't pay a surprise bill without checking.",
+      },
+    ],
+    related: [
+      { href: "/guides/price-transparency-law", label: "Hospital price transparency, explained" },
+      { href: "/guides/hospital-bill", label: "How to read and fight a hospital bill" },
+      { href: "/guides/er-visit-cost", label: "How much does an ER visit cost?" },
+      { href: "/procedures", label: "Browse procedure prices" },
+    ],
+  },
+  {
+    slug: "knee-replacement-cost",
+    title: "How much does a knee or hip replacement cost?",
+    metaTitle: "How Much Does a Knee or Hip Replacement Cost? (Real Prices)",
+    metaDescription:
+      "Real hospital prices for knee and hip replacement from published files — what the surgery actually costs, why the cash price can beat insurance, and how to shop for it.",
+    sub: "What a joint replacement actually costs, why the cash price can undercut your insurance, and how to shop a big elective surgery.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does a knee or hip replacement cost?</h2>
+        <p>
+          Joint replacement is one of the most expensive common elective surgeries — and one of the most worth
+          shopping, because you usually have time to plan. As of mid-2026, the negotiated (insured) facility price has a
+          median around <strong>$13,000</strong>{" "}for both knee and hip replacement, but the range is enormous: the
+          cheapest tenth of hospitals are under <strong>$2,000</strong>{" "}and the priciest tenth are over{" "}
+          <strong>$21,000</strong>. <a href="/procedure/knee-replacement">Knee prices →</a>{" · "}
+          <a href="/procedure/hip-replacement">Hip prices →</a>
+        </p>
+
+        <h2>Why the cash price can beat your insurance</h2>
+        <p>
+          Here&apos;s the counterintuitive part. For joint replacement the <strong>cash (self-pay) price is often lower
+          than the negotiated rate</strong>: the median cash price is around <strong>$9,500</strong>{" "}for a knee and{" "}
+          <strong>$9,000</strong>{" "}for a hip — several thousand dollars below the insured median. Many hospitals and
+          surgery centers offer a bundled &quot;package&quot; price for self-pay joint replacement that undercuts what
+          insurers pay. If you have a high-deductible plan, it can be worth asking for the cash package and comparing.
+        </p>
+
+        <h2>What the price includes — and what it doesn&apos;t</h2>
+        <p>
+          The figure on a hospital&apos;s file is usually the <strong>facility fee</strong>. The surgeon, the
+          anesthesiologist, the implant itself, and post-op physical therapy are often billed separately, so the all-in
+          cost runs higher than the facility number alone. Always ask for a <strong>bundled or all-inclusive quote</strong>{" "}
+          that names what&apos;s covered.
+        </p>
+
+        <h2>Inpatient vs. outpatient surgery center</h2>
+        <p>
+          Joint replacements are increasingly done as outpatient procedures, often at an{" "}
+          <strong>ambulatory surgery center (ASC)</strong>{" "}rather than a hospital — and ASCs are frequently cheaper for
+          the same operation. If you&apos;re medically suitable, ask your surgeon whether an outpatient or ASC setting is an
+          option.
+        </p>
+
+        <h2>The three prices you&apos;ll see</h2>
+        <ul>
+          <li><strong>Cash / self-pay price</strong>{" "}— what you pay directly; for joint replacement, often a bundled package that can beat insurance.</li>
+          <li><strong>Negotiated price</strong>{" "}— your plan&apos;s rate; what you pay toward it depends on your deductible and coinsurance.</li>
+          <li><strong>Gross / chargemaster price</strong>{" "}— the list price, far higher than anyone pays. Ignore it.</li>
+        </ul>
+        <p><a href="/guides/cash-vs-negotiated-price">More on cash vs. negotiated →</a></p>
+
+        <h2>How to shop for a joint replacement</h2>
+        <ul>
+          <li><strong>Get bundled quotes from two or three facilities</strong>{" "}before you schedule — this is elective, so use the time.</li>
+          <li><strong>Ask for the self-pay package price</strong>{" "}even if you&apos;re insured, and compare it to your expected out-of-pocket share.</li>
+          <li><strong>Ask about an ASC.</strong>{" "}Outpatient settings are often materially cheaper.</li>
+          <li><strong>Check your out-of-pocket maximum.</strong>{" "}With insurance, once you hit it the rest of the year is covered. <a href="/guides/deductible-coinsurance-copay">How deductibles work →</a></li>
+        </ul>
+
+        <h2>A note on accuracy</h2>
+        <p>
+          These figures come from hospitals&apos; federally-mandated price files (45 CFR §180), not estimates. They&apos;re for
+          comparison; your actual cost depends on the facility, your surgeon, your implant, and your plan, so confirm
+          before scheduling. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "Is a knee replacement cheaper if I pay cash instead of using insurance?",
+        a: "Often, yes. The median self-pay price for a knee replacement is around $9,500, versus about $13,000 for the negotiated insurance rate. Many hospitals offer a bundled cash package that beats the insured rate, so if you have a high-deductible plan it's worth comparing both.",
+      },
+      {
+        q: "Does the hospital price include the surgeon and anesthesia?",
+        a: "Usually not. The published figure is typically the facility fee. The surgeon, anesthesiologist, implant, and physical therapy are often billed separately, so ask for a bundled or all-inclusive quote.",
+      },
+      {
+        q: "Why does a knee replacement cost so much more at one hospital than another?",
+        a: "Each hospital sets its own price and negotiates separately with insurers. For knee replacement the facility price ranges from under $2,000 to over $21,000 — a higher price doesn't mean a better outcome, so comparing is worth thousands.",
+      },
+      {
+        q: "Can a joint replacement be done at a surgery center instead of a hospital?",
+        a: "Increasingly, yes. Many knee and hip replacements are now outpatient procedures done at ambulatory surgery centers, which are often cheaper than hospitals. Ask your surgeon whether that's an option for you.",
+      },
+    ],
+    related: [
+      { href: "/procedure/knee-replacement", label: "Knee replacement prices" },
+      { href: "/procedure/hip-replacement", label: "Hip replacement prices" },
+      { href: "/guides/why-prices-vary", label: "Why hospital prices vary so much" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+  {
+    slug: "cataract-surgery-cost",
+    title: "How much does cataract surgery cost?",
+    metaTitle: "How Much Does Cataract Surgery Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real prices for cataract surgery from hospitals' own files — what it costs per eye, what Medicare covers, premium lens upgrades, and how to pay less.",
+    sub: "What cataract surgery costs per eye, what Medicare covers, and why a premium lens can change the bill.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does cataract surgery cost?</h2>
+        <p>
+          Cataract surgery is one of the most common operations in the country, and it&apos;s usually planned, so you can
+          shop. As of mid-2026, the negotiated facility price has a median around <strong>$2,650</strong>{" "}per eye, with
+          most hospitals between <strong>$1,400 and $5,750</strong>. The cash (self-pay) median is around{" "}
+          <strong>$3,000</strong>. <a href="/procedure/cataract-surgery">See cataract surgery prices →</a>
+        </p>
+        <p>That&apos;s the facility fee per eye — and most people have each eye done separately, so budget accordingly.</p>
+
+        <h2>What Medicare and insurance cover</h2>
+        <p>
+          Standard cataract surgery is covered by Medicare and most insurance, because it&apos;s medically necessary once a
+          cataract affects your vision. With insurance you&apos;ll typically owe your deductible and coinsurance rather than
+          the full price. <a href="/guides/deductible-coinsurance-copay">How deductibles and coinsurance work →</a>
+        </p>
+
+        <h2>The premium-lens upsell</h2>
+        <p>
+          The biggest swing in what you pay is the lens. A standard monofocal lens is covered. <strong>Premium lenses</strong>{" "}
+          — toric (for astigmatism) or multifocal (to reduce glasses use) — are generally <em>not</em>{" "}covered, and the
+          upgrade can add <strong>$1,000–$4,000 per eye</strong>{" "}out of pocket. It can be worth it, but make sure it&apos;s a
+          choice you make, not a default you&apos;re billed for.
+        </p>
+
+        <h2>Surgery center vs. hospital</h2>
+        <p>
+          Most cataract surgery is outpatient and often done at an <strong>ambulatory surgery center</strong>, which is
+          usually cheaper than a hospital outpatient department for the same procedure. Ask where yours will be done.
+        </p>
+
+        <h2>How to pay less</h2>
+        <ul>
+          <li><strong>Compare a few facilities</strong>{" "}— the facility price varies several-fold for identical surgery.</li>
+          <li><strong>Ask whether a standard lens meets your needs</strong>{" "}before paying for a premium upgrade.</li>
+          <li><strong>Ask for the self-pay price</strong>{" "}if you&apos;re uninsured, and get it in writing.</li>
+          <li><strong>Confirm what&apos;s bundled</strong>{" "}— surgeon and anesthesia may be billed separately from the facility fee.</li>
+        </ul>
+
+        <h2>A note on accuracy</h2>
+        <p>
+          Figures come straight from hospitals&apos; published price files (45 CFR §180), not estimates. Your actual cost
+          depends on the facility, your lens choice, and your plan. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "Does Medicare cover cataract surgery?",
+        a: "Yes. Standard cataract surgery is covered by Medicare and most insurance once a cataract affects your vision. You'll generally owe your deductible and coinsurance rather than the full price, but premium lens upgrades are not covered.",
+      },
+      {
+        q: "Why was I quoted thousands extra for a lens?",
+        a: "Standard monofocal lenses are covered, but premium lenses — toric for astigmatism or multifocal to reduce glasses use — usually aren't, and can add $1,000 to $4,000 per eye out of pocket. Make sure the upgrade is a choice you're making, not a default.",
+      },
+      {
+        q: "How much is cataract surgery without insurance?",
+        a: "The self-pay price has a median around $3,000 per eye, with most hospitals between roughly $850 and $8,600. Ambulatory surgery centers are often cheaper than hospitals, so it pays to compare.",
+      },
+      {
+        q: "Is cataract surgery cheaper at a surgery center?",
+        a: "Usually. Most cataract surgery is outpatient and frequently done at an ambulatory surgery center, which tends to cost less than a hospital outpatient department for the same procedure.",
+      },
+    ],
+    related: [
+      { href: "/procedure/cataract-surgery", label: "Cataract surgery prices" },
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/guides/why-prices-vary", label: "Why hospital prices vary so much" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+  {
+    slug: "gallbladder-surgery-cost",
+    title: "How much does gallbladder removal surgery cost?",
+    metaTitle: "How Much Does Gallbladder Removal Cost? (Real Hospital Prices)",
+    metaDescription:
+      "Real prices for laparoscopic gallbladder removal (cholecystectomy) from hospitals' files — what it costs, emergency vs. planned, and how to shop when you can.",
+    sub: "What laparoscopic gallbladder removal actually costs, why an emergency changes everything, and how to shop a planned surgery.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does gallbladder removal cost?</h2>
+        <p>
+          Gallbladder removal — a <strong>laparoscopic cholecystectomy</strong>{" "}— is one of the most common general
+          surgeries. As of mid-2026, the negotiated facility price has a median around <strong>$6,100</strong>, with most
+          hospitals between <strong>$900 and $12,200</strong>. The cash (self-pay) median is a bit lower, around{" "}
+          <strong>$5,650</strong>. <a href="/procedure/laparoscopic-gallbladder-removal">See gallbladder surgery prices →</a>
+        </p>
+
+        <h2>Emergency vs. planned — it changes everything</h2>
+        <p>
+          The biggest factor in what you pay is whether it&apos;s planned. A sudden gallbladder attack (acute
+          cholecystitis) often means emergency surgery and an inpatient stay — you can&apos;t shop, and the bill is much
+          higher. If your surgery is <strong>elective</strong>{" "}(scheduled for recurring gallstones), you have time to
+          compare facilities and ask for a bundled price.
+        </p>
+
+        <h2>What the price includes</h2>
+        <p>
+          The published figure is usually the <strong>facility fee</strong>. The surgeon and anesthesiologist are
+          commonly billed separately, so ask for an all-in quote. Laparoscopic removal is typically outpatient — you go
+          home the same day — but if it&apos;s converted to open surgery or you&apos;re admitted, the cost rises.
+        </p>
+
+        <h2>Surgery center vs. hospital</h2>
+        <p>
+          A planned laparoscopic cholecystectomy can sometimes be done at an <strong>ambulatory surgery center</strong>,
+          which is often cheaper than a hospital. Ask your surgeon whether that&apos;s appropriate for you.
+        </p>
+
+        <h2>The three prices you&apos;ll see</h2>
+        <ul>
+          <li><strong>Cash / self-pay price</strong>{" "}— what you pay directly; for this surgery it can be slightly below the insured rate.</li>
+          <li><strong>Negotiated price</strong>{" "}— your plan&apos;s rate; your share depends on your deductible and coinsurance.</li>
+          <li><strong>Gross / chargemaster price</strong>{" "}— the list price, far above what anyone pays.</li>
+        </ul>
+
+        <h2>How to pay less (when you can)</h2>
+        <ul>
+          <li><strong>If it&apos;s elective, compare facilities</strong>{" "}and ask each for a bundled price.</li>
+          <li><strong>Ask about an outpatient or ASC setting.</strong></li>
+          <li><strong>Confirm what&apos;s included</strong>{" "}and get the self-pay price in writing if uninsured.</li>
+          <li><strong>Apply for financial assistance</strong>{" "}if an emergency leaves you with a large bill. <a href="/guides/financial-assistance">How financial assistance works →</a></li>
+        </ul>
+
+        <h2>A note on accuracy</h2>
+        <p>
+          Figures come from hospitals&apos; published price files (45 CFR §180), not estimates. Your cost depends on the
+          facility, whether it&apos;s an emergency, and your plan. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does laparoscopic gallbladder removal cost?",
+        a: "The negotiated facility price has a median around $6,100, with most hospitals between roughly $900 and $12,200. The self-pay median is a bit lower, near $5,650. The surgeon and anesthesia are often billed separately.",
+      },
+      {
+        q: "Why is emergency gallbladder surgery so much more expensive?",
+        a: "An emergency (acute gallbladder attack) usually means inpatient admission and surgery you can't shop for, which costs far more than a planned outpatient procedure. If your surgery is elective, you have time to compare facilities and ask for a bundled price.",
+      },
+      {
+        q: "Is gallbladder surgery done as an outpatient procedure?",
+        a: "Laparoscopic removal is typically outpatient — most people go home the same day. If it's converted to open surgery or you're admitted, the cost goes up. A planned procedure can sometimes be done at a cheaper ambulatory surgery center.",
+      },
+      {
+        q: "Does insurance cover gallbladder removal?",
+        a: "Yes, when it's medically necessary. With insurance you'll owe your deductible and coinsurance rather than the full price. If you're uninsured, ask for the self-pay price and apply for financial assistance on any large bill.",
+      },
+    ],
+    related: [
+      { href: "/procedure/laparoscopic-gallbladder-removal", label: "Gallbladder surgery prices" },
+      { href: "/guides/financial-assistance", label: "Hospital financial assistance" },
+      { href: "/guides/why-prices-vary", label: "Why hospital prices vary so much" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+  {
+    slug: "hernia-surgery-cost",
+    title: "How much does hernia repair surgery cost?",
+    metaTitle: "How Much Does Hernia Repair Surgery Cost? (Real Prices)",
+    metaDescription:
+      "Real prices for inguinal and umbilical hernia repair from hospitals' files — what the surgery costs, open vs. laparoscopic, and how to shop a planned repair.",
+    sub: "What inguinal and umbilical hernia repair actually costs, and how to shop a planned, elective surgery.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>How much does hernia repair cost?</h2>
+        <p>
+          Most hernia repairs are elective and outpatient, which means you usually have time to compare prices. As of
+          mid-2026, an <strong>inguinal (groin) hernia repair</strong>{" "}has a negotiated facility price with a median
+          around <strong>$3,800</strong>, with most hospitals between <strong>$770 and $7,900</strong>. The cash median
+          is around <strong>$4,200</strong>. <a href="/procedure/inguinal-hernia-repair">See inguinal hernia prices →</a>
+        </p>
+        <p>
+          An <strong>umbilical (belly-button) hernia repair</strong>{" "}is broadly similar, with a negotiated median around{" "}
+          <strong>$4,100</strong>{" "}and an often-lower cash price. <a href="/procedure/umbilical-hernia-repair">See umbilical hernia prices →</a>
+        </p>
+
+        <h2>What drives the price</h2>
+        <ul>
+          <li><strong>Open vs. laparoscopic.</strong>{" "}Both are common; laparoscopic (keyhole) repair may cost more in facility fees but can mean a faster recovery.</li>
+          <li><strong>Mesh.</strong>{" "}Most repairs use surgical mesh, which is usually included in the facility charge.</li>
+          <li><strong>Setting.</strong>{" "}A planned repair at an ambulatory surgery center is often cheaper than a hospital.</li>
+          <li><strong>Separate bills.</strong>{" "}The surgeon and anesthesiologist are frequently billed on top of the facility fee — ask for an all-in quote.</li>
+        </ul>
+
+        <h2>Planned vs. emergency</h2>
+        <p>
+          A hernia that becomes <em>strangulated</em>{" "}is an emergency and must be repaired urgently, which costs far more
+          than a scheduled repair. For a stable, non-urgent hernia, your doctor may even suggest watchful waiting — and
+          if surgery is planned, you have room to shop.
+        </p>
+
+        <h2>The three prices you&apos;ll see</h2>
+        <ul>
+          <li><strong>Cash / self-pay price</strong>{" "}— what you pay directly without insurance.</li>
+          <li><strong>Negotiated price</strong>{" "}— your plan&apos;s rate; your share depends on your deductible and coinsurance.</li>
+          <li><strong>Gross / chargemaster price</strong>{" "}— the list price, far above what anyone pays.</li>
+        </ul>
+        <p><a href="/guides/cash-vs-negotiated-price">More on cash vs. negotiated →</a></p>
+
+        <h2>How to shop for a hernia repair</h2>
+        <ul>
+          <li><strong>Compare two or three facilities</strong>{" "}before scheduling an elective repair.</li>
+          <li><strong>Ask about an ambulatory surgery center.</strong></li>
+          <li><strong>Get a bundled quote</strong>{" "}covering facility, surgeon, and anesthesia.</li>
+          <li><strong>Check your out-of-pocket maximum</strong>{" "}if insured. <a href="/guides/deductible-coinsurance-copay">How deductibles work →</a></li>
+        </ul>
+
+        <h2>A note on accuracy</h2>
+        <p>
+          Figures come from hospitals&apos; published price files (45 CFR §180), not estimates. Your cost depends on the
+          facility, the technique, and your plan. <a href="/methodology">How we source this →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "How much does inguinal hernia surgery cost?",
+        a: "The negotiated facility price has a median around $3,800, with most hospitals between roughly $770 and $7,900. The self-pay median is around $4,200. The surgeon and anesthesia are often billed separately, so ask for an all-in quote.",
+      },
+      {
+        q: "Is hernia repair cheaper at a surgery center?",
+        a: "Often. Most elective hernia repairs are outpatient, and an ambulatory surgery center is frequently cheaper than a hospital for the same operation. Ask your surgeon whether that's an option.",
+      },
+      {
+        q: "Does the price include the surgeon and anesthesia?",
+        a: "Usually not. The published figure is typically the facility fee; the surgeon and anesthesiologist are commonly billed separately. Ask for a bundled or all-inclusive quote before scheduling.",
+      },
+      {
+        q: "What's the difference between open and laparoscopic hernia repair cost?",
+        a: "Both are common. Laparoscopic (keyhole) repair can carry higher facility fees but may mean a faster recovery. The right choice depends on the hernia and your surgeon — compare both the price and the recovery.",
+      },
+    ],
+    related: [
+      { href: "/procedure/inguinal-hernia-repair", label: "Inguinal hernia repair prices" },
+      { href: "/procedure/umbilical-hernia-repair", label: "Umbilical hernia repair prices" },
+      { href: "/guides/why-prices-vary", label: "Why hospital prices vary so much" },
+      { href: "/procedures", label: "Browse all procedures" },
+    ],
+  },
+  {
+    slug: "deductible-coinsurance-copay",
+    title: "Deductible, copay, and coinsurance: what you actually pay",
+    metaTitle: "Deductible vs. Copay vs. Coinsurance: What You Actually Pay",
+    metaDescription:
+      "A plain-English guide to deductibles, copays, coinsurance, and out-of-pocket maximums — how they stack up, with a worked example, and why the hospital price still matters.",
+    sub: "A plain-English guide to the four terms that decide your share of a medical bill — with a worked example.",
+    updated: "June 2026",
+    body: (
+      <>
+        <h2>The four things that decide what you pay</h2>
+        <p>
+          Even with good insurance, you pay part of most medical bills. Four terms determine how much — and they trip up
+          almost everyone. Here&apos;s what each one actually means.
+        </p>
+
+        <h2>Deductible</h2>
+        <p>
+          The amount you pay <strong>before your insurance starts paying</strong>. If your deductible is $2,000, you cover
+          the first $2,000 of covered care yourself. Crucially, until you hit it you usually pay the{" "}
+          <strong>full negotiated price</strong>{" "}of each service — which is exactly why knowing that price matters.
+        </p>
+
+        <h2>Copay</h2>
+        <p>
+          A <strong>flat fee</strong>{" "}for a specific service — say $30 for a doctor&apos;s visit or $15 for a prescription.
+          Copays often apply even before you meet your deductible, depending on your plan.
+        </p>
+
+        <h2>Coinsurance</h2>
+        <p>
+          A <strong>percentage</strong>{" "}you pay <em>after</em>{" "}your deductible is met. With 20% coinsurance, on a $1,000
+          service your plan pays $800 and you pay $200 — until you reach your out-of-pocket maximum.
+        </p>
+
+        <h2>Out-of-pocket maximum</h2>
+        <p>
+          The <strong>most you&apos;ll pay in a year</strong>{" "}for covered, in-network care. Once your deductible, copays, and
+          coinsurance add up to this cap, your insurance pays <strong>100%</strong>{" "}of covered care for the rest of the
+          year. This is the number that protects you from catastrophe.
+        </p>
+
+        <h2>How it stacks up: a worked example</h2>
+        <p>
+          Say you have a $2,000 deductible, 20% coinsurance, and a $7,000 out-of-pocket max, and you need a procedure
+          with a negotiated price of $10,000:
+        </p>
+        <ul>
+          <li>You pay the first <strong>$2,000</strong>{" "}(your deductible).</li>
+          <li>Of the remaining $8,000, you pay <strong>20%</strong>{" "}= $1,600 (coinsurance); your plan pays $6,400.</li>
+          <li>Your total: <strong>$3,600</strong>{" "}— and since that&apos;s under your $7,000 cap, you owe all of it.</li>
+        </ul>
+        <p>Two more such procedures that year and you&apos;d hit the $7,000 cap, after which you&apos;d owe nothing more.</p>
+
+        <h2>Why the hospital price still matters when you&apos;re insured</h2>
+        <p>
+          Early in the year, before you&apos;ve met your deductible, <strong>you pay the full negotiated price</strong>{" "}of each
+          service — so the price <em>is</em>{" "}your cost. And the negotiated price varies wildly between hospitals for the
+          same care. Comparing before non-emergency treatment can lower what counts against your deductible.{" "}
+          <a href="/guides/cash-vs-negotiated-price">Cash vs. negotiated price →</a>
+        </p>
+
+        <h2>In-network vs. out-of-network</h2>
+        <p>
+          These rules apply to <strong>in-network</strong>{" "}care. Out-of-network providers can charge more and may not count
+          toward your in-network out-of-pocket max. For most surprise out-of-network bills you&apos;re now protected.{" "}
+          <a href="/guides/no-surprises-act">The No Surprises Act →</a>
+        </p>
+      </>
+    ),
+    faq: [
+      {
+        q: "What's the difference between a copay and coinsurance?",
+        a: "A copay is a flat fee for a service (like $30 for a visit). Coinsurance is a percentage you pay after meeting your deductible (like 20% of the cost). Copays often apply even before the deductible is met; coinsurance generally applies after.",
+      },
+      {
+        q: "Do I pay the full price before I meet my deductible?",
+        a: "For most services, yes — until you've met your deductible you pay the full negotiated price of each covered service. That's why comparing hospital prices matters even when you're insured: early in the year, the price is your cost.",
+      },
+      {
+        q: "What happens after I hit my out-of-pocket maximum?",
+        a: "Once your deductible, copays, and coinsurance for the year add up to your out-of-pocket maximum, your insurance pays 100% of covered, in-network care for the rest of the year. It's the cap that protects you from catastrophic costs.",
+      },
+      {
+        q: "Does coinsurance apply before or after the deductible?",
+        a: "After. You first pay your deductible in full, then coinsurance (your percentage share) applies to additional covered care until you reach your out-of-pocket maximum.",
+      },
+    ],
+    related: [
+      { href: "/guides/cash-vs-negotiated-price", label: "Cash vs. negotiated vs. chargemaster" },
+      { href: "/guides/no-surprises-act", label: "The No Surprises Act explained" },
+      { href: "/guides/hospital-bill", label: "How to read and fight a hospital bill" },
+      { href: "/procedures", label: "Browse procedure prices" },
+    ],
+  },
 ];
 
 export function getGuide(slug: string): Guide | undefined {
@@ -1145,7 +1869,13 @@ export function guidesForProcedure(slug: string, name: string, category: string 
   else if (/ultrasound|sonogram/.test(s)) topic = link("ultrasound-cost");
   else if (/x-ray|\bxray\b|radiograph/.test(s)) topic = link("chest-x-ray-cost");
   else if (/sleep study|polysomnog/.test(s)) topic = link("sleep-study-cost");
-  else if (category === "surgery" || /replacement|hernia|gallbladder|cataract|hysterect|appendect|tonsillect/.test(s))
+  else if (/\bcbc\b|complete blood count|metabolic panel|lipid panel|cholesterol|hemoglobin|\ba1c\b|\btsh\b|thyroid (test|function)|vitamin d|\bpsa\b|urinalysis|blood (test|count|panel)/.test(s))
+    topic = link("blood-test-cost");
+  else if (/knee replacement|hip replacement|joint replacement|arthroplasty/.test(s)) topic = link("knee-replacement-cost");
+  else if (/cataract/.test(s)) topic = link("cataract-surgery-cost");
+  else if (/gallbladder|cholecystect/.test(s)) topic = link("gallbladder-surgery-cost");
+  else if (/hernia/.test(s)) topic = link("hernia-surgery-cost");
+  else if (category === "surgery" || /replacement|hysterect|appendect|tonsillect/.test(s))
     topic = link("why-prices-vary");
   return [topic, link("cash-vs-negotiated-price")].filter((x): x is GuideLink => x !== null).slice(0, 2);
 }
