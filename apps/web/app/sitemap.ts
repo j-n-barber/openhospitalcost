@@ -3,7 +3,7 @@ import { sql } from "@/lib/db";
 import { GUIDES } from "@/lib/guides";
 
 const BASE = "https://openhospitalcost.com";
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const states = (await sql`
@@ -58,6 +58,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/faq`, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/methodology`, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/data`, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE}/transparency`, changeFrequency: "weekly", priority: 0.5 },
     { url: `${BASE}/about`, changeFrequency: "monthly", priority: 0.4 },
     { url: `${BASE}/corrections`, changeFrequency: "monthly", priority: 0.3 },
     { url: `${BASE}/contact`, changeFrequency: "monthly", priority: 0.3 },

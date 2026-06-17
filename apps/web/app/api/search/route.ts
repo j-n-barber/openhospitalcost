@@ -1,7 +1,7 @@
 import { sql } from "@/lib/db";
 import { titleCase, titleCaseProcedure } from "@/lib/format";
 
-export const revalidate = 3600; // cache the index, rebuilt hourly
+export const revalidate = 86400; // cache the index, rebuilt daily
 
 export async function GET() {
   const procs = (await sql`

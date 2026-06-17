@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 import ProcedureIndex, { type ProcIndexRow } from "@/components/ProcedureIndex";
 import { titleCaseProcedure } from "@/lib/format";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Browse procedures by price — OpenHospitalCost",

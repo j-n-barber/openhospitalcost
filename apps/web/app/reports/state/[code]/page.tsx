@@ -7,7 +7,7 @@ import SubscribeForm from "@/components/SubscribeForm";
 import { STATE_NAMES } from "@/lib/states";
 import { titleCaseProcedure, usd } from "@/lib/format";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 // Per-procedure thresholds. States have far fewer hospitals than the national
 // set, so the bar to call a number "representative" is lower here than on the

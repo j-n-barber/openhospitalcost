@@ -10,7 +10,7 @@ import { MoneyRail } from "@/components/MoneyRail";
 import { HospitalEducation, type Faq } from "@/components/PriceEducation";
 import { guidesForHospital } from "@/lib/guides";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Params = { params: Promise<{ ccn: string }> };
@@ -76,11 +76,17 @@ async function getRelatedHospitals(state: string, ccn: string): Promise<{ ccn: s
 }
 
 export async function generateStaticParams() {
+  // Prerender only the largest hospitals at build. Prerendering all ~2,300
+  // eligible pages on every deploy was the main driver of ISR write usage; the
+  // rest are still served (dynamicParams defaults on) — they render on-demand on
+  // first request and then cache via ISR like any other page.
   const rows = (await sql`
     SELECT h.ccn
     FROM hospitals h
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
-    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean`) as { ccn: string }[];
+    WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean AND h.beds >= 100
+    ORDER BY h.beds DESC NULLS LAST
+    LIMIT 250`) as { ccn: string }[];
   return rows.map((r) => ({ ccn: r.ccn }));
 }
 

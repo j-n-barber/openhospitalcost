@@ -9,7 +9,7 @@ import { MoneyRail } from "@/components/MoneyRail";
 import { ProcedureEducation, type Faq } from "@/components/PriceEducation";
 import { guidesForProcedure } from "@/lib/guides";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 // Show the right rail when there's rail content (related links) or once ads are on.
 const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 

@@ -6,7 +6,7 @@ import CoverageMap from "@/components/CoverageMap";
 import { titleCase, titleCaseProcedure, usd } from "@/lib/format";
 import { isTerritory } from "@/lib/states";
 
-export const revalidate = 3600; // ISR: rebuild at most hourly
+export const revalidate = 86400; // ISR: rebuild at most daily (data refreshes weekly)
 
 // Fisher–Yates seeded by the UTC day (mulberry32), not Math.random: re-renders
 // within the same day emit identical HTML, so Vercel's ISR write-dedup can skip

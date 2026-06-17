@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 import HospitalIndex, { type HospIndexCard } from "@/components/HospitalIndex";
 import { isTerritory } from "@/lib/states";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "Browse hospitals by price data — OpenHospitalCost",

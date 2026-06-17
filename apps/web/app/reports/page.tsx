@@ -7,7 +7,7 @@ import { STATE_NAMES } from "@/lib/states";
 import { getSwings, getPriciest, getSavings, getHospitalCount } from "@/lib/reports-data";
 import SubscribeForm from "@/components/SubscribeForm";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 
 export const metadata: Metadata = {
   title: "National Hospital Price Report — OpenHospitalCost",

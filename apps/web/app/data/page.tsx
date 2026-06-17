@@ -33,7 +33,8 @@ export default function DataPage() {
           <p>
             We parse each MRF, match line items to procedure codes, score data quality, and compute a representative
             facility price per procedure. The full pipeline is described in our{" "}
-            <a href="/methodology">methodology</a>.
+            <a href="/methodology">methodology</a>, and live coverage, parse-success, and quality numbers are in our{" "}
+            <a href="/transparency">transparency report</a>.
           </p>
 
           <h2>Open data export</h2>

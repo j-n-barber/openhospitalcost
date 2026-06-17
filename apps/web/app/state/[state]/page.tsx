@@ -8,7 +8,7 @@ import { titleCaseProcedure } from "@/lib/format";
 import FilterableHospitals from "@/components/FilterableHospitals";
 import { MoneyRail } from "@/components/MoneyRail";
 
-export const revalidate = 3600;
+export const revalidate = 86400;
 const ADSENSE_ON = !!process.env.NEXT_PUBLIC_ADSENSE_CLIENT;
 
 type Hosp = { ccn: string; name: string; city: string; procedures: number };
