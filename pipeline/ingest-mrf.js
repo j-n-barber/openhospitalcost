@@ -190,7 +190,7 @@ export async function persistMrf(client, { hospitalId, url, filePath, computed, 
         metrics.parseStatus === 'failed' ? 'failed' : 'parsed',
         metrics.rowsParsed,
         score.score,
-        JSON.stringify({ ...score, metrics: undefined }),
+        JSON.stringify({ ...score, lastUpdatedOn: effectiveDate, metrics: undefined }),
         r2RawKey,
       ]
     )).rows[0];

@@ -163,6 +163,8 @@ export type HospitalEducationProps = {
   procCount: number;
   cashCount: number;
   asOf: string | null;
+  sourceUpdated: string | null; // the hospital's own "last updated" date from the file
+  fileStale: boolean; // source file is over a year old
   qualityScore: number | null;
   sourceUrl: string | null;
   faq: Faq[];
@@ -178,8 +180,10 @@ export function HospitalEducation(p: HospitalEducationProps) {
         file it is required to publish, covering <strong>{p.procCount}</strong> procedure
         {p.procCount !== 1 ? "s" : ""}
         {p.cashCount > 0 ? <>, including {p.cashCount} with a cash (self-pay) price you can use without insurance</> : null}
-        {p.asOf ? <>. The file was last posted {p.asOf}</> : null}
-        {p.qualityScore != null ? <>, and scores {p.qualityScore}/100 on our data-quality checks</> : null}.
+        {p.sourceUpdated
+          ? <>. The hospital&apos;s file is dated {p.sourceUpdated}{p.fileStale ? <> (over a year old, so confirm current prices directly)</> : null}{p.asOf ? <>, and we ingested it {p.asOf}</> : null}</>
+          : (p.asOf ? <>. We ingested this file on {p.asOf}</> : null)}
+        {p.qualityScore != null ? <>; it scores {p.qualityScore}/100 on our data-quality checks</> : null}.
       </p>
       <p>
         These are the hospital&apos;s own published standard charges, shown so you can compare — not a quote.

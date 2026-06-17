@@ -17,7 +17,7 @@ type Params = { params: Promise<{ ccn: string }> };
 type Hosp = {
   id: string; name: string; city: string; state: string; beds: number | null;
   url: string | null; as_of: string | null; quality_score: number | null; eligible: boolean | null;
-  proc_count: number | null;
+  proc_count: number | null; source_updated: string | null;
 };
 type Row = {
   slug: string; name: string; category: string | null; code_type: string | null;
@@ -31,6 +31,7 @@ async function getHospital(ccn: string): Promise<Hosp | null> {
     SELECT h.id, h.name, h.city, h.state, h.beds,
       f.url, f.parsed_at::date AS as_of, f.quality_score,
       (f.quality_metrics->>'eligibleForMoneyPages')::boolean AS eligible,
+      f.quality_metrics->>'lastUpdatedOn' AS source_updated,
       (SELECT count(DISTINCT s.procedure_id) FROM procedure_hospital_summary s WHERE s.hospital_id = h.id)::int AS proc_count
     FROM hospitals h
     JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id = h.id ORDER BY parsed_at DESC LIMIT 1) f ON true
@@ -170,6 +171,14 @@ export default async function HospitalPage({ params }: Params) {
   const asOf = asOfDate
     ? `${asOfDate.getFullYear()}-${String(asOfDate.getMonth() + 1).padStart(2, "0")}-${String(asOfDate.getDate()).padStart(2, "0")}`
     : null;
+  // The file's OWN "last updated" date (from the MRF), distinct from asOf (= when
+  // we ingested it). Flag files the hospital hasn't refreshed in over a year —
+  // stale MRFs are a known industry problem. Populates as the weekly cron
+  // re-ingests; null on files parsed before we started capturing it.
+  const fileDate = h.source_updated ? new Date(h.source_updated) : null;
+  const fileValid = !!fileDate && !isNaN(fileDate.getTime());
+  const fileAgeMonths = fileValid ? Math.round((Date.now() - fileDate!.getTime()) / (1000 * 60 * 60 * 24 * 30.44)) : null;
+  const fileStale = fileAgeMonths != null && fileAgeMonths >= 12;
   const guideLinks = guidesForHospital();
 
   return (
@@ -189,7 +198,8 @@ export default async function HospitalPage({ params }: Params) {
           </p>
           <p className="prov" style={{ margin: "8px 0 0" }}>
             Sourced from this hospital&apos;s machine-readable file
-            {h.as_of ? `, posted ${h.as_of}` : ""}
+            {fileValid ? <> · the hospital last updated it {h.source_updated}{fileStale ? <span className="stale"> ⚠ over a year old</span> : null}</> : null}
+            {asOf ? ` · we ingested it ${asOf}` : ""}
             {h.quality_score != null ? ` · data quality ${h.quality_score}/100` : ""}
             {h.url ? <> · <a href={h.url} target="_blank" rel="noopener noreferrer">source file ↗</a></> : null}
           </p>
@@ -230,6 +240,8 @@ export default async function HospitalPage({ params }: Params) {
           procCount={rows.length}
           cashCount={cashCount}
           asOf={asOf}
+          sourceUpdated={fileValid ? h.source_updated : null}
+          fileStale={fileStale}
           qualityScore={h.quality_score}
           sourceUrl={h.url}
           faq={faqItems}
