@@ -228,6 +228,11 @@ footer { border-top: 1px solid var(--border); padding: 40px 0 56px; font-size: 1
 .rb-hi { text-align: right; }
 .rb-track { position: relative; flex: 1; height: 3px; background: var(--border); border-radius: 2px; }
 .rb-dot { position: absolute; top: 50%; width: 8px; height: 8px; border-radius: 50%; background: var(--teal); transform: translate(-50%, -50%); }
+/* Per-row trust signals under the negotiated median: plan count + shared-tier flag. */
+.negcell .negmeta { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; }
+.negcell .plans { font-family: var(--sans); font-size: 11px; color: var(--muted); }
+.negcell .plans.thin { color: var(--higher); cursor: help; }
+.negcell .tierflag { font-family: var(--sans); font-size: 10.5px; line-height: 1.4; color: var(--higher); background: var(--paper); border: 1px solid var(--border); border-radius: 999px; padding: 1px 7px; white-space: nowrap; cursor: help; }
 
 /* column info tooltips */
 .infotip { display: inline-flex; margin-left: 5px; vertical-align: middle; cursor: help; }

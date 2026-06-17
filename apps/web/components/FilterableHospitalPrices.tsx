@@ -14,6 +14,7 @@ export type HPRow = {
   ccn: string; name: string; city: string; state: string;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
+  tier_size?: number | null;
 };
 type SortKey = "name" | "negotiated" | "cash" | "gross";
 
@@ -75,7 +76,7 @@ export default function FilterableHospitalPrices({ rows }: { rows: HPRow[] }) {
                 <a href={`/hospital/${r.ccn}`}>{titleCase(r.name)}</a>
                 <div className="rng">{titleCase(r.city)}, {r.state.toUpperCase()}</div>
               </td>
-              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
+              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} tier={r.tier_size} /></td>
               <td className="num" data-label="Cash">{money(r.cash)}</td>
               <td className="num" data-label="Gross">{money(r.gross)}</td>
             </tr>

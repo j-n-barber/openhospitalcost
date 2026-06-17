@@ -23,6 +23,7 @@ type Row = {
   slug: string; name: string; category: string | null; code_type: string | null;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
+  tier_size: number | null;
 };
 
 async function getHospital(ccn: string): Promise<Hosp | null> {
@@ -45,7 +46,15 @@ async function getProcedures(hospitalId: string): Promise<Row[]> {
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.max_amount END)::float  AS neg_hi,
       max(CASE WHEN s.charge_type = 'negotiated' THEN s.payer_count END)::int   AS payers,
       max(CASE WHEN s.charge_type = 'discounted_cash' THEN s.amount END)::float AS cash,
-      max(CASE WHEN s.charge_type = 'gross' THEN s.amount END)::float           AS gross
+      max(CASE WHEN s.charge_type = 'gross' THEN s.amount END)::float           AS gross,
+      -- How many of this hospital's procedures share this exact negotiated row
+      -- (same amount + source file) — a shared billing tier (e.g. a DRG) rather
+      -- than a price specific to this procedure. 1 = unique to it.
+      max(CASE WHEN s.charge_type = 'negotiated' THEN (
+        SELECT count(DISTINCT s2.procedure_id) FROM procedure_hospital_summary s2
+        WHERE s2.hospital_id = ${hospitalId} AND s2.charge_type = 'negotiated'
+          AND s2.amount = s.amount AND s2.source_file_id = s.source_file_id
+      ) END)::int AS tier_size
     FROM procedure_hospital_summary s
     JOIN procedures p ON p.id = s.procedure_id
     WHERE s.hospital_id = ${hospitalId}
@@ -195,14 +204,14 @@ export default async function HospitalPage({ params }: Params) {
           <div className="moneygrid">
             <div className="mg-main">
               <FilterableProcedures rows={rows} />
-              <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
+              <p className="prov">Median facility price per procedure — facility charges only, so the surgeon, anesthesia, and pathology may be billed separately and your total can run higher. Negotiated shows the median across payers with the full range; &quot;1 plan&quot; flags a figure backed by a single payer, and a &quot;shared rate&quot; tag means the hospital lists several procedures at one negotiated tier (e.g. a DRG), so that number isn&apos;t specific to this procedure. Figures as reported in the hospital&apos;s file — not a quote.</p>
             </div>
             <MoneyRail title={`Other hospitals in ${stateName}`} items={related.map((r) => ({ href: `/hospital/${r.ccn}`, label: r.name }))} />
           </div>
         ) : (
           <>
             <FilterableProcedures rows={rows} />
-            <p className="prov">Median facility price per procedure. Negotiated shows the median across payers with the full range. Figures as reported in the hospital&apos;s file — not a quote.</p>
+            <p className="prov">Median facility price per procedure — facility charges only, so the surgeon, anesthesia, and pathology may be billed separately and your total can run higher. Negotiated shows the median across payers with the full range; &quot;1 plan&quot; flags a figure backed by a single payer, and a &quot;shared rate&quot; tag means the hospital lists several procedures at one negotiated tier (e.g. a DRG), so that number isn&apos;t specific to this procedure. Figures as reported in the hospital&apos;s file — not a quote.</p>
           </>
         )}
 

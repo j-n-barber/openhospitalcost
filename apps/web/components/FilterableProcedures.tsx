@@ -14,6 +14,7 @@ export type ProcRow = {
   slug: string; name: string; category: string | null; code_type: string | null;
   negotiated: number | null; neg_lo: number | null; neg_hi: number | null;
   payers: number | null; cash: number | null; gross: number | null;
+  tier_size?: number | null;
 };
 type SortKey = "name" | "negotiated" | "cash" | "gross";
 
@@ -114,7 +115,7 @@ export default function FilterableProcedures({ rows }: { rows: ProcRow[] }) {
           {view.map((r) => (
             <tr key={r.slug}>
               <td><a href={`/procedure/${r.slug}`}>{r.name}</a>{settingOf(r.code_type) === "Inpatient" ? <>{" "}<span className="setting-tag inpatient">Inpatient</span></> : null}</td>
-              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} /></td>
+              <td className="num" data-label="Negotiated"><NegotiatedCell median={r.negotiated} lo={r.neg_lo} hi={r.neg_hi} payers={r.payers} tier={r.tier_size} /></td>
               <td className="num" data-label="Cash">{money(r.cash)}</td>
               <td className="num" data-label="Gross">{money(r.gross)}</td>
             </tr>
