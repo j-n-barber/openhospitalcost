@@ -144,8 +144,10 @@
   .wall{ background:var(--ink); color:#dfe7eb; }
   .wall h2{ color:#fff; }
   .wall .eyebrow{ color:#7fd3c4; } .wall .eyebrow::before{ background:#7fd3c4; }
-  .wall p{ color:#b9c5cd; }
-  .wall .lede{ color:#cdd7dd; }
+  /* .band.wall beats the generic `section.band p/.lede { color:#34495a }` rule,
+     which otherwise wins on specificity and tanks contrast on the dark bg. */
+  .band.wall p{ color:#cad5db; }
+  .band.wall .lede{ color:#e3eaee; }
   .wall a{ color:#7fd3c4; text-decoration:underline; text-underline-offset:2px; }
   .wall-pts{ margin:30px 0 0; padding:0; list-style:none; display:grid; gap:0; border-top:1px solid rgba(255,255,255,.14); max-width:64ch; }
   .wall-pts li{ padding:20px 0; border-bottom:1px solid rgba(255,255,255,.14); display:grid; grid-template-columns:34px 1fr; gap:16px; }
