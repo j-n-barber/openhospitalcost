@@ -1,0 +1,551 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>How OpenHospitalCost worked — a teardown</title>
+<meta name="description" content="A teardown of OpenHospitalCost: the data pipeline that turned thousands of messy, federally-mandated hospital price files into a clean, source-cited comparison site — and the AMA licensing wall that retired it." />
+<meta name="robots" content="index,follow" />
+
+<!-- Open Graph -->
+<meta property="og:type" content="article" />
+<meta property="og:title" content="How OpenHospitalCost worked — a teardown" />
+<meta property="og:description" content="The data pipeline behind a hospital price-transparency site — and the licensing wall that retired it." />
+<meta property="og:url" content="https://openhospitalcost.vercel.app/" />
+<link rel="canonical" href="https://openhospitalcost.vercel.app/" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,600&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet" />
+
+<style>
+  /* ---- Brand tokens (from brand/palette.md — source of truth) ---- */
+  :root{
+    --ink:#13283A; --paper:#FAF9F6; --surface:#FFFFFF;
+    --teal:#1A6B7A; --teal-ink:#12545F; --savings:#147A52; --higher:#B4433A;
+    --border:#E5E3DD; --muted:#5B6670;
+    --serif:'Source Serif 4', Georgia, serif;
+    --sans:'Inter', system-ui, sans-serif;
+    --mono:'IBM Plex Mono', ui-monospace, monospace;
+  }
+  *{ box-sizing:border-box; }
+  html{ scroll-behavior:smooth; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink); font-family:var(--sans);
+    font-size:16px; line-height:1.55; -webkit-font-smoothing:antialiased;
+    background-image:radial-gradient(circle at 1px 1px, rgba(19,40,58,.025) 1px, transparent 0);
+    background-size:22px 22px;
+  }
+  a{ color:var(--teal-ink); text-decoration:none; }
+  .wrap{ max-width:1120px; margin:0 auto; padding:0 28px; }
+  .narrow{ max-width:760px; }
+  h1,h2,h3,h4{ text-wrap:balance; }
+  p{ text-wrap:pretty; }
+  .eyebrow{ font-family:var(--mono); font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:var(--teal); margin-bottom:18px; display:inline-flex; align-items:center; gap:10px; }
+  .eyebrow::before{ content:""; width:26px; height:1px; background:var(--teal); }
+
+  /* ---- top bar ---- */
+  header.bar{ border-bottom:1px solid var(--border); background:rgba(250,249,246,.85); backdrop-filter:blur(6px); position:sticky; top:0; z-index:40; }
+  .bar-in{ display:flex; align-items:center; justify-content:space-between; height:62px; }
+  .brand{ display:flex; align-items:center; gap:11px; font-family:var(--serif); font-weight:700; font-size:21px; letter-spacing:-.01em; color:var(--ink); }
+  .brand .mark{ width:32px; height:30px; flex:none; }
+  .brand .o{ color:var(--teal); }
+  .bar-tag{ font-family:var(--mono); font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); }
+  @media (max-width:680px){ .bar-tag{ display:none; } }
+
+  /* ---- hero ---- */
+  .hero{ padding:88px 0 36px; }
+  .hero h1{ font-family:var(--serif); font-weight:700; font-size:clamp(38px,6vw,68px); line-height:1.02; letter-spacing:-.02em; max-width:18ch; margin:0; }
+  .hero h1 em{ font-style:italic; color:var(--teal-ink); }
+  .hero .sub{ margin-top:24px; font-size:19px; line-height:1.5; max-width:54ch; color:#34495a; }
+  .hero .meta{ margin-top:34px; display:flex; flex-wrap:wrap; gap:0; border:1px solid var(--border); border-radius:6px; overflow:hidden; background:var(--border); max-width:640px; }
+  .hero .meta div{ background:var(--surface); padding:16px 20px; flex:1; min-width:140px; }
+  .hero .meta .k{ font-family:var(--mono); font-size:11px; letter-spacing:.06em; text-transform:uppercase; color:var(--teal); }
+  .hero .meta .v{ font-family:var(--serif); font-weight:600; font-size:18px; margin-top:5px; }
+
+  /* ---- generic section ---- */
+  section.band{ padding:64px 0; }
+  section.band h2{ font-family:var(--serif); font-weight:700; font-size:clamp(26px,4vw,38px); letter-spacing:-.02em; line-height:1.08; margin:0 0 4px; }
+  section.band .lede{ font-size:18px; line-height:1.6; color:#34495a; max-width:60ch; margin:14px 0 0; }
+  section.band p{ font-size:16.5px; line-height:1.65; color:#34495a; max-width:62ch; }
+  .kick{ font-family:var(--serif); font-style:italic; color:var(--teal-ink); }
+
+  /* ---- the mess: format cards ---- */
+  .mess{ display:grid; grid-template-columns:repeat(auto-fill,minmax(225px,1fr)); gap:14px; margin-top:34px; }
+  .mcard{ background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:18px 20px; }
+  .mcard .ft{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--teal); }
+  .mcard .nm{ font-family:var(--serif); font-weight:600; font-size:16px; margin:8px 0 7px; letter-spacing:-.01em; }
+  .mcard .ds{ font-size:13.5px; line-height:1.5; color:#46586a; }
+
+  /* ---- pipeline scrolly ---- */
+  .pipeline{ padding:36px 0 56px; }
+  .pl-head{ margin-bottom:30px; }
+  .pl-grid{ display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1.05fr); gap:54px; align-items:start; }
+  .pl-sticky{ position:sticky; top:90px; align-self:start; }
+
+  /* vertical rail of 8 nodes */
+  .pl-rail{ display:flex; flex-direction:column; gap:0; margin-bottom:22px; }
+  .pl-node{ display:flex; align-items:center; gap:13px; padding:7px 0; position:relative; opacity:.42; transition:opacity .35s; }
+  .pl-node::before{ content:""; position:absolute; left:13px; top:-12px; height:12px; width:1.5px; background:var(--border); }
+  .pl-node:first-child::before{ display:none; }
+  .pl-node .dot{ width:27px; height:27px; flex:none; border-radius:50%; border:1.5px solid var(--border); background:var(--surface); display:grid; place-items:center; font-family:var(--mono); font-size:12px; color:var(--muted); transition:.35s; }
+  .pl-node .lbl{ font-size:14px; font-weight:500; color:var(--muted); transition:.35s; }
+  .pl-node.on{ opacity:1; }
+  .pl-node.on .dot{ border-color:var(--ink); background:var(--teal); color:#fff; box-shadow:3px 3px 0 rgba(19,40,58,.16); }
+  .pl-node.on .lbl{ color:var(--ink); font-weight:600; }
+  .pl-node.done{ opacity:.85; }
+  .pl-node.done .dot{ border-color:var(--teal); color:var(--teal-ink); }
+
+  /* transforming data card */
+  .pl-card{ border:1.5px solid var(--ink); border-radius:8px; background:var(--surface); box-shadow:6px 8px 0 rgba(19,40,58,.07); overflow:hidden; }
+  .pl-card-top{ background:var(--ink); color:#eef2f4; padding:11px 16px; display:flex; align-items:center; justify-content:space-between; }
+  .pl-card-top .t{ font-family:var(--mono); font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:#7fd3c4; }
+  .pl-card-top .s{ font-family:var(--mono); font-size:11px; color:#9fb1bb; }
+  .pl-stage{ display:none; padding:20px 20px 22px; }
+  .pl-stage.show{ display:block; animation:fade .4s ease; }
+  @keyframes fade{ from{ opacity:0; transform:translateY(6px); } to{ opacity:1; transform:none; } }
+  .pl-stage .cap{ font-size:13px; color:var(--muted); line-height:1.5; margin:0 0 13px; }
+  .blob{ font-family:var(--mono); font-size:12px; line-height:1.5; color:#46586a; background:var(--paper); border:1px solid var(--border); border-radius:6px; padding:12px 13px; white-space:pre-wrap; word-break:break-word; }
+  .blob .dim{ color:#9aa6ae; }
+  .blob .hi{ color:var(--teal-ink); }
+  .kv{ display:flex; justify-content:space-between; align-items:baseline; gap:12px; padding:8px 0; border-bottom:1px solid var(--border); }
+  .kv:last-child{ border-bottom:0; }
+  .kv .k{ font-size:13px; color:var(--muted); }
+  .kv .v{ font-family:var(--mono); font-size:13.5px; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .kv .v.strike{ color:var(--muted); text-decoration:line-through; }
+  .badge{ display:inline-block; font-family:var(--mono); font-size:10.5px; letter-spacing:.05em; text-transform:uppercase; padding:3px 8px; border-radius:100px; }
+  .badge.ok{ background:#e7f1ea; color:var(--savings); }
+  .badge.warn{ background:#fdeeee; color:var(--higher); }
+  .badge.teal{ background:#e7f0f1; color:var(--teal-ink); }
+  .rowmeta{ display:flex; gap:8px; flex-wrap:wrap; margin-top:13px; }
+
+  /* the rendered price card (final stage) */
+  .pcard{ border:1px solid var(--border); border-radius:8px; padding:15px 16px; background:var(--surface); }
+  .pcard .h{ font-family:var(--serif); font-weight:600; font-size:16px; letter-spacing:-.01em; }
+  .pcard .c{ font-size:12.5px; color:var(--muted); margin-top:1px; }
+  .pcard .pr{ display:flex; justify-content:space-between; align-items:baseline; padding:9px 0; border-bottom:1px solid var(--border); }
+  .pcard .pr:last-of-type{ border-bottom:0; }
+  .pcard .pr .lab{ font-size:12px; text-transform:uppercase; letter-spacing:.05em; color:var(--muted); }
+  .pcard .pr .amt{ font-family:var(--mono); font-size:15px; color:var(--ink); font-variant-numeric:tabular-nums; }
+  .pcard .src{ font-size:11px; color:var(--muted); font-style:italic; margin-top:11px; }
+
+  /* scrolling steps */
+  .pl-steps{ display:flex; flex-direction:column; }
+  .pl-step{ min-height:78vh; display:flex; flex-direction:column; justify-content:center; padding:18px 0; }
+  .pl-step .n{ font-family:var(--mono); font-size:12px; letter-spacing:.1em; color:var(--teal); }
+  .pl-step h3{ font-family:var(--serif); font-weight:700; font-size:26px; letter-spacing:-.01em; margin:10px 0 12px; line-height:1.12; }
+  .pl-step p{ font-size:16px; line-height:1.65; color:#34495a; margin:0 0 12px; max-width:46ch; }
+  .pl-step .note{ font-family:var(--mono); font-size:12.5px; color:var(--muted); border-left:2px solid var(--border); padding-left:12px; line-height:1.55; }
+
+  /* ---- stack strip ---- */
+  .stack{ display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:1px; background:var(--border); border:1px solid var(--border); border-radius:8px; overflow:hidden; margin-top:30px; }
+  .stack div{ background:var(--surface); padding:20px 18px; }
+  .stack .k{ font-family:var(--mono); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--teal); }
+  .stack .v{ font-weight:500; font-size:15px; margin-top:6px; }
+  .stack .v small{ display:block; color:var(--muted); font-weight:400; font-size:12.5px; margin-top:3px; line-height:1.45; }
+
+  /* ---- the wall (ending) ---- */
+  .wall{ background:var(--ink); color:#dfe7eb; }
+  .wall h2{ color:#fff; }
+  .wall .eyebrow{ color:#7fd3c4; } .wall .eyebrow::before{ background:#7fd3c4; }
+  .wall p{ color:#b9c5cd; }
+  .wall .lede{ color:#cdd7dd; }
+  .wall a{ color:#7fd3c4; text-decoration:underline; text-underline-offset:2px; }
+  .wall-pts{ margin:30px 0 0; padding:0; list-style:none; display:grid; gap:0; border-top:1px solid rgba(255,255,255,.14); max-width:64ch; }
+  .wall-pts li{ padding:20px 0; border-bottom:1px solid rgba(255,255,255,.14); display:grid; grid-template-columns:34px 1fr; gap:16px; }
+  .wall-pts .ix{ font-family:var(--mono); font-size:12px; color:#7fd3c4; padding-top:3px; }
+  .wall-pts .bd{ font-size:15.5px; line-height:1.6; color:#cdd7dd; }
+  .wall-pts .bd strong{ color:#fff; font-weight:600; }
+
+  /* ---- takeaways + CTA ---- */
+  .takeaways{ display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin-top:32px; }
+  .tcard{ border:1px solid var(--border); border-radius:8px; background:var(--surface); padding:22px 22px; }
+  .tcard h3{ font-family:var(--serif); font-weight:600; font-size:18px; letter-spacing:-.01em; margin:0 0 8px; }
+  .tcard p{ font-size:14.5px; line-height:1.6; color:#46586a; margin:0; }
+  .cta{ margin-top:46px; border:1.5px solid var(--ink); border-radius:10px; background:var(--surface); box-shadow:6px 8px 0 rgba(19,40,58,.07); padding:34px 36px; display:flex; align-items:center; justify-content:space-between; gap:26px; flex-wrap:wrap; }
+  .cta .t{ font-family:var(--serif); font-weight:700; font-size:23px; letter-spacing:-.01em; max-width:24ch; }
+  .cta .t span{ color:var(--teal-ink); font-style:italic; }
+  .btn{ font-family:var(--sans); font-size:15px; font-weight:500; color:#fff; background:var(--teal-ink); border:1.5px solid var(--ink); border-radius:100px; padding:12px 26px; cursor:pointer; transition:transform .14s, box-shadow .14s; box-shadow:3px 4px 0 rgba(19,40,58,.18); display:inline-block; }
+  .btn:hover{ transform:translate(-1px,-1px); box-shadow:5px 6px 0 var(--ink); }
+
+  footer{ border-top:1px solid var(--border); padding:36px 0 56px; font-size:13px; color:var(--muted); }
+  footer .fl{ display:flex; justify-content:space-between; gap:20px; flex-wrap:wrap; }
+  footer a{ color:var(--muted); } footer a:hover{ color:var(--ink); }
+  .fine{ margin-top:18px; font-size:12px; line-height:1.6; max-width:74ch; }
+
+  /* progress bar */
+  .prog{ position:fixed; top:0; left:0; height:3px; background:var(--teal); width:0; z-index:60; transition:width .1s linear; }
+
+  @media (max-width:880px){
+    .pl-grid{ grid-template-columns:1fr; gap:0; }
+    .pl-sticky{ position:sticky; top:62px; background:var(--paper); padding:14px 0 16px; z-index:10; box-shadow:0 10px 18px -12px rgba(19,40,58,.18); }
+    .pl-rail{ flex-direction:row; gap:0; overflow-x:auto; margin-bottom:16px; padding-bottom:4px; }
+    .pl-node{ flex-direction:column; gap:6px; padding:0 9px; text-align:center; flex:none; }
+    .pl-node::before{ left:-12px; top:13px; height:1.5px; width:24px; }
+    .pl-node .lbl{ font-size:11px; }
+    .pl-step{ min-height:auto; padding:30px 0; }
+    .pl-step:first-child{ padding-top:8px; }
+  }
+  @media (prefers-reduced-motion:reduce){ html{ scroll-behavior:auto; } .pl-stage.show{ animation:none; } }
+</style>
+</head>
+<body>
+<div class="prog" id="prog"></div>
+
+<header class="bar">
+  <div class="wrap bar-in">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 32 30" aria-hidden="true"><rect x="1" y="1" width="30" height="28" rx="6" fill="none" stroke="#13283A" stroke-width="2"/><path d="M9 20 L9 14 L13 11 L17 15 L23 9" fill="none" stroke="#1A6B7A" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      <span><span class="o">Open</span>HospitalCost</span>
+    </div>
+    <div class="bar-tag">Case study · Retired</div>
+  </div>
+</header>
+
+<!-- HERO -->
+<div class="wrap">
+  <div class="hero narrow">
+    <div class="eyebrow">A teardown</div>
+    <h1>How <em>OpenHospitalCost</em> turned federal red tape into clean prices.</h1>
+    <p class="sub">
+      U.S. hospitals are legally required to publish their prices — and they comply in the least
+      usable way possible. This was the machine that read those files anyway: a pipeline that ingested
+      thousands of sprawling, inconsistent price disclosures and rebuilt them into a single,
+      source-cited place to compare what a procedure actually costs. Here's how it worked — and the
+      licensing wall that retired it.
+    </p>
+    <div class="meta">
+      <div><div class="k">Role</div><div class="v">Solo — build &amp; ops</div></div>
+      <div><div class="k">Built</div><div class="v">2026</div></div>
+      <div><div class="k">Status</div><div class="v">Retired, 2026</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- THE PROBLEM -->
+<section class="band">
+  <div class="wrap narrow">
+    <div class="eyebrow">The problem</div>
+    <h2>Compliance without usability.</h2>
+    <p class="lede">
+      Since the CMS Hospital Price Transparency rule, every U.S. hospital must post a
+      machine-readable file (MRF) of its prices — gross, cash, and the rates negotiated with each
+      insurer. The letter of the law is met. The spirit is not.
+    </p>
+    <p style="margin-top:18px">
+      There is no enforced schema, so the files are a zoo. One hospital ships a tidy 2&nbsp;MB CSV;
+      the next ships a <span class="kick">2&nbsp;GB</span> nested JSON with hundreds of plan tiers per
+      line. Column names, encodings, file hosting, and the very definition of a "price" all differ from
+      facility to facility. A patient cannot read these. That gap — between <em>published</em> and
+      <em>usable</em> — was the entire opportunity.
+    </p>
+    <div class="mess">
+      <div class="mcard"><div class="ft">.json.gz · 1.8&nbsp;GB</div><div class="nm">Nested &amp; gzipped</div><div class="ds">Plans buried three levels deep; too big for memory — streamed and queried on disk.</div></div>
+      <div class="mcard"><div class="ft">.csv · semicolons</div><div class="nm">Pick-a-delimiter</div><div class="ds">Commas, semicolons, tabs, pipes — and headers that move between releases.</div></div>
+      <div class="mcard"><div class="ft">.xlsx · 9 tabs</div><div class="nm">Spreadsheet soup</div><div class="ds">Real prices on tab 7, below merged cells and a legend nobody documented.</div></div>
+      <div class="mcard"><div class="ft">404 / blocked</div><div class="nm">Hidden in plain sight</div><div class="ds">Files behind redirects, bot walls, and link wrappers — published, but hard to reach.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PIPELINE SCROLLY -->
+<section class="pipeline">
+  <div class="wrap">
+    <div class="pl-head narrow">
+      <div class="eyebrow">The pipeline</div>
+      <h2 style="font-family:var(--serif); font-weight:700; font-size:clamp(26px,4vw,38px); letter-spacing:-.02em; margin:0 0 6px;">One price, eight stages.</h2>
+      <p style="font-size:18px; line-height:1.6; color:#34495a; max-width:60ch; margin:12px 0 0;">
+        Follow a single line item — a knee MRI at a fictional hospital — from a raw federal file to a
+        clean, cited number a patient can actually read. Scroll to advance the pipeline.
+      </p>
+    </div>
+
+    <div class="pl-grid">
+      <!-- sticky visual -->
+      <div class="pl-sticky">
+        <div class="pl-rail" id="rail">
+          <div class="pl-node" data-n="0"><span class="dot">1</span><span class="lbl">Discover</span></div>
+          <div class="pl-node" data-n="1"><span class="dot">2</span><span class="lbl">Fetch</span></div>
+          <div class="pl-node" data-n="2"><span class="dot">3</span><span class="lbl">Detect format</span></div>
+          <div class="pl-node" data-n="3"><span class="dot">4</span><span class="lbl">Parse</span></div>
+          <div class="pl-node" data-n="4"><span class="dot">5</span><span class="lbl">Normalize</span></div>
+          <div class="pl-node" data-n="5"><span class="dot">6</span><span class="lbl">Quality</span></div>
+          <div class="pl-node" data-n="6"><span class="dot">7</span><span class="lbl">Store</span></div>
+          <div class="pl-node" data-n="7"><span class="dot">8</span><span class="lbl">Serve</span></div>
+        </div>
+
+        <div class="pl-card">
+          <div class="pl-card-top">
+            <span class="t" id="cardTag">Raw file</span>
+            <span class="s" id="cardStep">stage 1 / 8</span>
+          </div>
+
+          <!-- 0 Discover -->
+          <div class="pl-stage show" data-s="0">
+            <p class="cap">Locate the hospital's MRF — from the CMS dataset, by crawling the hospital's own transparency page, or via a manual URL handoff when it's hidden.</p>
+            <div class="blob"><span class="dim"># resolved source</span>
+stmarys-regional.example.org/
+  finance/<span class="hi">713219002_standardcharges.json.gz</span></div>
+            <div class="rowmeta"><span class="badge teal">matched → CMS facility ID</span></div>
+          </div>
+
+          <!-- 1 Fetch -->
+          <div class="pl-stage" data-s="1">
+            <p class="cap">Download it — with a real-browser fallback for bot walls and link-wrappers — then decompress. Many files don't fit in memory.</p>
+            <div class="blob"><span class="dim">GET …standardcharges.json.gz</span>  <span class="hi">200 OK</span>
+1.84 GB → gunzip → <span class="hi">6.1 GB JSON</span>
+streamed to disk (not RAM)</div>
+            <div class="rowmeta"><span class="badge ok">fetched</span><span class="badge teal">decompressed</span></div>
+          </div>
+
+          <!-- 2 Detect -->
+          <div class="pl-stage" data-s="2">
+            <p class="cap">Sniff the shape before trusting it: which CMS schema version, JSON vs CSV vs spreadsheet, and where the price columns actually live.</p>
+            <div class="blob"><span class="dim">format   </span> <span class="hi">JSON · CMS v2.0.0</span>
+<span class="dim">layout   </span> nested → standard_charges[]
+<span class="dim">encoding </span> utf-8</div>
+            <div class="rowmeta"><span class="badge teal">schema recognized</span></div>
+          </div>
+
+          <!-- 3 Parse -->
+          <div class="pl-stage" data-s="3">
+            <p class="cap">Stream every line item out with an on-disk SQL engine, so a multi-gigabyte file is queried — not loaded. One raw row for our procedure:</p>
+            <div class="blob"><span class="dim">{</span>
+  description: <span class="hi">"MRI LOWER EXTREMITY JOINT W/O DYE"</span>,
+  gross: 4200, cash: 1850,
+  payers: [ 14 negotiated rates… ]
+<span class="dim">}</span></div>
+            <div class="rowmeta"><span class="badge ok">1 of 38,402 line items</span></div>
+          </div>
+
+          <!-- 4 Normalize -->
+          <div class="pl-stage" data-s="4">
+            <p class="cap">The hard part. Map the hospital's wording to a canonical procedure, collapse the plan tiers to a representative median, and strip component fees that make a price look misleadingly low.</p>
+            <div class="kv"><span class="k">Canonical procedure</span><span class="v">Knee MRI</span></div>
+            <div class="kv"><span class="k">Gross (list)</span><span class="v">$4,200</span></div>
+            <div class="kv"><span class="k">Cash price</span><span class="v">$1,850</span></div>
+            <div class="kv"><span class="k">Negotiated (median of 14)</span><span class="v">$1,210</span></div>
+            <div class="kv"><span class="k">Separate radiologist fee</span><span class="v strike">excluded</span></div>
+          </div>
+
+          <!-- 5 Quality -->
+          <div class="pl-stage" data-s="5">
+            <p class="cap">Score the row before it's allowed near the site: is the file fresh, is this a real facility price, and is it a duplicate of a file shared across a hospital system?</p>
+            <div class="kv"><span class="k">Rubric score</span><span class="v">0.92 / 1.00</span></div>
+            <div class="kv"><span class="k">File self-dated</span><span class="v">2026-04 · fresh</span></div>
+            <div class="kv"><span class="k">Shared-MRF dupe?</span><span class="v">no</span></div>
+            <div class="rowmeta"><span class="badge ok">passed</span></div>
+          </div>
+
+          <!-- 6 Store -->
+          <div class="pl-stage" data-s="6">
+            <p class="cap">Write the clean row to Postgres for serving — and archive the original file to object storage, plus a columnar snapshot, so every number stays traceable to its source forever.</p>
+            <div class="blob"><span class="dim">→ Neon Postgres</span>  price_records  <span class="hi">+1 row</span>
+<span class="dim">→ R2 archive</span>     raw file       <span class="hi">stored</span>
+<span class="dim">→ R2 snapshot</span>    parquet        <span class="hi">stored</span></div>
+            <div class="rowmeta"><span class="badge teal">traceable</span></div>
+          </div>
+
+          <!-- 7 Serve -->
+          <div class="pl-stage" data-s="7">
+            <p class="cap">Render it as a page a person can read — statically generated, fast, and cited back to the exact file and ingest date.</p>
+            <div class="pcard">
+              <div class="h">Knee MRI</div>
+              <div class="c">St. Mary's Regional · cited to source</div>
+              <div style="margin-top:10px">
+                <div class="pr"><span class="lab">Cash</span><span class="amt">$1,850</span></div>
+                <div class="pr"><span class="lab">Negotiated (median)</span><span class="amt">$1,210</span></div>
+                <div class="pr"><span class="lab">Gross</span><span class="amt">$4,200</span></div>
+              </div>
+              <div class="src">Sourced from the hospital's machine-readable file · ingested Apr 2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- scrolling steps -->
+      <div class="pl-steps" id="steps">
+        <div class="pl-step" data-n="0">
+          <div class="n">STAGE 1</div><h3>Discover the file</h3>
+          <p>Half the battle is finding the file at all. The starting point is the CMS dataset, but coverage is patchy, so the crawler also reads each hospital's own transparency page, probes likely paths, and unwraps link-protection redirects.</p>
+          <p class="note">When a file was genuinely hidden, a manual-handoff queue let a human drop in the URL — then the pipeline took over.</p>
+        </div>
+        <div class="pl-step" data-n="1">
+          <div class="n">STAGE 2</div><h3>Fetch &amp; decompress</h3>
+          <p>Download with retries and a failure taxonomy (blocked, moved, dead), falling back to a real headless browser for hosts that refuse plain requests. Gzipped multi-gigabyte files are streamed to disk rather than held in memory.</p>
+          <p class="note">"Published" and "reachable" are not the same thing. A surprising share of compliance lived behind bot walls.</p>
+        </div>
+        <div class="pl-step" data-n="2">
+          <div class="n">STAGE 3</div><h3>Detect the format</h3>
+          <p>Before parsing, sniff the file: which CMS schema version, JSON vs CSV vs spreadsheet, delimiter, encoding, and where the actual price columns live. Guessing wrong here poisons everything downstream.</p>
+          <p class="note">No enforced schema means detection has to be defensive — assume the file is lying about its own shape until proven otherwise.</p>
+        </div>
+        <div class="pl-step" data-n="3">
+          <div class="n">STAGE 4</div><h3>Parse at scale</h3>
+          <p>Extract every line item using an on-disk SQL engine, so a file far larger than available RAM is queried in place. A single hospital can yield tens of thousands of rows, each with its own gross, cash, and a fan of negotiated rates.</p>
+          <p class="note">DuckDB over the raw file meant a 6&nbsp;GB JSON was a query, not a crash.</p>
+        </div>
+        <div class="pl-step" data-n="4">
+          <div class="n">STAGE 5</div><h3>Normalize — the real work</h3>
+          <p>Free-text descriptions get mapped to a canonical procedure. The dozens of plan-specific negotiated rates collapse to a median with a published range. And separate professional or component fees are flagged and excluded, so a facility price isn't quietly understated.</p>
+          <p class="note">This stage is where "a thousand spreadsheets" becomes "one comparable number" — and where most of the judgment lives.</p>
+        </div>
+        <div class="pl-step" data-n="5">
+          <div class="n">STAGE 6</div><h3>Score the quality</h3>
+          <p>A rubric gates every row: Is the file's self-reported date stale? Is this a real facility price or a placeholder? Is it a duplicate of a file shared across a multi-hospital system — which would otherwise double-count a price as if two hospitals agreed?</p>
+          <p class="note">Trust signals — payer count, shared-tier flags, file staleness — were surfaced on the page, not hidden. The number you saw came with its own caveats.</p>
+        </div>
+        <div class="pl-step" data-n="6">
+          <div class="n">STAGE 7</div><h3>Store &amp; archive</h3>
+          <p>Clean rows land in serverless Postgres for fast reads. In parallel, the original file and a columnar snapshot are pushed to object storage with retention — so any number on the site can always be traced back to the exact bytes it came from.</p>
+          <p class="note">Provenance was the product. "Trust us" is worthless in pricing; "here's the source file and the date" is the whole pitch.</p>
+        </div>
+        <div class="pl-step" data-n="7">
+          <div class="n">STAGE 8</div><h3>Serve it, cited</h3>
+          <p>Pages were statically generated and incrementally revalidated — fast to load, cheap to host, friendly to search engines. Every price linked back to its source file and ingest date, with plain-language context for what gross, cash, and negotiated actually mean.</p>
+          <p class="note">From a 6&nbsp;GB federal file to a number a patient can read in under a second — that was the entire job.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section class="band">
+  <div class="wrap narrow">
+    <div class="eyebrow">The stack</div>
+    <h2>Boring tools, used carefully.</h2>
+    <p class="lede">Nothing exotic — the difficulty was never the framework, it was the data. The stack was chosen to keep a solo operator's cost and maintenance near zero while staying fully traceable.</p>
+    <div class="stack">
+      <div><div class="k">Ingest</div><div class="v">Node.js<small>Crawl, fetch, parse, normalize — one pipeline.</small></div></div>
+      <div><div class="k">Big files</div><div class="v">DuckDB<small>SQL over multi-GB files, on disk.</small></div></div>
+      <div><div class="k">Database</div><div class="v">Neon Postgres<small>Serverless, scales to zero.</small></div></div>
+      <div><div class="k">Archive</div><div class="v">Cloudflare R2<small>Raw + parquet snapshots, retained.</small></div></div>
+      <div><div class="k">Site</div><div class="v">Next.js · Vercel<small>Static + ISR, search-friendly.</small></div></div>
+      <div><div class="k">Cost</div><div class="v">~Free tier<small>Solo-operator economics throughout.</small></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- THE WALL (ending) -->
+<section class="band wall">
+  <div class="wrap narrow">
+    <div class="eyebrow">Why it's retired</div>
+    <h2>The wall wasn't technical.</h2>
+    <p class="lede">
+      To compare a procedure across hospitals, you need a shared key — and the universal key for medical
+      procedures is CPT, a code set <strong style="color:#fff;font-weight:600">copyrighted and licensed by the American Medical Association</strong>.
+      The pipeline could read the files. It couldn't escape the license on the one thing that made the
+      files comparable.
+    </p>
+    <ul class="wall-pts">
+      <li><span class="ix">01</span><span class="bd">I <strong>applied for a CPT data license</strong> in good faith — paid the application fee, described the full commercial scope straight, and asked the question that matters for a public tool.</span></li>
+      <li><span class="ix">02</span><span class="bd">That question: <strong>how do you count "users"</strong> for a free, ad-supported website whose "users" are the entire viewing public? The standard per-user royalty model has no sane answer for public-interest price transparency.</span></li>
+      <li><span class="ix">03</span><span class="bd">While that sat unresolved, I <strong>removed every CPT code from the public site</strong> — display, structured data, search — and used the codes only internally as matching keys. The conservative posture, pending an answer.</span></li>
+      <li><span class="ix">04</span><span class="bd">The honest conclusion: a free price-transparency tool <strong>can't be built on an open-ended per-user royalty</strong>. Rather than operate indefinitely on licensing uncertainty, I retired the live product — and kept the part that's mine to share: how it was built.</span></li>
+    </ul>
+    <p style="margin-top:30px">
+      It's a structural problem, not a personal one. The data hospitals are <em>required</em> to publish is
+      gated, for comparison purposes, behind a code set that's licensed per user — and "every patient in
+      America" isn't a number you can license. That tension is the most interesting thing this project
+      surfaced, and it's still unresolved across the industry.
+    </p>
+  </div>
+</section>
+
+<!-- TAKEAWAYS + CTA -->
+<section class="band">
+  <div class="wrap narrow">
+    <div class="eyebrow">What it proves</div>
+    <h2>The engineering still stands.</h2>
+    <div class="takeaways">
+      <div class="tcard"><h3>End-to-end data pipeline</h3><p>Discovery, fetching, multi-format parsing, normalization, quality scoring, storage, and serving — designed, built, and operated solo.</p></div>
+      <div class="tcard"><h3>Messy real-world data</h3><p>Thousands of inconsistent, multi-gigabyte files turned into one clean, comparable, source-cited dataset.</p></div>
+      <div class="tcard"><h3>Provenance by default</h3><p>Every number traceable to its original file and date — with trust signals surfaced, not buried.</p></div>
+      <div class="tcard"><h3>Knowing when to stop</h3><p>Spotting a structural licensing wall, engaging it honestly, and retiring cleanly instead of building on sand.</p></div>
+    </div>
+
+    <div class="cta">
+      <div class="t">Read the full <span>case study</span> on the build, the economics, and the decision to retire.</div>
+      <a class="btn" href="https://www.jnbarber.com/case-studies/hospital-price-transparency">Back to the case study →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="fl">
+      <div>OpenHospitalCost — a retired project by <a href="https://www.jnbarber.com">J.N. Barber</a>.</div>
+      <div><a href="https://www.jnbarber.com/case-studies/hospital-price-transparency">Full case study ↗</a></div>
+    </div>
+    <p class="fine">
+      This page is a technical retrospective. It displays no CPT content and no live pricing. All hospital
+      names, files, and figures shown here are illustrative examples used to explain how the system worked.
+      CPT is a registered trademark of the American Medical Association.
+    </p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  var steps = Array.prototype.slice.call(document.querySelectorAll('.pl-step'));
+  var nodes = Array.prototype.slice.call(document.querySelectorAll('.pl-node'));
+  var stages = Array.prototype.slice.call(document.querySelectorAll('.pl-stage'));
+  var cardTag = document.getElementById('cardTag');
+  var cardStep = document.getElementById('cardStep');
+  var prog = document.getElementById('prog');
+  var tags = ['Raw file','Downloading','Detecting','Parsing','Normalizing','Quality check','Storing','Live page'];
+  var current = -1;
+
+  function setStage(n){
+    if(n === current) return;
+    current = n;
+    nodes.forEach(function(nd,i){
+      nd.classList.toggle('on', i === n);
+      nd.classList.toggle('done', i < n);
+    });
+    stages.forEach(function(st,i){ st.classList.toggle('show', i === n); });
+    cardTag.textContent = tags[n];
+    cardStep.textContent = 'stage ' + (n+1) + ' / 8';
+  }
+
+  // Pick the step whose center is nearest the viewport middle. Deterministic and
+  // jump-safe — survives fast flick-scrolling and the rail-click jumps below, where
+  // a "last intersecting entry" approach would settle on the wrong stage.
+  function nearestStep(){
+    var mid = window.innerHeight / 2;
+    var best = 0, bestDist = Infinity;
+    for(var i=0; i<steps.length; i++){
+      var r = steps[i].getBoundingClientRect();
+      var d = Math.abs((r.top + r.height/2) - mid);
+      if(d < bestDist){ bestDist = d; best = i; }
+    }
+    return best;
+  }
+
+  var ticking = false;
+  function update(){
+    ticking = false;
+    setStage(nearestStep());
+    var max = document.documentElement.scrollHeight - window.innerHeight;
+    prog.style.width = (max > 0 ? (window.pageYOffset / max) * 100 : 0) + '%';
+  }
+  function onScroll(){
+    if(!ticking){ ticking = true; requestAnimationFrame(update); }
+  }
+  window.addEventListener('scroll', onScroll, { passive:true });
+  window.addEventListener('resize', onScroll, { passive:true });
+  update();
+
+  // tap a rail node to jump to its step
+  nodes.forEach(function(nd){
+    nd.style.cursor = 'pointer';
+    nd.addEventListener('click', function(){
+      var n = parseInt(nd.getAttribute('data-n'), 10);
+      if(steps[n]) steps[n].scrollIntoView({ behavior:'smooth', block:'center' });
+    });
+  });
+})();
+</script>
+</body>
+</html>
