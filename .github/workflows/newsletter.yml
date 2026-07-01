@@ -6,11 +6,10 @@ name: Monthly newsletter
 # subscribers who haven't received the current edition, up to the per-run cap, so
 # re-runs drain the remainder without duplicates. Auth via the CRON_SECRET bearer.
 #
-# Scheduled run = real send for the current month. Manual dispatch defaults to a
-# DRY run (preview counts, send nothing) so you can check before a live send.
+# Scheduled send disabled (site retired — see case-study/index.html). Manual
+# dispatch kept below for a one-off send if ever needed; defaults to a DRY run
+# (preview counts, send nothing) so you can check before a live send.
 on:
-  schedule:
-    - cron: '0 14 1 * *'   # 1st of each month, 14:00 UTC (~9–10am ET)
   workflow_dispatch:
     inputs:
       dry:     { description: dry run (preview only, send nothing), type: boolean, default: true }
