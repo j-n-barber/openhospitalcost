@@ -1,49 +1,32 @@
 # OpenHospitalCost
 
-National consumer-facing hospital price transparency site. Per-hospital prices from federally mandated Machine-Readable Files (MRFs), cited back to source.
+Consumer-facing hospital price transparency site, retired 2026-07-01 over AMA/CPT licensing (see [docs/CPT_LICENSING.md](docs/CPT_LICENSING.md)). What's left is a case study: a self-contained scrollytelling explainer of the real 8-stage ingestion pipeline that used to run here, plus a few static pages.
 
-See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the full project brief.
-
-## Status
-
-Phase A — Foundation. Repo scaffolded, schema migration written, procedure dictionary seeded.
+See [docs/PROJECT_BRIEF.md](docs/PROJECT_BRIEF.md) for the original project brief and `docs/` generally for how the pipeline worked — the code that ran it has been removed, but the methodology (discovery, parsing, quality rubric, licensing story) is documented there.
 
 ## Repo layout
 
 ```
-apps/web/        # Next.js App Router site (Phase D)
-pipeline/        # Ingestion: discovery, fetch, parse, normalize, quality
-db/              # Migrations and seed scripts
+apps/web/        # Next.js app — case-study explainer (served at "/") + /about /privacy /terms
+db/migrations/   # Schema history of the retired product (reference only, DB is gone)
 data/            # Canonical reference data (procedure dictionary)
-docs/            # Project brief, schema notes, parser notes, style guides
-.github/workflows/  # CI + scheduled ingestion crons
+docs/            # Project brief, methodology, quality rubric, licensing writeup
+brand/           # Brand palette/type — still followed by apps/web
+.github/workflows/  # CI (builds apps/web)
 ```
 
 ## Local setup
 
 ```sh
-# 1. Install deps
+cd apps/web
 npm install
-
-# 2. Copy env template and fill in Neon connection strings
-cp .env.example .env
-# edit .env
-
-# 3. Apply migrations to the dev branch first
-DATABASE_URL="$DATABASE_URL_DEV" npm run migrate:up
-
-# 4. Seed the procedure dictionary
-DATABASE_URL="$DATABASE_URL_DEV" npm run seed:procedures
-
-# 5. When dev is green, run the same against the main branch
-npm run migrate:up
-npm run seed:procedures
+npm run dev
 ```
 
 ## Stack
 
-Vercel (Phase D) · Next.js App Router · Neon Postgres · Cloudflare R2 · DuckDB · GitHub Actions · MiniSearch · Plausible.
+Vercel · Next.js App Router.
 
 ## License
 
-TBD — defer until v1 launch.
+TBD.

@@ -1,6 +1,0 @@
-{"hospital_name":"Cluster Health","last_updated_on":"2026-05-01","version":"3.0.0",
- "location_name":["Main Campus","ER North","ER South"],
- "standard_charge_information":[
-  {"description":"X-ray","code_information":[{"code":"71045","type":"CPT"}],
-   "standard_charges":[{"gross_charge":300.0,"discounted_cash":150.0,"payers_information":[{"payer_name":"BCBS","standard_charge_dollar":120.0}]}]}
- ]}

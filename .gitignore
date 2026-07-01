@@ -11,12 +11,6 @@ node_modules/
 .agents/
 skills-lock.json
 
-# MRF samples (large, downloadable from source)
-pipeline/parse/samples/
-
-# Parquet snapshots (archived in R2)
-pipeline/snapshots/output/
-
 # Next.js build artifacts (Phase D)
 apps/web/.next/
 apps/web/out/

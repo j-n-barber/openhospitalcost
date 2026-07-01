@@ -5,7 +5,7 @@ import SiteFooter from "@/components/SiteFooter";
 export const metadata: Metadata = {
   title: "Terms of Service — OpenHospitalCost",
   description:
-    "The terms for using OpenHospitalCost: an informational price-transparency service. Prices are not quotes, the data is provided as-is, and figures are not medical, financial, or legal advice.",
+    "The terms for using OpenHospitalCost, a retired hospital price-transparency project now presented as a case study.",
   alternates: { canonical: "/terms" },
 };
 
@@ -17,7 +17,7 @@ export default function TermsPage() {
         <section className="pagehead">
           <div className="crumb"><a href="/">Home</a> / Terms</div>
           <h1>Terms of Service</h1>
-          <p className="sub">Last updated: June 4, 2026</p>
+          <p className="sub">Last updated: July 1, 2026</p>
         </section>
 
         <div className="copy">
@@ -29,56 +29,33 @@ export default function TermsPage() {
 
           <h2>What the Site is</h2>
           <p>
-            OpenHospitalCost is a free, informational service that aggregates hospital price-transparency data from the
-            machine-readable files hospitals publish under 45 CFR §180, normalizes it, and presents it for comparison.
-            We add public context such as bed counts and metro data.
-          </p>
-
-          <h2>Informational only — not advice or a quote</h2>
-          <p>
-            The prices and figures on the Site are <strong>informational and are not quotes, estimates, or guarantees
-            of cost</strong>. They are shown as reported in each hospital&apos;s file and may differ from what you are
-            actually charged, which depends on your specific care, provider, and insurance. Nothing on the Site is
-            medical, financial, legal, or insurance advice. Always confirm pricing directly with the hospital and your
-            insurer before making decisions.
+            OpenHospitalCost was a free, informational service that aggregated hospital price-transparency data
+            published under 45 CFR §180. It is now retired; the Site is a static case study describing the project
+            and how it worked. There is no live pricing data, and no data submission or lookup functionality.
           </p>
 
           <h2>Accuracy &amp; availability</h2>
           <p>
-            The Site and its data are provided <strong>&ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without
-            warranties of any kind</strong>, express or implied, including accuracy, completeness, or fitness for a
-            particular purpose. Source files vary in quality and format; data may be incomplete, out of date, or
-            contain errors. We may change, suspend, or discontinue any part of the Site at any time. Found a mistake?
-            Please <a href="mailto:contact@openhospitalcost.com?subject=Correction">let us know</a>.
+            The Site is provided <strong>&ldquo;as is&rdquo; and &ldquo;as available,&rdquo; without warranties of any
+            kind</strong>, express or implied. We may change, suspend, or discontinue the Site at any time.
           </p>
 
           <h2>Acceptable use</h2>
           <p>
-            Use the Site lawfully and don&apos;t attempt to disrupt it, gain unauthorized access, or place undue load on
-            it (e.g., aggressive automated scraping). For bulk or programmatic access to the underlying data, see our{" "}
-            <a href="/data">data page</a>.
+            Use the Site lawfully and don&apos;t attempt to disrupt it, gain unauthorized access, or place undue load
+            on it (e.g., aggressive automated scraping).
           </p>
 
           <h2>Intellectual property</h2>
           <p>
-            The Site&apos;s design, original text, branding, and presentation are owned by J.N. Barber LLC. The
-            underlying hospital pricing originates from public files published by the hospitals and from public
-            government datasets. Third-party names and marks belong to their respective owners; their use here is for
-            identification and comparison only.
-          </p>
-
-          <h2>Third-party links &amp; advertising</h2>
-          <p>
-            The Site may display advertising and links to third-party sites. We are not responsible for the content,
-            products, or practices of third parties. Advertising is handled per our{" "}
-            <a href="/privacy">Privacy Policy</a>.
+            The Site&apos;s design, original text, branding, and presentation are owned by J.N. Barber LLC. Any
+            hospital or procedure names used illustratively in the case study are for identification purposes only.
           </p>
 
           <h2>Limitation of liability</h2>
           <p>
             To the fullest extent permitted by law, J.N. Barber LLC will not be liable for any indirect, incidental,
-            or consequential damages, or for any decisions made in reliance on information from the Site. Your use of
-            the Site is at your own risk.
+            or consequential damages arising from use of the Site. Your use of the Site is at your own risk.
           </p>
 
           <h2>Changes to these Terms</h2>

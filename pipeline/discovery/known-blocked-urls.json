@@ -1,9 +1,0 @@
-{
-  "_note": "Marquee hospitals whose cms-hpt.txt is gated by JS challenges (Akamai, Imperva, Incapsula) or ASP.NET .ashx handlers. These can't be reached by direct curl; need Playwright. Per ACQUISITION_STRATEGY.md Tier-2. If a hospital fails here too, escalate to Tier-3 (direct outreach).",
-  "blocked_roots": [
-    { "ccn": null, "name_hint": "Mayo Clinic Rochester",        "url": "https://www.mayoclinic.org/cms-hpt.txt",        "defense": "Akamai" },
-    { "ccn": null, "name_hint": "Memorial Hermann (system)",    "url": "https://memorialhermann.org/cms-hpt.txt",       "defense": "ASP.NET .ashx" },
-    { "ccn": null, "name_hint": "Boston Children's Longwood",   "url": "https://www.bostonchildrens.org/cms-hpt.txt",   "defense": "Imperva/Incapsula" },
-    { "ccn": null, "name_hint": "Saint Vincent Hospital (AHN)", "url": "https://www.stvincenthospital.com/cms-hpt.txt", "defense": "Cloudflare" }
-  ]
-}

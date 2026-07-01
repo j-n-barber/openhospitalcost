@@ -1,25 +1,17 @@
 # OpenHospitalCost
 
-> A free, public-interest index of real U.S. hospital prices — gross, cash, and
-> negotiated rates — extracted from the machine-readable files hospitals are
-> required to publish under 45 CFR §180, and cited to the source file and date.
+> A retired hospital price transparency project. It used to index real U.S.
+> hospital prices — gross, cash, and negotiated rates — extracted from the
+> machine-readable files hospitals are required to publish under 45 CFR §180.
+> It was retired over AMA/CPT licensing (matching procedures across hospitals
+> at scale requires the AMA's copyrighted, per-user-licensed CPT codes, which
+> has no workable model for a free, public, ad-supported tool).
 
-## What makes this data different
-Every price is an actual figure reported by the hospital, not a modeled estimate
-or range. Prices are shown as the median facility rate per (hospital, procedure),
-with the full payer range, isolating facility charges from professional/component
-line items. Each hospital page links to the underlying machine-readable file.
-
-## URL patterns
-- /procedure/{slug} — one procedure (CPT), compared across hospitals (the money page)
-- /hospital/{ccn} — one hospital's prices by procedure, with MRF provenance
-- /state/{code} — hospitals with published prices in a U.S. state
-- /sitemap.xml — all indexed pages
-
-## Coverage
-Launching with the largest U.S. metros and expanding outward. Coverage and the
-"as of" date are shown on each page.
+## What's here now
+`/` is an interactive case study walking through the real 8-stage ingestion
+pipeline (discover, fetch, detect, parse, normalize, quality, store, serve)
+that used to run this site. `/about`, `/privacy`, and `/terms` are the only
+other pages; everything else has been removed.
 
 ## Citation
-Cite individual pages by URL. Figures are informational, not a quote or
-guarantee of cost.
+This is a case study of a retired project, not a live data source.

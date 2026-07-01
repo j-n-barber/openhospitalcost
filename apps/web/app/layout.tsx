@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Source_Serif_4, Inter, IBM_Plex_Mono } from "next/font/google";
 import "./globals.css";
 import { Analytics } from "@vercel/analytics/next";
-import { AdSense } from "@/components/AdSense";
 import BackToTop from "@/components/BackToTop";
-import Track from "@/components/Track";
 
 // Direction B brand type — locked in brand/palette.md.
 const serif = Source_Serif_4({ subsets: ["latin"], style: ["normal", "italic"], variable: "--font-serif", display: "swap" });
@@ -12,15 +10,15 @@ const sans = Inter({ subsets: ["latin"], variable: "--font-sans", display: "swap
 const mono = IBM_Plex_Mono({ subsets: ["latin"], weight: ["500"], variable: "--font-mono", display: "swap" });
 
 const DESCRIPTION =
-  "Real gross, cash, and negotiated hospital prices pulled straight from federally-mandated machine-readable files and cited to the source. Not estimates.";
+  "A retired hospital price transparency project — a case study of the 8-stage ingestion pipeline that pulled real gross, cash, and negotiated prices from federally-mandated machine-readable files.";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://openhospitalcost.com"),
-  title: "OpenHospitalCost — What hospitals actually charge",
+  title: "OpenHospitalCost — a retired price transparency project",
   description: DESCRIPTION,
   alternates: { canonical: "/" },
   openGraph: {
-    title: "OpenHospitalCost — What hospitals actually charge",
+    title: "OpenHospitalCost — a retired price transparency project",
     description: DESCRIPTION,
     url: "https://openhospitalcost.com",
     siteName: "OpenHospitalCost",
@@ -29,7 +27,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "OpenHospitalCost — What hospitals actually charge",
+    title: "OpenHospitalCost — a retired price transparency project",
     description: DESCRIPTION,
     images: ["/og.png"],
   },
@@ -41,9 +39,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       <body>
         {children}
         <BackToTop />
-        <Track />
         <Analytics />
-        <AdSense />
       </body>
     </html>
   );

@@ -7,43 +7,6 @@
   "engines": {
     "node": ">=20"
   },
-  "scripts": {
-    "migrate:up": "node db/migrate.js up",
-    "migrate:down": "node db/migrate.js down",
-    "migrate:create": "node db/migrate.js create",
-    "seed:procedures": "node db/seeds/load-procedures.js",
-    "ingest:cms-hospitals": "node pipeline/discovery/ingest-cms-hospitals.js",
-    "geocode:hospitals": "node pipeline/discovery/geocode-hospitals.js",
-    "scrape:cms-hpt": "node pipeline/discovery/scrape-cms-hpt.js",
-    "ingest:tpafs-links": "node pipeline/discovery/ingest-tpafs-links.js",
-    "ingest:dolthub-charges": "node pipeline/discovery/ingest-dolthub-charges.js",
-    "ingest:pps-cancer": "node pipeline/discovery/ingest-pps-exempt-cancer-hospitals.js",
-    "probe:alt-paths": "node pipeline/discovery/probe-alt-paths.js",
-    "scrape:via-browser": "node pipeline/discovery/scrape-via-browser.js",
-    "apply:manual-urls": "node pipeline/discovery/apply-manual-mrf-urls.js",
-    "refresh:untried-urls": "node pipeline/discovery/refresh-untried-urls.js",
-    "coverage": "node pipeline/coverage.js",
-    "quality": "node pipeline/quality.js",
-    "syntax-check": "node --check db/seeds/load-procedures.js && node --check db/migrate.js && node --check db/load-env.js && node --check pipeline/coverage.js && node --check pipeline/quality.js && node --check pipeline/parse/detect-format.js && node --check pipeline/parse/duckdb.js && node --check pipeline/parse/decompress.js && node --check pipeline/parse/parse-mrf.js && node --check pipeline/parse/parsers/csv.js && node --check pipeline/parse/parsers/json.js && node --check pipeline/discovery/slugify.js && node --check pipeline/discovery/ingest-cms-hospitals.js && node --check pipeline/discovery/geocode-hospitals.js && node --check pipeline/discovery/scrape-cms-hpt.js && node --check pipeline/discovery/ingest-tpafs-links.js && node --check pipeline/discovery/ingest-dolthub-charges.js && node --check pipeline/discovery/probe-alt-paths.js && node --check pipeline/discovery/scrape-via-browser.js && node --check pipeline/discovery/match-hospital.js && node --check pipeline/discovery/audit-shared-mrf-urls.js && node --check pipeline/discovery/audit-duplicate-data.js && node --check pipeline/discovery/verify-attribution.js && node --check pipeline/discovery/unwrap-proofpoint.js && node --check pipeline/fetch/browser-fetch.js && node --check pipeline/discovery/apply-manual-mrf-urls.js && node --check pipeline/discovery/refresh-untried-urls.js && node --check pipeline/select-starter-200.js && node --check pipeline/discovery/ingest-pos-beds.js && node --check pipeline/discovery/ingest-cbsa-crosswalk.js && node --check pipeline/parse/normalize.js && node --check pipeline/ingest-mrf.js && node --check pipeline/fetch/download.js && node --check pipeline/run-ingest-batch.js && node --check pipeline/archive/r2.js && node --check pipeline/archive/apply-lifecycle.js && node --check pipeline/snapshots/write-snapshot.js && node --check pipeline/snapshots/prune-snapshots.js",
-    "ingest:pos-beds": "node pipeline/discovery/ingest-pos-beds.js",
-    "select:starter-200": "node pipeline/select-starter-200.js",
-    "ingest:cbsa-crosswalk": "node pipeline/discovery/ingest-cbsa-crosswalk.js",
-    "ingest:mrf": "node pipeline/ingest-mrf.js",
-    "ingest:batch": "node pipeline/run-ingest-batch.js",
-    "archive:lifecycle": "node pipeline/archive/apply-lifecycle.js",
-    "snapshot:write": "node pipeline/snapshots/write-snapshot.js",
-    "snapshot:prune": "node pipeline/snapshots/prune-snapshots.js",
-    "analytics": "node scripts/analytics-report.js",
-    "analytics:rollup": "node scripts/analytics-rollup.js"
-  },
-  "dependencies": {
-    "@aws-sdk/client-s3": "^3.1058.0",
-    "@aws-sdk/lib-storage": "^3.1058.0",
-    "csv-parse": "^5.5.0",
-    "node-pg-migrate": "^7.0.0",
-    "pg": "^8.11.0",
-    "playwright": "^1.60.0"
-  },
   "devDependencies": {
     "topojson-client": "^3.1.0"
   }
