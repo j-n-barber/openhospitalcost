@@ -55,8 +55,8 @@ export default function HowItWorksPage() {
           <p>
             Every hospital page links to the exact machine-readable file the prices came from and the date we
             ingested it. If something looks wrong, you can check the original — and{" "}
-            <a href="/corrections">tell us</a> so we can fix it. For the full sourcing and pricing logic, see our{" "}
-            <a href="/methodology">methodology</a>.
+            <a href="mailto:contact@openhospitalcost.com?subject=Correction">tell us</a> so we can fix it. For the full
+            sourcing and pricing logic, see our <a href="/methodology">methodology</a>.
           </p>
         </div>
       </main>

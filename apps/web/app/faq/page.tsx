@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import SubscribeForm from "@/components/SubscribeForm";
 import { GUIDES as GUIDE_PAGES } from "@/lib/guides";
 
 export const metadata: Metadata = {
@@ -103,11 +102,9 @@ export default function FaqPage() {
             ))}
           </ul>
 
-          <SubscribeForm source="faq" />
-
           <p className="prov" style={{ margin: "28px 0 0" }}>
-            Still have a question? <a href="/contact">Contact us</a> — or, if a price looks wrong,{" "}
-            <a href="/corrections">submit a correction</a>.
+            Still have a question? <a href="mailto:contact@openhospitalcost.com">Contact us</a> — or, if a price looks
+            wrong, <a href="mailto:contact@openhospitalcost.com?subject=Correction">let us know</a>.
           </p>
         </div>
       </main>

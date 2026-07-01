@@ -22,10 +22,9 @@ type Quality = {
   fresh30: number; fresh90: number; oldest: string | null;
 };
 type Outcomes = { attempted: number; ok: number; unreachable: number; unusable: number; parse_err: number; other: number };
-type Corrections = { total: number; handled: number };
 
 async function getReport() {
-  const [cov, qual, out, corr] = (await Promise.all([
+  const [cov, qual, out] = (await Promise.all([
     sql`
       SELECT
         (SELECT count(*) FROM hospitals h JOIN LATERAL (SELECT * FROM mrf_files m WHERE m.hospital_id=h.id ORDER BY parsed_at DESC LIMIT 1) f ON true WHERE (f.quality_metrics->>'eligibleForMoneyPages')::boolean)::int AS hospitals,
@@ -63,16 +62,15 @@ async function getReport() {
         count(*) FILTER (WHERE status='fail' AND failure_class NOT IN ('404_dead','403_blocked','fetch_failed','http_5xx','http_429','timeout','unrecognized','zip_no_csv','giant_json','oom','parse'))::int AS other
       FROM latest
     `,
-    sql`SELECT count(*)::int AS total, count(*) FILTER (WHERE status IN ('reviewed','resolved'))::int AS handled FROM form_submissions WHERE kind='correction'`,
-  ])) as [Coverage[], Quality[], Outcomes[], Corrections[]];
-  return { cov: cov[0], qual: qual[0], out: out[0], corr: corr[0] };
+  ])) as [Coverage[], Quality[], Outcomes[]];
+  return { cov: cov[0], qual: qual[0], out: out[0] };
 }
 
 const fmt = (n: number) => n.toLocaleString("en-US");
 const pct = (n: number, d: number) => (d > 0 ? Math.round((n / d) * 100) : 0);
 
 export default async function TransparencyPage() {
-  const { cov, qual, out, corr } = await getReport();
+  const { cov, qual, out } = await getReport();
   const failed = out.unreachable + out.unusable + out.parse_err + out.other;
   const fetchedUsable = out.ok + out.parse_err; // files we got in a recognized format
   const asOf = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -154,14 +152,8 @@ export default async function TransparencyPage() {
 
           <h2>Corrections</h2>
           <p>
-            Every page invites a correction, and corrections go into a review-then-ingest queue rather than changing the
-            site silently.{" "}
-            {corr.total > 0 ? (
-              <>To date we&apos;ve received <strong>{fmt(corr.total)}</strong> correction{corr.total === 1 ? "" : "s"}, of which <strong>{fmt(corr.handled)}</strong> {corr.handled === 1 ? "has" : "have"} been reviewed or resolved.</>
-            ) : (
-              <>No corrections have been submitted yet — if you spot a number that looks wrong, you&apos;d be the first to flag it.</>
-            )}{" "}
-            <a href="/corrections">Submit a correction →</a>
+            If you spot a number that looks wrong, we check every report against the source file.{" "}
+            <a href="mailto:contact@openhospitalcost.com?subject=Correction">Let us know →</a>
           </p>
 
           <h2>Want the raw data?</h2>

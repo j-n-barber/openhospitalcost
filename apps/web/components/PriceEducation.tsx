@@ -145,8 +145,8 @@ export function ProcedureEducation(p: ProcedureEducationProps) {
         Every figure here is pulled straight from hospitals&apos; federally-mandated machine-readable price
         files (required since 2021 under 45 CFR §180) — not estimates or models. They&apos;re meant for
         comparison; your actual bill depends on your exact care and your plan, so confirm directly before
-        scheduling. <a href="/methodology">How we source this →</a> · <a href="/corrections">Spot
-        something off?</a>
+        scheduling. <a href="/methodology">How we source this →</a> ·{" "}
+        <a href="mailto:contact@openhospitalcost.com?subject=Correction">Spot something off?</a>
       </p>
 
       <FaqSection items={p.faq} />
@@ -224,7 +224,8 @@ export function HospitalEducation(p: HospitalEducationProps) {
             <a href={p.sourceUrl} target="_blank" rel="noopener noreferrer">View the source file ↗</a> ·{" "}
           </>
         ) : null}
-        <a href="/methodology">How we source this →</a> · <a href="/corrections">Spot something off?</a>
+        <a href="/methodology">How we source this →</a> ·{" "}
+        <a href="mailto:contact@openhospitalcost.com?subject=Correction">Spot something off?</a>
       </p>
 
       <FaqSection items={p.faq} />

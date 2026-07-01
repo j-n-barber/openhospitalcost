@@ -49,7 +49,7 @@ export default function TermsPage() {
             warranties of any kind</strong>, express or implied, including accuracy, completeness, or fitness for a
             particular purpose. Source files vary in quality and format; data may be incomplete, out of date, or
             contain errors. We may change, suspend, or discontinue any part of the Site at any time. Found a mistake?
-            Please <a href="/corrections">submit a correction</a>.
+            Please <a href="mailto:contact@openhospitalcost.com?subject=Correction">let us know</a>.
           </p>
 
           <h2>Acceptable use</h2>
@@ -96,8 +96,7 @@ export default function TermsPage() {
           <h2>Contact</h2>
           <p>
             Questions? Reach us at{" "}
-            <a href="mailto:contact@openhospitalcost.com">contact@openhospitalcost.com</a> or via our{" "}
-            <a href="/contact">contact page</a>.
+            <a href="mailto:contact@openhospitalcost.com">contact@openhospitalcost.com</a>.
           </p>
         </div>
       </main>

@@ -72,8 +72,8 @@ export default function MethodologyPage() {
             <li>Figures are informational, not quotes. Your actual cost depends on your care and your insurance.</li>
           </ul>
           <p>
-            Found an error? <a href="/corrections">Submit a correction</a> — every report is checked against the
-            source file.
+            Found an error? <a href="mailto:contact@openhospitalcost.com?subject=Correction">Let us know</a> — every
+            report is checked against the source file.
           </p>
         </div>
       </main>

@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { sql } from "@/lib/db";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
-import SubscribeForm from "@/components/SubscribeForm";
 import { STATE_NAMES } from "@/lib/states";
 import { titleCaseProcedure, usd } from "@/lib/format";
 
@@ -236,7 +235,6 @@ export default async function StateReportPage({ params }: Params) {
             <a href={`/state/${c}`}>Browse all {name} hospitals →</a> &nbsp;·&nbsp;{" "}
             <a href="/reports">National price report →</a>
           </p>
-          <SubscribeForm source={`report-state-${c}`} />
         </div>
       </main>
       <SiteFooter />

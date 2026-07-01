@@ -5,7 +5,6 @@ import SiteFooter from "@/components/SiteFooter";
 import { titleCaseProcedure, usd } from "@/lib/format";
 import { STATE_NAMES } from "@/lib/states";
 import { getSwings, getPriciest, getSavings, getHospitalCount } from "@/lib/reports-data";
-import SubscribeForm from "@/components/SubscribeForm";
 
 export const revalidate = 86400;
 
@@ -158,10 +157,6 @@ export default async function ReportsPage() {
               </ul>
             </>
           )}
-          <p style={{ color: "var(--muted)", fontSize: 14, marginTop: 24 }}>
-            A monthly edition is on the way.
-          </p>
-          <SubscribeForm source="reports" />
         </div>
       </main>
       <SiteFooter />

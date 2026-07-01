@@ -99,7 +99,8 @@ export default async function GuidePage({ params }: Params) {
           <p className="prov" style={{ margin: "28px 0 0" }}>
             Prices in this guide are as of {g.updated} and link to the live page for current
             figures. Published data is for comparison, not a quote — always confirm with the
-            hospital. Spotted something off? <a href="/corrections">Submit a correction</a>.
+            hospital. Spotted something off?{" "}
+            <a href="mailto:contact@openhospitalcost.com?subject=Correction">Let us know</a>.
           </p>
         </article>
       </main>
